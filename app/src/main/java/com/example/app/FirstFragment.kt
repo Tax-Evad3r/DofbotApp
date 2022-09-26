@@ -48,16 +48,15 @@ class FirstFragment : Fragment() {
 
         binding.buttonSend.setOnClickListener {
 
+            //bypass android 9 requirement for not cleartext requests
             val policy = ThreadPolicy.Builder()
                 .permitAll().build()
             StrictMode.setThreadPolicy(policy)
 
-            //val temp = URL("https://1.1.1.1/").readText()
-
-            //val temp = URL("http://10.255.146.43:5000").readText()
-
+            //servo data to be sent
             var reqParam = "{ \"1\": [[1000,0]]}"
 
+            //switch between data
             if (selected) {
                 reqParam = "{ \"1\": [[1000,90]]}"
                 selected = false
@@ -65,14 +64,19 @@ class FirstFragment : Fragment() {
                 selected = true
             }
 
+            //address of robotarm
             val mURL = URL("http://192.168.137.168:5000/motion")
 
+            //make http connection
             with(mURL.openConnection() as HttpURLConnection) {
-                // optional default is GET
+                // set request method
                 requestMethod = "POST"
+                //set content type of POST data
                 setRequestProperty("Content-Type", "application/json")
+                //set accepted return data type
                 setRequestProperty("Accept", "application/json")
 
+                //write parameter data
                 val wr = OutputStreamWriter(getOutputStream());
                 wr.write(reqParam);
                 wr.flush();
@@ -80,6 +84,7 @@ class FirstFragment : Fragment() {
                 println("URL : $url")
                 println("Response Code : $responseCode")
 
+                //read return data
                 BufferedReader(InputStreamReader(inputStream)).use {
                     val response = StringBuffer()
 
