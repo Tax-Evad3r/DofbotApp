@@ -40,6 +40,40 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.buttonTest.setOnClickListener {
+
+            var text = binding.jsonData.text
+
+            //create gson object
+            //add data
+            //convert to json
+
+            //Json Array template
+            /*{
+                "json_id": "12.4",
+                "json_name": "name of the array",
+                "json_image": "https://image_path",
+                "json_description": "Description of the Json Array"
+            }*/
+
+            //data class JsonDataParser(
+            //@SerializedName("json_id") val id: Long,
+            //@SerializedName("json_name") val name: String,
+            //@SerializedName("json_image") val image: String,
+            //@SerializedName("json_description") val description: String
+            //)
+
+            //val gson = Gson()
+            //val json = gson.toJson(jsonDataParser)
+
+            //val json = getJson()
+            //val topic = gson.fromJson(json, JsonDataParser::class.java)
+
+
+            println("Current data= $text")
+
+        }
+
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
