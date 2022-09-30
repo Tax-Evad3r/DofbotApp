@@ -39,9 +39,9 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.llTop.setOnDragListener(dragListener)
+        binding.llRight.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
-        binding.dragView.setOnLongClickListener {
+        binding.imageView.setOnLongClickListener {
             val clipText = "Hello"
             val item = ClipData.Item(clipText)
             val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)

@@ -1,39 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     tools:context=".SecondFragment">
 
-    <LinearLayout
-        android:id="@+id/llTop"
-        android:layout_width="match_parent"
-        android:layout_height="424dp"
-        android:layout_weight="1"
-        android:background="@android:color/darker_gray"
-        android:gravity="center"
-        android:orientation="horizontal">
 
-        <View
-            android:id="@+id/dragView"
+    <LinearLayout
+        android:id="@+id/llRight"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <ImageView
+            android:id="@+id/imageView"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
-            android:background="@android:color/black" />
+            android:background="@android:color/black"
+            android:contentDescription="En_test_bild"
+            app:srcCompat="@drawable/ic_launcher_foreground" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/llBottom"
-        android:layout_width="438dp"
-        android:layout_height="293dp"
-        android:layout_weight="1"
-        android:background="@android:color/holo_blue_light"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:background="@android:color/black"
+            android:contentDescription="En_test_bild"
+            app:srcCompat="@drawable/ic_launcher_foreground" />
     </LinearLayout>
 
     <!--
@@ -55,4 +66,4 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textview_second" /> -->
-    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
