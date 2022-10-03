@@ -41,7 +41,7 @@ class SecondFragment : Fragment() {
 
         binding.llRight.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
-        binding.imageView.setOnLongClickListener {
+        binding.motion.setOnLongClickListener {
             val clipText = "Hello"
             val item = ClipData.Item(clipText)
             val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
