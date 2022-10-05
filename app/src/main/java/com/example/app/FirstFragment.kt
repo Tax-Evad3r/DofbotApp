@@ -1,16 +1,19 @@
 package com.example.app
 
 import android.os.Bundle
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.example.app.databinding.FragmentFirstBinding
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
@@ -37,76 +40,106 @@ class FirstFragment : Fragment() {
 
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    @Serializable
+    data class Data(
+        var bottom_rotation: MutableList<MutableList<Int>>?,
+        var joint_1: MutableList<MutableList<Int>>?,
+        var joint_2: MutableList<MutableList<Int>>?,
+        var joint_3: MutableList<MutableList<Int>>?,
+        var claw_rotation: MutableList<MutableList<Int>>?,
+        var claw_grip: MutableList<MutableList<Int>>?
+    )
+    {
+        operator fun plus(dat1: Data) : Data {
 
-        binding.buttonTest.setOnClickListener {
+            //get longest time in first animation and add it to next
+            var maxTime : MutableList<Int> = ArrayList()
 
-            var text = binding.jsonData.text
-
-            //create gson object
-            //add data
-            //convert to json
-
-            //Json Array template
-            /*{
-                "json_id": "12.4",
-                "json_name": "name of the array",
-                "json_image": "https://image_path",
-                "json_description": "Description of the Json Array"
-            }*/
-
-            //data class JsonDataParser(
-            //@SerializedName("json_id") val id: Long,
-            //@SerializedName("json_name") val name: String,
-            //@SerializedName("json_image") val image: String,
-            //@SerializedName("json_description") val description: String
-            //)
-
-            //val gson = Gson()
-            //val json = gson.toJson(jsonDataParser)
-
-            //val json = getJson()
-            //val topic = gson.fromJson(json, JsonDataParser::class.java)
-
-
-            println("Current data= $text")
-
-        }
-
-        binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
-
-        var selected = true
-
-        binding.buttonSend.setOnClickListener {
-
-            //allow requests from main thread
-            val policy = ThreadPolicy.Builder()
-                .permitAll().build()
-            StrictMode.setThreadPolicy(policy)
-
-            //servo data to be sent
-            var reqParam = "{ \"1\": [[1000,0]]}"
-            var temp = ""
-
-            //switch between data
-            if (selected) {
-                temp = "{ \"1\": [[1000,90]]}"
-                selected = false
-            } else {
-                temp = "{ \"1\": [[1000,0]]}"
-                selected = true
+            var bottomRotation : MutableList<MutableList<Int>> = ArrayList()
+            this.bottom_rotation?.forEach {
+                maxTime.add((it[0]))
+                bottomRotation.add(it)
             }
 
+            var joint1 : MutableList<MutableList<Int>> = ArrayList()
+            this.joint_1?.forEach {
+                maxTime.add((it[0]))
+                joint1.add(it)
+            }
+            var joint2 : MutableList<MutableList<Int>> = ArrayList()
+            this.joint_2?.forEach {
+                maxTime.add((it[0]))
+                joint2.add(it)
+            }
+            var joint3 : MutableList<MutableList<Int>> = ArrayList()
+            this.joint_3?.forEach {
+                maxTime.add((it[0]))
+                joint3.add(it)
+            }
+            var clawRotation : MutableList<MutableList<Int>> = ArrayList()
+            this.claw_rotation?.forEach {
+                maxTime.add((it[0]))
+                clawRotation.add(it)
+            }
+            var clawGrip : MutableList<MutableList<Int>> = ArrayList()
+            this.claw_grip?.forEach {
+                maxTime.add((it[0]))
+                clawGrip.add(it)
+            }
 
-            reqParam = binding.jsonData.text.toString()
-            binding.jsonData.setText(temp)
+            var time : Int = 0
+            maxTime.forEach {
+                if (it > time) {
+                    time = it
+                }
+            }
 
+            dat1.bottom_rotation?.forEach {
+                it[0] += time
+                bottomRotation.add(it)
+            }
+            dat1.joint_1?.forEach {
+                it[0] += time
+                joint1.add(it)
+            }
+            dat1.joint_2?.forEach {
+                it[0] += time
+                joint2.add(it)
+            }
+            dat1.joint_3?.forEach {
+                it[0] += time
+                joint3.add(it)
+            }
+            dat1.claw_rotation?.forEach {
+                it[0] += time
+                clawRotation.add(it)
+            }
+            dat1.claw_grip?.forEach {
+                it[0] += time
+                clawGrip.add(it)
+            }
 
-            //address of robotarm
-            val mURL = URL("http://192.168.137.168:5000/motion")
+            return Data(bottomRotation, joint1, joint2, joint3, clawRotation, clawGrip)
+        }
+
+    }
+
+    class SendData(): ViewModel() {
+
+        fun send(jsonBody: String) {
+            // Create a new coroutine to move the execution off the UI thread
+            viewModelScope.launch(Dispatchers.IO) {
+                println(HttpConnection().send(jsonBody))
+            }
+        }
+    }
+
+    class HttpConnection () {
+        fun send (jsonBody: String) : String {
+
+            //val mURL = URL("http://172.28.176.226:5000/motion")
+            val mURL = URL("http://192.168.50.172:5000/motion")
+            //val mURL = URL("http://10.255.145.74:5000/motion")
 
             //make http connection
             with(mURL.openConnection() as HttpURLConnection) {
@@ -119,16 +152,62 @@ class FirstFragment : Fragment() {
 
                 //write parameter data
                 val wr = OutputStreamWriter(outputStream);
-                wr.write(reqParam);
+                wr.write(jsonBody);
                 wr.flush();
 
                 println("URL : $url")
                 println("Response Code : $responseCode")
 
-
+                if (responseCode == 200)
+                    return "Success"
+                return "Fail bad response code"
             }
 
-            binding.textviewFirst.text = "done"
+            return "Fail request failed"
+        }
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.buttonTest.setOnClickListener {
+
+            val switch2 = binding.switch2.isChecked
+            val switch1 = binding.switch3.isChecked
+
+            val motion1 = Data(mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)),null, null, null, null, null)
+            val motion2 = Data(null, null, null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 180)))
+
+            var requestdata = Data(null, null, null, null, null, null)
+
+            if (switch1) {
+                println("Adding motion1")
+                requestdata += motion1
+            }
+            if (switch2) {
+                println("Adding motion2")
+                requestdata += motion2
+            }
+
+            val jsonRequestdata = Json.encodeToString(requestdata)
+
+            println("Current json= $jsonRequestdata")
+            SendData().send(jsonRequestdata)
+
+        }
+
+        binding.buttonFirst.setOnClickListener {
+            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+        }
+
+        binding.buttonSend.setOnClickListener {
+
+            val resetData = Data(mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)))
+
+            val resetDataJson = Json.encodeToString(resetData)
+
+            println(SendData().send(resetDataJson))
         }
     }
 
