@@ -52,6 +52,12 @@ class FirstFragment : Fragment() {
     {
         operator fun plus(dat1: Data) : Data {
 
+            if(this.bottom_rotation?.size == null && this.joint_1?.size == null && this.joint_2?.size == null && this.joint_3?.size == null && this. claw_rotation?.size == null && this.claw_grip?.size == null)
+                return dat1
+
+            println("bottomrotation size is")
+            println(this.bottom_rotation?.size)
+
             //get longest time in first animation and add it to next
             var maxTime : MutableList<Int> = ArrayList()
 
@@ -92,6 +98,25 @@ class FirstFragment : Fragment() {
                 if (it > time) {
                     time = it
                 }
+            }
+
+            if (bottomRotation.size == 0) {
+                bottomRotation.add(mutableListOf(time, -1))
+            }
+            if (joint1.size == 0) {
+                joint1.add(mutableListOf(time, -1))
+            }
+            if (joint2.size == 0) {
+                joint2.add(mutableListOf(time, -1))
+            }
+            if (joint3.size == 0) {
+                joint3.add(mutableListOf(time, -1))
+            }
+            if (clawRotation.size == 0) {
+                clawRotation.add(mutableListOf(time, -1))
+            }
+            if (clawGrip.size == 0) {
+                clawGrip.add(mutableListOf(time, -1))
             }
 
             dat1.bottom_rotation?.forEach {
@@ -176,8 +201,8 @@ class FirstFragment : Fragment() {
             val switch2 = binding.switch2.isChecked
             val switch1 = binding.switch3.isChecked
 
-            val motion1 = Data(mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)),null, null, null, null, null)
-            val motion2 = Data(null, null, null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 180)))
+            val motion1 = Data(mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)),null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), null, null, null)
+            val motion2 = Data(mutableListOf(mutableListOf(1000, 90), mutableListOf(2000, 180)), null, null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 180)))
 
             var requestdata = Data(null, null, null, null, null, null)
 
