@@ -52,11 +52,9 @@ class FirstFragment : Fragment() {
     {
         operator fun plus(dat1: Data) : Data {
 
-            if(this.bottom_rotation?.size == null && this.joint_1?.size == null && this.joint_2?.size == null && this.joint_3?.size == null && this. claw_rotation?.size == null && this.claw_grip?.size == null)
+            if(this.bottom_rotation?.size == 0 && this.joint_1?.size == 0 && this.joint_2?.size == 0 && this.joint_3?.size == 0 && this. claw_rotation?.size == 0 && this.claw_grip?.size == 0) {
                 return dat1
-
-            println("bottomrotation size is")
-            println(this.bottom_rotation?.size)
+            }
 
             //get longest time in first animation and add it to next
             var maxTime : MutableList<Int> = ArrayList()
@@ -201,10 +199,10 @@ class FirstFragment : Fragment() {
             val switch2 = binding.switch2.isChecked
             val switch1 = binding.switch3.isChecked
 
-            val motion1 = Data(mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)),null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), null, null, null)
-            val motion2 = Data(mutableListOf(mutableListOf(1000, 90), mutableListOf(2000, 180)), null, null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), null, mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 180)))
+            val motion1 = Data(mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)),mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), mutableListOf(), mutableListOf(), mutableListOf())
+            val motion2 = Data(mutableListOf(mutableListOf(1000, 90), mutableListOf(2000, 180)), mutableListOf(), mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 180)))
 
-            var requestdata = Data(null, null, null, null, null, null)
+            var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
 
             if (switch1) {
                 println("Adding motion1")
