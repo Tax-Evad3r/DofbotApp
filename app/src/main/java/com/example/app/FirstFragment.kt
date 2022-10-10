@@ -33,7 +33,7 @@ class FirstFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
         return binding.root
@@ -57,41 +57,41 @@ class FirstFragment : Fragment() {
             }
 
             //get longest time in first animation and add it to next
-            var maxTime : MutableList<Int> = ArrayList()
+            val maxTime : MutableList<Int> = ArrayList()
 
-            var bottomRotation : MutableList<MutableList<Int>> = ArrayList()
+            val bottomRotation : MutableList<MutableList<Int>> = ArrayList()
             this.bottom_rotation?.forEach {
                 maxTime.add((it[0]))
                 bottomRotation.add(it)
             }
 
-            var joint1 : MutableList<MutableList<Int>> = ArrayList()
+            val joint1 : MutableList<MutableList<Int>> = ArrayList()
             this.joint_1?.forEach {
                 maxTime.add((it[0]))
                 joint1.add(it)
             }
-            var joint2 : MutableList<MutableList<Int>> = ArrayList()
+            val joint2 : MutableList<MutableList<Int>> = ArrayList()
             this.joint_2?.forEach {
                 maxTime.add((it[0]))
                 joint2.add(it)
             }
-            var joint3 : MutableList<MutableList<Int>> = ArrayList()
+            val joint3 : MutableList<MutableList<Int>> = ArrayList()
             this.joint_3?.forEach {
                 maxTime.add((it[0]))
                 joint3.add(it)
             }
-            var clawRotation : MutableList<MutableList<Int>> = ArrayList()
+            val clawRotation : MutableList<MutableList<Int>> = ArrayList()
             this.claw_rotation?.forEach {
                 maxTime.add((it[0]))
                 clawRotation.add(it)
             }
-            var clawGrip : MutableList<MutableList<Int>> = ArrayList()
+            val clawGrip : MutableList<MutableList<Int>> = ArrayList()
             this.claw_grip?.forEach {
                 maxTime.add((it[0]))
                 clawGrip.add(it)
             }
 
-            var time : Int = 0
+            var time = 0
             maxTime.forEach {
                 if (it > time) {
                     time = it
@@ -147,7 +147,7 @@ class FirstFragment : Fragment() {
 
     }
 
-    class SendData(): ViewModel() {
+    class SendData : ViewModel() {
 
         fun send(jsonBody: String) {
             // Create a new coroutine to move the execution off the UI thread
@@ -157,7 +157,7 @@ class FirstFragment : Fragment() {
         }
     }
 
-    class HttpConnection () {
+    class HttpConnection {
         fun send (jsonBody: String) : String {
 
             //val mURL = URL("http://172.28.176.226:5000/motion")
@@ -174,9 +174,9 @@ class FirstFragment : Fragment() {
                 setRequestProperty("Accept", "application/json")
 
                 //write parameter data
-                val wr = OutputStreamWriter(outputStream);
-                wr.write(jsonBody);
-                wr.flush();
+                val wr = OutputStreamWriter(outputStream)
+                wr.write(jsonBody)
+                wr.flush()
 
                 println("URL : $url")
                 println("Response Code : $responseCode")
@@ -186,7 +186,6 @@ class FirstFragment : Fragment() {
                 return "Fail bad response code"
             }
 
-            return "Fail request failed"
         }
 
     }
