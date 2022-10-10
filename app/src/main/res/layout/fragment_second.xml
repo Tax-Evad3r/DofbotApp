@@ -31,20 +31,14 @@
     <LinearLayout
         android:id="@+id/llBottom"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="100dp"
         android:orientation="vertical"
+        android:background="@color/purple_200"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:background="@android:color/black"
-            android:contentDescription="En_test_bild"
-            app:srcCompat="@drawable/ic_launcher_foreground" />
+
     </LinearLayout>
     <LinearLayout
         android:id="@+id/llTop"
