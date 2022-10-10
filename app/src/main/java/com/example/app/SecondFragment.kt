@@ -64,6 +64,8 @@ class SecondFragment : Fragment() {
             event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
         }
         DragEvent.ACTION_DRAG_ENTERED -> {
+            val v = event.localState as View
+            v.setVisibility(View.VISIBLE);
             view.invalidate()
             true
         }
@@ -89,6 +91,8 @@ class SecondFragment : Fragment() {
             true
         }
         DragEvent.ACTION_DRAG_ENDED -> {
+            val v = event.localState as View
+            v.setVisibility(View.VISIBLE);
             view.invalidate()
             true
         }
