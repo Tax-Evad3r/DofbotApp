@@ -94,6 +94,66 @@ class SecondFragment : Fragment() {
 
         }
 
+        binding.motion1.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
+        binding.motion2.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
+        binding.motion3.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
+        binding.motion4.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
+        binding.motion5.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
         //binding.buttonSecond.setOnClickListener {
            // findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
         //}
