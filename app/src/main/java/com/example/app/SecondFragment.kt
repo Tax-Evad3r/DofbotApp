@@ -2,6 +2,7 @@ package com.example.app
 
 import android.content.ClipData
 import android.content.ClipDescription
+import android.content.Context
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -9,9 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.navigation.fragment.findNavController
 import com.example.app.databinding.FragmentSecondBinding
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import java.io.IOException
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -52,6 +54,26 @@ class SecondFragment : Fragment() {
 
             it.visibility = View.INVISIBLE
             true
+        }
+
+        binding.buttonQuickRun.setOnClickListener {
+
+            fun getMotion(context: Context): Data {
+
+                lateinit var jsonString: String
+                try {
+                    jsonString = context.assets.open("motion1.json")
+                        .bufferedReader()
+                        .use { it.readText() }
+                } catch (ioException: IOException) {
+                    println(ioException)
+                }
+
+                return Json { ignoreUnknownKeys = true }.decodeFromString(jsonString)
+            }
+
+            println(context?.let { it1 -> getMotion(it1) })
+
         }
 
         binding.buttonRun.setOnClickListener {
