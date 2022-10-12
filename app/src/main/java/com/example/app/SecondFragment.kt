@@ -54,12 +54,43 @@ class SecondFragment : Fragment() {
             true
         }
 
-        binding.buttonStart.setOnClickListener {
+        binding.buttonRun.setOnClickListener {
             println("Current queue")
             println(binding.llBottom.childCount)
             for (i in 0 until binding.llBottom.childCount) {
                 println(binding.llBottom.getChildAt(i).contentDescription)
             }
+
+            //FIX ME: Proof of concept until drag and drop is fully implemented,
+            //        data should also probably not be stored as static variable
+
+            //initialize two predefined motions
+            val motion1 = Data(mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)),mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), mutableListOf(), mutableListOf(), mutableListOf())
+            val motion2 = Data(mutableListOf(mutableListOf(1000, 90), mutableListOf(2000, 180)), mutableListOf(), mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 180)))
+
+            //initialize empty initial response
+            var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
+
+            //define motionCount as amount of motions on timeline
+            val motionCount = binding.llBottom.childCount
+
+            //if 1 or more motions on time line add 1:st motion to request
+            if (motionCount > 0) {
+                println("Adding motion1")
+                requestdata += motion1
+            }
+            //if 2 or more motions on time line add 2:nd motion to request
+            if (motionCount > 1) {
+                println("Adding motion2")
+                requestdata += motion2
+            }
+
+            //convert request to json
+            val jsonRequestdata = requestdata.toJson()
+            println("Sending json= $jsonRequestdata")
+
+            //send request
+            SendData().send(jsonRequestdata)
 
         }
 
