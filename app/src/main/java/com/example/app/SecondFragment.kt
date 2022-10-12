@@ -53,19 +53,29 @@ class SecondFragment : Fragment() {
             it.visibility = View.INVISIBLE
             true
         }
+
+        binding.buttonStart.setOnClickListener {
+            println("Current queue")
+            println(binding.llBottom.childCount)
+            for (i in 0 until binding.llBottom.childCount) {
+                println(binding.llBottom.getChildAt(i).contentDescription)
+            }
+
+        }
+
         //binding.buttonSecond.setOnClickListener {
            // findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
         //}
     }
 
-    val dragListener = View.OnDragListener { view, event ->
+    private val dragListener = View.OnDragListener { view, event ->
     when(event.action){
         DragEvent.ACTION_DRAG_STARTED -> {
             event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
         }
         DragEvent.ACTION_DRAG_ENTERED -> {
             val v = event.localState as View
-            v.setVisibility(View.VISIBLE);
+            v.visibility = View.VISIBLE;
             view.invalidate()
             true
         }
@@ -92,12 +102,14 @@ class SecondFragment : Fragment() {
         }
         DragEvent.ACTION_DRAG_ENDED -> {
             val v = event.localState as View
-            v.setVisibility(View.VISIBLE);
+            v.visibility = View.VISIBLE;
             view.invalidate()
             true
         }
         else -> false
     }
+
+
 }
     override fun onDestroyView() {
         super.onDestroyView()
