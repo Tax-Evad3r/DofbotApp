@@ -54,7 +54,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
-                android:background="@android:color/black"
+                android:background="@android:color/holo_blue_dark"
                 android:contentDescription="motion"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
@@ -63,7 +63,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
-                android:background="@android:color/black"
+                android:background="@android:color/holo_green_dark"
                 android:contentDescription="motion"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
@@ -72,7 +72,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
-                android:background="@android:color/black"
+                android:background="@android:color/holo_orange_dark"
                 android:contentDescription="motion"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
@@ -81,7 +81,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
-                android:background="@android:color/black"
+                android:background="@android:color/holo_purple"
                 android:contentDescription="motion"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
@@ -90,7 +90,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
-                android:background="@android:color/black"
+                android:background="@android:color/holo_red_dark"
                 android:contentDescription="motion"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
@@ -99,7 +99,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
-                android:background="@android:color/black"
+                android:background="@android:color/holo_blue_bright"
                 android:contentDescription="motion"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
@@ -108,7 +108,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
-                android:background="@android:color/black"
+                android:background="@android:color/holo_green_light"
                 android:contentDescription="motion"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
