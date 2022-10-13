@@ -7,6 +7,25 @@
     tools:context=".SecondFragment">
 
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabsRight"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Motions" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sounds" />
+
+    </com.google.android.material.tabs.TabLayout>
+
     <HorizontalScrollView
         android:id="@+id/hsvBottom"
         android:layout_width="0dp"
@@ -35,17 +54,19 @@
 
     <ScrollView
         android:id="@+id/scRightMotions"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="@+id/tabsRight"
+        app:layout_constraintTop_toBottomOf="@id/tabsRight">
 
 
         <LinearLayout
             android:id="@+id/llRightMotions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical">
 
 
@@ -117,17 +138,19 @@
 
     <ScrollView
         android:id="@+id/scRightSounds"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="@+id/tabsRight"
+        app:layout_constraintTop_toBottomOf="@id/tabsRight">
 
 
         <LinearLayout
             android:id="@+id/llRightSounds"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical">
 
 
@@ -196,150 +219,14 @@
 
         </LinearLayout>
     </ScrollView>
-<!--
-    <ScrollView
-        android:id="@+id/scBottom"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/scRight"
-        app:layout_constraintStart_toEndOf="@+id/llLeft">
-
-        <LinearLayout
-            android:id="@+id/llBottom"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/imageView26"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView27"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView28"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView29"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView30"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView31"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView32"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView33"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView22"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView23"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView24"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView25"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/imageView5"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="En_test_bild"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-        </LinearLayout>
-    </ScrollView>
-    -->
 
     <LinearLayout
         android:id="@+id/llTop"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tabsRight"
+        app:layout_constraintStart_toEndOf="@id/llLeft"
         app:layout_constraintTop_toTopOf="parent">
 
         <Space
