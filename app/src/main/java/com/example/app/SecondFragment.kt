@@ -120,7 +120,7 @@ class SecondFragment : Fragment() {
                 if (motionNumParse.toIntOrNull() != null) {
                     //parse substring to usable in for later
                     var motionNum = motionNumParse.toInt()
-                    if (motionNum <= availableMotions.size) {
+                    if (motionNum < availableMotions.size) {
                         //if motion exist add to list
                         motionNumList.add(motionNum)
                     }
