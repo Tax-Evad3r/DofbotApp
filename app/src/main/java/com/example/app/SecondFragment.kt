@@ -15,6 +15,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.io.IOException
 
+
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
@@ -41,6 +42,24 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //define empty motion data container
+        var availableMotions : MutableList<Data> = mutableListOf()
+
+        //debug print to indicate parsing started
+        println("Motion import started!")
+
+        //import motions from asset files (located in "main/assets/motion")
+        val importedMotions = importMotionFromFile(this.requireContext())
+        for (importedMotion in importedMotions) {
+            availableMotions.add(importedMotion)
+        }
+
+        //debug print of all stored motions
+        println("Motion import done!")
+        for (motion in availableMotions) {
+            println(motion.toJson())
+        }
+
         binding.llRight.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
         binding.motion.setOnLongClickListener {
@@ -58,21 +77,7 @@ class SecondFragment : Fragment() {
 
         binding.buttonQuickRun.setOnClickListener {
 
-            fun getMotion(context: Context): Data {
-
-                lateinit var jsonString: String
-                try {
-                    jsonString = context.assets.open("motion1.json")
-                        .bufferedReader()
-                        .use { it.readText() }
-                } catch (ioException: IOException) {
-                    println(ioException)
-                }
-
-                return Json { ignoreUnknownKeys = true }.decodeFromString(jsonString)
-            }
-
-            println(context?.let { it1 -> getMotion(it1) })
+            println("pressed quick run!")
 
         }
 
@@ -83,12 +88,7 @@ class SecondFragment : Fragment() {
                 println(binding.llBottom.getChildAt(i).contentDescription)
             }
 
-            //FIX ME: Proof of concept until drag and drop is fully implemented,
-            //        data should also probably not be stored as static variable
-
-            //initialize two predefined motions
-            val motion1 = Data(mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)),mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), mutableListOf(), mutableListOf(), mutableListOf())
-            val motion2 = Data(mutableListOf(mutableListOf(1000, 90), mutableListOf(2000, 180)), mutableListOf(), mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 180)))
+            //FIX ME: Proof of concept until drag and drop is fully implemented
 
             //initialize empty initial response
             var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
@@ -99,12 +99,12 @@ class SecondFragment : Fragment() {
             //if 1 or more motions on time line add 1:st motion to request
             if (motionCount > 0) {
                 println("Adding motion1")
-                requestdata += motion1
+                requestdata += availableMotions[0]
             }
             //if 2 or more motions on time line add 2:nd motion to request
             if (motionCount > 1) {
                 println("Adding motion2")
-                requestdata += motion2
+                requestdata += availableMotions[1]
             }
 
             //convert request to json

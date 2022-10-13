@@ -1,5 +1,6 @@
 package com.example.app
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -8,6 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
+import java.io.IOException
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
@@ -166,3 +168,30 @@ import java.net.URL
         }
 
     }
+
+fun importMotionFromFile(context: Context): List<Data> {
+
+    //retrieve all files in motions folder
+    val assetsList = context.assets.list("motions")
+
+    //create a list to hold all parsed motions
+    val motionList : MutableList<Data> = mutableListOf()
+
+    //if assets exist loop through and parse to list
+    if (assetsList != null) {
+        for (assetName in assetsList) {
+            lateinit var jsonString: String
+            try {
+                jsonString = context.assets.open("motions/$assetName")
+                    .bufferedReader()
+                    .use { it.readText() }
+                motionList.add(Json { ignoreUnknownKeys = true }.decodeFromString(jsonString))
+            } catch (ioException: IOException) {
+                println(ioException)
+            }
+        }
+    }
+
+    //returned parsed motions
+    return motionList
+}
