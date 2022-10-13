@@ -1,5 +1,7 @@
 package com.example.app
 
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
 import android.os.Bundle
@@ -20,6 +22,10 @@ class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
 
+    private lateinit var motion_animation:AnimatorSet
+    private lateinit var sound_animation:AnimatorSet
+    private var motionShown = true
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -33,13 +39,40 @@ class SecondFragment : Fragment() {
 
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.llRight.setOnDragListener(dragListener)
+
+        val scale:Float = this.requireContext().resources.displayMetrics.density
+        binding.scRightMotions.cameraDistance = 8000 * scale
+        binding.scRightSounds.cameraDistance = 8000 * scale
+
+        motion_animation = AnimatorInflater.loadAnimator(activity, R.animator.motion_animator) as AnimatorSet
+        sound_animation = AnimatorInflater.loadAnimator(activity, R.animator.sound_animator) as AnimatorSet
+
+        binding.buttonQuickRun.setOnClickListener {
+            if (motionShown)
+            {
+                motion_animation.setTarget(binding.scRightMotions)
+                sound_animation.setTarget(binding.scRightSounds)
+                motion_animation.start()
+                sound_animation.start()
+                motionShown = false
+            }
+            else
+            {
+                motion_animation.setTarget(binding.scRightSounds)
+                sound_animation.setTarget(binding.scRightMotions)
+                motion_animation.start()
+                sound_animation.start()
+                motionShown = true
+            }
+
+        }
+
+        binding.llRightMotions.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
         binding.motion.setOnLongClickListener {
             val clipText = "Hello"
