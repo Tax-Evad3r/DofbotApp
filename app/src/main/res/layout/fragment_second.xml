@@ -55,7 +55,7 @@
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
                 android:background="@android:color/holo_blue_dark"
-                android:contentDescription="motion"
+                android:contentDescription="motion0"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <ImageView
@@ -64,7 +64,7 @@
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
                 android:background="@android:color/holo_green_dark"
-                android:contentDescription="motion"
+                android:contentDescription="motion1"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <ImageView
@@ -73,7 +73,7 @@
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
                 android:background="@android:color/holo_orange_dark"
-                android:contentDescription="motion"
+                android:contentDescription="motion2"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <ImageView
@@ -82,7 +82,7 @@
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
                 android:background="@android:color/holo_purple"
-                android:contentDescription="motion"
+                android:contentDescription="motion3"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <ImageView
@@ -91,7 +91,7 @@
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
                 android:background="@android:color/holo_red_dark"
-                android:contentDescription="motion"
+                android:contentDescription="motion4"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <ImageView
@@ -100,7 +100,7 @@
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
                 android:background="@android:color/holo_blue_bright"
-                android:contentDescription="motion"
+                android:contentDescription="motion5"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <ImageView
@@ -109,7 +109,7 @@
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
                 android:background="@android:color/holo_green_light"
-                android:contentDescription="motion"
+                android:contentDescription="motion6"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
         </LinearLayout>

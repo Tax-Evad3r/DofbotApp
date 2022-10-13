@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.text.isDigitsOnly
+import androidx.core.view.iterator
 import com.example.app.databinding.FragmentSecondBinding
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -82,13 +84,15 @@ class SecondFragment : Fragment() {
         }
 
         binding.buttonRun.setOnClickListener {
+
+            //debug print for all objects on timeline
             println("Current queue")
             println(binding.llBottom.childCount)
             for (i in 0 until binding.llBottom.childCount) {
                 println(binding.llBottom.getChildAt(i).contentDescription)
             }
 
-            //FIX ME: Proof of concept until drag and drop is fully implemented
+            //FIX ME: This may change before drag and drop is fully implemented
 
             //initialize empty initial response
             var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
@@ -96,15 +100,28 @@ class SecondFragment : Fragment() {
             //define motionCount as amount of motions on timeline
             val motionCount = binding.llBottom.childCount
 
-            //if 1 or more motions on time line add 1:st motion to request
-            if (motionCount > 0) {
-                println("Adding motion1")
-                requestdata += availableMotions[0]
+            //list of motion id to add to request
+            val motionNumList = mutableListOf<Int>()
+
+            //loop through all motions in timeline
+            for (tileNo in 0 until binding.llBottom.childCount) {
+                //get content description defined in xml
+                val desc = binding.llBottom.getChildAt(tileNo).contentDescription
+                //extract last char (this is currently motion number)
+                var motionNumParse = desc.substring(desc.length-1)
+                //ignore temp motion (might not be needed in the end)
+                if (motionNumParse.toIntOrNull() != null) {
+                    //parse substring to usable in for later
+                    var motionNum = motionNumParse.toInt()
+                    if (motionNum <= availableMotions.size) {
+                        //if motion exist add to list
+                        motionNumList.add(motionNum)
+                    }
+                }
             }
-            //if 2 or more motions on time line add 2:nd motion to request
-            if (motionCount > 1) {
-                println("Adding motion2")
-                requestdata += availableMotions[1]
+            //add motions to request
+            for (i in motionNumList) {
+                requestdata += availableMotions[i]
             }
 
             //convert request to json
