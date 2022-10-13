@@ -81,6 +81,13 @@ class SecondFragment : Fragment() {
 
             println("pressed quick run!")
 
+            //repurpose quick run as reset button during development
+            //define reset data
+            val resetData = Data(mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)))
+
+            //send reset data
+            SendData().send(resetData.toJson())
+
         }
 
         binding.buttonRun.setOnClickListener {
