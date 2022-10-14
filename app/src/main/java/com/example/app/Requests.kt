@@ -31,19 +31,21 @@ import java.net.URL
 
         operator fun plus(dat1: Data) : Data {
 
+            //if rhs is empty return lhs directly
             if(this.bottom_rotation?.size == 0 && this.joint_1?.size == 0 && this.joint_2?.size == 0 && this.joint_3?.size == 0 && this. claw_rotation?.size == 0 && this.claw_grip?.size == 0) {
                 return dat1
             }
 
             //get longest time in first animation and add it to next
-            val maxTime : MutableList<Int> = ArrayList()
+            val maxTime : MutableList<Int> = mutableListOf()
 
+            //for each servo create temporary variable
+            //store all servo data from lhs and their durations
             val bottomRotation : MutableList<MutableList<Int>> = ArrayList()
             this.bottom_rotation?.forEach {
                 maxTime.add((it[0]))
                 bottomRotation.add(it)
             }
-
             val joint1 : MutableList<MutableList<Int>> = ArrayList()
             this.joint_1?.forEach {
                 maxTime.add((it[0]))
@@ -70,6 +72,7 @@ import java.net.URL
                 clawGrip.add(it)
             }
 
+            //find longest duration from all lhs servos
             var time = 0
             maxTime.forEach {
                 if (it > time) {
@@ -77,6 +80,7 @@ import java.net.URL
                 }
             }
 
+            //if a servo does not have any movement add NO_ACTION with appropriate duration
             if (bottomRotation.size == 0) {
                 bottomRotation.add(mutableListOf(time, -1))
             }
@@ -96,31 +100,27 @@ import java.net.URL
                 clawGrip.add(mutableListOf(time, -1))
             }
 
+            //add all servo motions from rhs and displace with duration of first animation
             dat1.bottom_rotation?.forEach {
-                it[0] += time
-                bottomRotation.add(it)
+                bottomRotation.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.joint_1?.forEach {
-                it[0] += time
-                joint1.add(it)
+                joint1.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.joint_2?.forEach {
-                it[0] += time
-                joint2.add(it)
+                joint2.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.joint_3?.forEach {
-                it[0] += time
-                joint3.add(it)
+                joint3.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.claw_rotation?.forEach {
-                it[0] += time
-                clawRotation.add(it)
+                clawRotation.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.claw_grip?.forEach {
-                it[0] += time
-                clawGrip.add(it)
+                clawGrip.add(mutableListOf(it[0]+time, it[1]))
             }
 
+            //return final data object containing both motions from lhs and rhs
             return Data(bottomRotation, joint1, joint2, joint3, clawRotation, clawGrip)
         }
 
@@ -139,8 +139,8 @@ import java.net.URL
     class HttpConnection {
         fun send (jsonBody: String) : String {
 
-            val mURL = URL("http://172.18.42.63:5000/motion")
-            //val mURL = URL("http://192.168.50.172:5000/motion")
+            //val mURL = URL("http://172.26.105.103:5000/motion")
+            val mURL = URL("http://192.168.50.172:5000/motion")
             //val mURL = URL("http://10.255.145.74:5000/motion")
 
             //make http connection

@@ -44,17 +44,8 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //define empty motion data container
-        var availableMotions : MutableList<Data> = mutableListOf()
-
-        //debug print to indicate parsing started
-        println("Motion import started!")
-
         //import motions from asset files (located in "main/assets/motion")
-        val importedMotions = importMotionFromFile(this.requireContext())
-        for (importedMotion in importedMotions) {
-            availableMotions.add(importedMotion)
-        }
+        val availableMotions = importMotionFromFile(this.requireContext())
 
         //debug print of all stored motions
         println("Motion import done!")
@@ -103,9 +94,6 @@ class SecondFragment : Fragment() {
 
             //initialize empty initial response
             var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
-
-            //define motionCount as amount of motions on timeline
-            val motionCount = binding.llBottom.childCount
 
             //list of motion id to add to request
             val motionNumList = mutableListOf<Int>()
