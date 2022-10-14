@@ -12,6 +12,7 @@ import kotlinx.serialization.json.*
 import java.io.IOException
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.net.URL
 
 @Serializable
@@ -139,30 +140,36 @@ import java.net.URL
     class HttpConnection {
         fun send (jsonBody: String) : String {
 
-            //val mURL = URL("http://172.26.105.103:5000/motion")
-            val mURL = URL("http://192.168.50.172:5000/motion")
+            val mURL = URL("http://172.26.105.103:5000/motion")
+            //val mURL = URL("http://192.168.50.172:5000/motion")
             //val mURL = URL("http://10.255.145.74:5000/motion")
 
-            //make http connection
-            with(mURL.openConnection() as HttpURLConnection) {
-                // set request method
-                requestMethod = "POST"
-                //set content type of POST data
-                setRequestProperty("Content-Type", "application/json")
-                //set accepted return data type
-                setRequestProperty("Accept", "application/json")
+            try {
+                //make http connection
+                with(mURL.openConnection() as HttpURLConnection) {
+                    // set request method
+                    requestMethod = "POST"
+                    //set content type of POST data
+                    setRequestProperty("Content-Type", "application/json")
+                    //set accepted return data type
+                    setRequestProperty("Accept", "application/json")
+                    //set request timeout to prohibit app crashing
+                    connectTimeout = 5000
 
-                //write parameter data
-                val wr = OutputStreamWriter(outputStream)
-                wr.write(jsonBody)
-                wr.flush()
+                    //write parameter data
+                    val wr = OutputStreamWriter(outputStream)
+                    wr.write(jsonBody)
+                    wr.flush()
 
-                println("URL : $url")
-                println("Response Code : $responseCode")
+                    println("URL : $url")
+                    println("Response Code : $responseCode")
 
-                if (responseCode == 200)
-                    return "Success"
-                return "Fail bad response code"
+                    if (responseCode == 200)
+                        return "Success"
+                    return "Fail bad response code"
+                }
+            }catch (e : SocketTimeoutException) {
+                return "Could not connect to robot!"
             }
 
         }
