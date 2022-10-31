@@ -11,9 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.navigation.fragment.findNavController
+import androidx.core.animation.doOnEnd
 import com.example.app.databinding.FragmentSecondBinding
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -22,9 +23,10 @@ class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
 
-    private lateinit var motion_animation:AnimatorSet
-    private lateinit var sound_animation:AnimatorSet
-    private var motionShown = true
+    private lateinit var flip_left_in:AnimatorSet
+    private lateinit var flip_left_out:AnimatorSet
+    private lateinit var flip_right_in:AnimatorSet
+    private lateinit var flip_right_out:AnimatorSet
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -35,42 +37,50 @@ class SecondFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
-    ): View? {
+    ): View {
 
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         val scale:Float = this.requireContext().resources.displayMetrics.density
         binding.scRightMotions.cameraDistance = 8000 * scale
         binding.scRightSounds.cameraDistance = 8000 * scale
 
-        motion_animation = AnimatorInflater.loadAnimator(activity, R.animator.motion_animator) as AnimatorSet
-        sound_animation = AnimatorInflater.loadAnimator(activity, R.animator.sound_animator) as AnimatorSet
+        flip_left_in = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_in) as AnimatorSet
+        flip_left_out = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_out) as AnimatorSet
+        flip_right_in = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_in) as AnimatorSet
+        flip_right_out = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_out) as AnimatorSet
 
-        binding.buttonQuickRun.setOnClickListener {
-            if (motionShown)
-            {
-                motion_animation.setTarget(binding.scRightMotions)
-                sound_animation.setTarget(binding.scRightSounds)
-                motion_animation.start()
-                sound_animation.start()
-                motionShown = false
+        binding.tabsRight.addOnTabSelectedListener(object : OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                if (tab?.position != 0)
+                {
+                    binding.scRightSounds.visibility = View.VISIBLE
+                    flip_left_in.setTarget(binding.scRightSounds)
+                    flip_left_out.setTarget(binding.scRightMotions)
+                    flip_left_in.start()
+                    flip_left_out.start()
+                    flip_left_in.doOnEnd { binding.scRightMotions.visibility = View.GONE }
+                }
+                else
+                {
+                    binding.scRightMotions.visibility = View.VISIBLE
+                    flip_right_in.setTarget(binding.scRightMotions)
+                    flip_right_out.setTarget(binding.scRightSounds)
+                    flip_right_in.start()
+                    flip_right_out.start()
+                    flip_right_in.doOnEnd { binding.scRightSounds.visibility = View.GONE }
+                }
             }
-            else
-            {
-                motion_animation.setTarget(binding.scRightSounds)
-                sound_animation.setTarget(binding.scRightMotions)
-                motion_animation.start()
-                sound_animation.start()
-                motionShown = true
-            }
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
 
-        }
 
         binding.llRightMotions.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
