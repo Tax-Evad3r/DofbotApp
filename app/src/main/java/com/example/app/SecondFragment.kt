@@ -23,10 +23,10 @@ class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
 
-    private lateinit var flip_left_in:AnimatorSet
-    private lateinit var flip_left_out:AnimatorSet
-    private lateinit var flip_right_in:AnimatorSet
-    private lateinit var flip_right_out:AnimatorSet
+    private lateinit var flipLeftIn:AnimatorSet
+    private lateinit var flipLeftOut:AnimatorSet
+    private lateinit var flipRightIn:AnimatorSet
+    private lateinit var flipRightOut:AnimatorSet
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -51,30 +51,30 @@ class SecondFragment : Fragment() {
         binding.scRightMotions.cameraDistance = 8000 * scale
         binding.scRightSounds.cameraDistance = 8000 * scale
 
-        flip_left_in = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_in) as AnimatorSet
-        flip_left_out = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_out) as AnimatorSet
-        flip_right_in = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_in) as AnimatorSet
-        flip_right_out = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_out) as AnimatorSet
+        flipLeftIn = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_in) as AnimatorSet
+        flipLeftOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_out) as AnimatorSet
+        flipRightIn = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_in) as AnimatorSet
+        flipRightOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_out) as AnimatorSet
 
         binding.tabsRight.addOnTabSelectedListener(object : OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab?.position != 0)
                 {
                     binding.scRightSounds.visibility = View.VISIBLE
-                    flip_left_in.setTarget(binding.scRightSounds)
-                    flip_left_out.setTarget(binding.scRightMotions)
-                    flip_left_in.start()
-                    flip_left_out.start()
-                    flip_left_in.doOnEnd { binding.scRightMotions.visibility = View.GONE }
+                    flipLeftIn.setTarget(binding.scRightSounds)
+                    flipLeftOut.setTarget(binding.scRightMotions)
+                    flipLeftIn.start()
+                    flipLeftOut.start()
+                    flipLeftIn.doOnEnd { binding.scRightMotions.visibility = View.GONE }
                 }
                 else
                 {
                     binding.scRightMotions.visibility = View.VISIBLE
-                    flip_right_in.setTarget(binding.scRightMotions)
-                    flip_right_out.setTarget(binding.scRightSounds)
-                    flip_right_in.start()
-                    flip_right_out.start()
-                    flip_right_in.doOnEnd { binding.scRightSounds.visibility = View.GONE }
+                    flipRightIn.setTarget(binding.scRightMotions)
+                    flipRightOut.setTarget(binding.scRightSounds)
+                    flipRightIn.start()
+                    flipRightOut.start()
+                    flipRightIn.doOnEnd { binding.scRightSounds.visibility = View.GONE }
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
