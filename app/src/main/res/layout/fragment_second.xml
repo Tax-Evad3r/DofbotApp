@@ -7,6 +7,7 @@
     tools:context=".SecondFragment">
 
 
+
     <HorizontalScrollView
         android:id="@+id/hsvBottom"
         android:layout_width="0dp"
@@ -327,6 +328,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2" />
+
+        <ImageButton
+            android:id="@+id/playButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:onClick="playSound"
+            android:src="@android:drawable/ic_media_play" />
+
+        <ImageButton
+            android:id="@+id/pauseButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:onClick="pauseSound"
+            android:src="@android:drawable/btn_star" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

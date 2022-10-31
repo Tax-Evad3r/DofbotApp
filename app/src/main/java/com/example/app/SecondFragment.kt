@@ -2,6 +2,7 @@ package com.example.app
 
 import android.content.ClipData
 import android.content.ClipDescription
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -16,18 +17,26 @@ import com.example.app.databinding.FragmentSecondBinding
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+
 class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
+    var mMediaPlayer: MediaPlayer? = null
+
+
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
+
+
+
     override fun onCreateView(
 
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
+
 
     ): View? {
 
@@ -38,6 +47,8 @@ class SecondFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+       // mMediaPlayer = MediaPlayer.create(context , R.raw.mixkit_sci_fi_positive_notification_266)
 
         binding.llRight.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
@@ -53,7 +64,12 @@ class SecondFragment : Fragment() {
             it.visibility = View.INVISIBLE
             true
         }
-
+        binding.playButton.setOnClickListener{
+            playSound()
+        }
+        binding.pauseButton.setOnClickListener{
+            pauseSound()
+        }
         binding.buttonRun.setOnClickListener {
             println("Current queue")
             println(binding.llBottom.childCount)
@@ -202,8 +218,50 @@ class SecondFragment : Fragment() {
 
 
 }
+
+
+    //binding.playButton.SetOnClickListener{}
+    // 1. Plays the water sound
+    fun playSound() {
+        if (mMediaPlayer == null) {
+            mMediaPlayer =
+                MediaPlayer.create(this.context, R.raw.george_ezra_shotgun_jesse_bloch_bootleg)
+            // mMediaPlayer!!.isLooping = true
+
+            mMediaPlayer!!.start()
+        } else mMediaPlayer!!.start()
+    }
+    // 2. Pause playback
+    fun pauseSound() {
+        if (mMediaPlayer?.isPlaying == true) mMediaPlayer?.pause()
+    }
+
+    // 3. Stops playback
+    fun stopSound() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer!!.stop()
+            mMediaPlayer!!.release()
+            mMediaPlayer = null
+        }
+    }
+
+    // 4. Destroys the MediaPlayer instance when the app is closed
+    override fun onStop() {
+        super.onStop()
+        if (mMediaPlayer != null) {
+            mMediaPlayer!!.release()
+            mMediaPlayer = null
+        }
+    }
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+
+
+
 }
+
