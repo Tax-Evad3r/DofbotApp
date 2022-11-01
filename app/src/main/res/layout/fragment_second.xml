@@ -334,7 +334,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:onClick="playSound"
             android:src="@android:drawable/ic_media_play" />
 
         <ImageButton
@@ -342,7 +341,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:onClick="pauseSound"
             android:src="@android:drawable/btn_star" />
     </LinearLayout>
 

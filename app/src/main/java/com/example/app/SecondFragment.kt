@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.app.databinding.FragmentSecondBinding
 
+
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
@@ -65,7 +66,7 @@ class SecondFragment : Fragment() {
             true
         }
         binding.playButton.setOnClickListener{
-            playSound()
+            playSound(this.context, null)
         }
         binding.pauseButton.setOnClickListener{
             pauseSound()
@@ -220,17 +221,9 @@ class SecondFragment : Fragment() {
 }
 
 
-    //binding.playButton.SetOnClickListener{}
-    // 1. Plays the water sound
-    fun playSound() {
-        if (mMediaPlayer == null) {
-            mMediaPlayer =
-                MediaPlayer.create(this.context, R.raw.george_ezra_shotgun_jesse_bloch_bootleg)
-            // mMediaPlayer!!.isLooping = true
 
-            mMediaPlayer!!.start()
-        } else mMediaPlayer!!.start()
-    }
+
+
     // 2. Pause playback
     fun pauseSound() {
         if (mMediaPlayer?.isPlaying == true) mMediaPlayer?.pause()
