@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.animation.doOnEnd
 import android.widget.Toast
@@ -70,7 +71,10 @@ class SecondFragment : Fragment() {
                     flipLeftOut.setTarget(binding.scRightMotions)
                     flipLeftIn.start()
                     flipLeftOut.start()
-                    flipLeftIn.doOnEnd { binding.scRightMotions.visibility = View.GONE }
+                    flipLeftIn.doOnEnd {
+                        binding.scRightMotions.visibility = View.GONE
+                        binding.scRightSounds.visibility = View.VISIBLE
+                    }
                 }
                 else
                 {
@@ -79,7 +83,10 @@ class SecondFragment : Fragment() {
                     flipRightOut.setTarget(binding.scRightSounds)
                     flipRightIn.start()
                     flipRightOut.start()
-                    flipRightIn.doOnEnd { binding.scRightSounds.visibility = View.GONE }
+                    flipRightIn.doOnEnd {
+                        binding.scRightSounds.visibility = View.GONE
+                        binding.scRightMotions.visibility = View.VISIBLE
+                    }
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
