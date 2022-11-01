@@ -11,9 +11,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
-import android.widget.RelativeLayout
-import androidx.core.view.children
-import androidx.core.view.get
 import com.example.app.databinding.FragmentSecondBinding
 
 /**
@@ -44,23 +41,81 @@ class SecondFragment : Fragment() {
 
         binding.llRight.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
+        binding.motion.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
 
-        // for loop to create all buttons for movements
-        for (i in 0 until binding.llRight.childCount) {
-            var x = binding.llRight.getChildAt(i);
-            x.setOnLongClickListener {
-                val clipText = "Hello"
-                val item = ClipData.Item(clipText)
-                val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
-                val data = ClipData(clipText, mimeTypes, item)
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
 
-                val dragShadowBuilder = View.DragShadowBuilder(it)
-                it.startDragAndDrop(data, dragShadowBuilder, it, 0)
-
-                it.visibility = View.INVISIBLE
-                true
-            }
+            it.visibility = View.INVISIBLE
+            true
         }
+        binding.motion1.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
+        binding.motion2.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
+        binding.motion3.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
+        binding.motion4.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
+        binding.motion5.setOnLongClickListener {
+            val clipText = "Hello"
+            val item = ClipData.Item(clipText)
+            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
+            val data = ClipData(clipText, mimeTypes, item)
+
+            val dragShadowBuilder = View.DragShadowBuilder(it)
+            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+
+            it.visibility = View.INVISIBLE
+            true
+        }
+        //binding.buttonSecond.setOnClickListener {
+           // findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+        //}
     }
 
     val dragListener = View.OnDragListener { view, event ->
@@ -91,30 +146,8 @@ class SecondFragment : Fragment() {
             val owner = v.parent as ViewGroup
             owner.removeView(v)
             val destination = view as LinearLayout
- /*           if (destination == binding.llBottom) {
-                val childcount = destination.childCount
-                val children = ArrayList<View>(childcount)
-
-                for (i in 1 until childcount) {
-                    if (destination.getChildAt(i) != null)
-                        children[i] = destination.getChildAt(i);
-                }
-
-                destination.removeAllViews()
-
-                destination.addView(v)
-                v.visibility = View.VISIBLE
-
-                for (x in 1 until children.count()) {
-                    children[x] = event.localState as View
-                    destination.addView(children[x])
-                    children[x].visibility = View.VISIBLE
-                }
-            }
-            else {*/
-                destination.addView(v)
-                v.visibility = View.VISIBLE
-            // }
+            destination.addView(v)
+            v.visibility = View.VISIBLE
             true
         }
         DragEvent.ACTION_DRAG_ENDED -> {
