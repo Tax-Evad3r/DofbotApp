@@ -11,6 +11,9 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import android.widget.RelativeLayout
+import androidx.core.view.children
+import androidx.core.view.get
 import com.example.app.databinding.FragmentSecondBinding
 
 /**
@@ -88,8 +91,30 @@ class SecondFragment : Fragment() {
             val owner = v.parent as ViewGroup
             owner.removeView(v)
             val destination = view as LinearLayout
-            destination.addView(v)
-            v.visibility = View.VISIBLE
+ /*           if (destination == binding.llBottom) {
+                val childcount = destination.childCount
+                val children = ArrayList<View>(childcount)
+
+                for (i in 1 until childcount) {
+                    if (destination.getChildAt(i) != null)
+                        children[i] = destination.getChildAt(i);
+                }
+
+                destination.removeAllViews()
+
+                destination.addView(v)
+                v.visibility = View.VISIBLE
+
+                for (x in 1 until children.count()) {
+                    children[x] = event.localState as View
+                    destination.addView(children[x])
+                    children[x].visibility = View.VISIBLE
+                }
+            }
+            else {*/
+                destination.addView(v)
+                v.visibility = View.VISIBLE
+            // }
             true
         }
         DragEvent.ACTION_DRAG_ENDED -> {
