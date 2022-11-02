@@ -20,7 +20,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.io.IOException
 import androidx.core.animation.doOnEnd
-import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.bumptech.glide.Glide
