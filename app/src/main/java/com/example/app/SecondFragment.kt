@@ -4,7 +4,6 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
-import android.content.Context
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -13,13 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.text.isDigitsOnly
-import androidx.core.view.iterator
 import com.example.app.databinding.FragmentSecondBinding
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import java.io.IOException
 import androidx.core.animation.doOnEnd
+import androidx.core.view.iterator
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.bumptech.glide.Glide
@@ -108,16 +103,12 @@ class SecondFragment : Fragment() {
         binding.llRightMotions.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
 
-        //FIX ME: get amount of motions from imports
-        for (i in 0..10) {
+        for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
             val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
             motion1.contentDescription = "motion$i"
-            if(i % 2 == 0) {
-                Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
-            } else {
-                Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
-            }
+            val res = this.resources.getIdentifier("motion$i", "drawable", "com.example.app")
+            Glide.with(this.requireContext()).load(res).into(motion1)
             destination.addView(motion1)
             createDragAndDropListener(motion1)
         }
@@ -152,20 +143,11 @@ class SecondFragment : Fragment() {
             //list of motion id to add to request
             val motionNumList = mutableListOf<Int>()
 
-            //loop through all motions in timeline
-            for (tileNo in 0 until binding.llBottom.childCount) {
-                //get content description defined in xml
-                val desc = binding.llBottom.getChildAt(tileNo).contentDescription
-                //extract last char (this is currently motion number)
-                var motionNumParse = desc.substring(desc.length-1)
-                //ignore temp motion (might not be needed in the end)
-                if (motionNumParse.toIntOrNull() != null) {
-                    //parse substring to usable in for later
-                    var motionNum = motionNumParse.toInt()
-                    if (motionNum < availableMotions.size) {
-                        //if motion exist add to list
-                        motionNumList.add(motionNum)
-                    }
+            //loop through all motions in timeline (skip first since it is not a motion)
+            for (motion in binding.llBottom) {
+                val motionId = getMotionId(motion)
+                if( motionId != -1) {
+                    motionNumList.add(motionId)
                 }
             }
             //add motions to request
@@ -206,11 +188,8 @@ class SecondFragment : Fragment() {
             if (destination.contentDescription == "motion_timeline") {
                 val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
                 motion1.contentDescription = v.contentDescription
-                if(v.contentDescription.substring(v.contentDescription.length-1, v.contentDescription.length).toInt() % 2 == 0) {
-                    Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
-                } else {
-                    Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
-                }
+                val res = this.resources.getIdentifier("motion${getMotionId(v)}", "drawable", "com.example.app")
+                Glide.with(this.requireContext()).load(res).into(motion1)
                 destination.addView(motion1)
                 createDragAndDropListener(motion1)
             } else {
@@ -243,4 +222,14 @@ fun createDragAndDropListener(view: View) {
         it.visibility = View.INVISIBLE
         true
     }
+}
+
+fun getMotionId(view: View) : Int {
+    var motionNumParse = view.contentDescription.filter { it.isDigit() }
+    //ignore temp motion (might not be needed in the end)
+    if (motionNumParse.toString().toIntOrNull() != null) {
+        //parse substring to usable in for later
+        return motionNumParse.toString().toInt()
+    }
+    return -1
 }

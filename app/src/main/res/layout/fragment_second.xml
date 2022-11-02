@@ -44,6 +44,7 @@
 
             <FrameLayout
                 android:id="@+id/dotted_button"
+                android:contentDescription="placeholder_motion"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"
