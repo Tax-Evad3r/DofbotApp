@@ -1,5 +1,7 @@
 package com.example.app
 
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Context
@@ -9,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.text.isDigitsOnly
 import androidx.core.view.iterator
@@ -16,7 +19,11 @@ import com.example.app.databinding.FragmentSecondBinding
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.io.IOException
-
+import androidx.core.animation.doOnEnd
+import com.example.app.databinding.FragmentSecondBinding
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.bumptech.glide.Glide
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -24,6 +31,11 @@ import java.io.IOException
 class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
+
+    private lateinit var flipLeftIn:AnimatorSet
+    private lateinit var flipLeftOut:AnimatorSet
+    private lateinit var flipRightIn:AnimatorSet
+    private lateinit var flipRightOut:AnimatorSet
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -34,11 +46,11 @@ class SecondFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
-    ): View? {
+    ): View {
 
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
-        return binding.root
 
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,19 +65,62 @@ class SecondFragment : Fragment() {
             println(motion.toJson())
         }
 
-        binding.llRight.setOnDragListener(dragListener)
+        val scale:Float = this.requireContext().resources.displayMetrics.density
+        binding.scRightMotions.cameraDistance = 8000 * scale
+        binding.scRightSounds.cameraDistance = 8000 * scale
+
+        flipLeftIn = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_in) as AnimatorSet
+        flipLeftOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_out) as AnimatorSet
+        flipRightIn = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_in) as AnimatorSet
+        flipRightOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_out) as AnimatorSet
+
+        binding.tabsRight.addOnTabSelectedListener(object : OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                if (tab?.position != 0)
+                {
+                    binding.scRightSounds.visibility = View.VISIBLE
+                    flipLeftIn.setTarget(binding.scRightSounds)
+                    flipLeftOut.setTarget(binding.scRightMotions)
+                    flipLeftIn.start()
+                    flipLeftOut.start()
+                    flipLeftIn.doOnEnd {
+                        binding.scRightMotions.visibility = View.GONE
+                        binding.scRightSounds.visibility = View.VISIBLE
+                    }
+                }
+                else
+                {
+                    binding.scRightMotions.visibility = View.VISIBLE
+                    flipRightIn.setTarget(binding.scRightMotions)
+                    flipRightOut.setTarget(binding.scRightSounds)
+                    flipRightIn.start()
+                    flipRightOut.start()
+                    flipRightIn.doOnEnd {
+                        binding.scRightSounds.visibility = View.GONE
+                        binding.scRightMotions.visibility = View.VISIBLE
+                    }
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
+
+        binding.llRightMotions.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
-        binding.motion.setOnLongClickListener {
-            val clipText = "Hello"
-            val item = ClipData.Item(clipText)
-            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
-            val data = ClipData(clipText, mimeTypes, item)
 
-            val dragShadowBuilder = View.DragShadowBuilder(it)
-            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
-
-            it.visibility = View.INVISIBLE
-            true
+        //FIX ME: get amount of motions from imports
+        for (i in 0..10) {
+            val destination = binding.llRightMotions
+            val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
+            motion1.contentDescription = "motion$i"
+            if(i % 2 == 0) {
+                Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
+            } else {
+                Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
+            }
+            destination.addView(motion1)
+            createDragAndDropListener(motion1)
         }
 
         binding.buttonQuickRun.setOnClickListener {
@@ -127,70 +182,6 @@ class SecondFragment : Fragment() {
             SendData().send(jsonRequestdata)
 
         }
-
-        binding.motion1.setOnLongClickListener {
-            val clipText = "Hello"
-            val item = ClipData.Item(clipText)
-            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
-            val data = ClipData(clipText, mimeTypes, item)
-
-            val dragShadowBuilder = View.DragShadowBuilder(it)
-            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
-
-            it.visibility = View.INVISIBLE
-            true
-        }
-        binding.motion2.setOnLongClickListener {
-            val clipText = "Hello"
-            val item = ClipData.Item(clipText)
-            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
-            val data = ClipData(clipText, mimeTypes, item)
-
-            val dragShadowBuilder = View.DragShadowBuilder(it)
-            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
-
-            it.visibility = View.INVISIBLE
-            true
-        }
-        binding.motion3.setOnLongClickListener {
-            val clipText = "Hello"
-            val item = ClipData.Item(clipText)
-            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
-            val data = ClipData(clipText, mimeTypes, item)
-
-            val dragShadowBuilder = View.DragShadowBuilder(it)
-            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
-
-            it.visibility = View.INVISIBLE
-            true
-        }
-        binding.motion4.setOnLongClickListener {
-            val clipText = "Hello"
-            val item = ClipData.Item(clipText)
-            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
-            val data = ClipData(clipText, mimeTypes, item)
-
-            val dragShadowBuilder = View.DragShadowBuilder(it)
-            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
-
-            it.visibility = View.INVISIBLE
-            true
-        }
-        binding.motion5.setOnLongClickListener {
-            val clipText = "Hello"
-            val item = ClipData.Item(clipText)
-            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
-            val data = ClipData(clipText, mimeTypes, item)
-
-            val dragShadowBuilder = View.DragShadowBuilder(it)
-            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
-
-            it.visibility = View.INVISIBLE
-            true
-        }
-        //binding.buttonSecond.setOnClickListener {
-           // findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
-        //}
     }
 
     private val dragListener = View.OnDragListener { view, event ->
@@ -210,19 +201,23 @@ class SecondFragment : Fragment() {
             true
         }
         DragEvent.ACTION_DROP -> {
-            val item = event.clipData.getItemAt(0)
-            val dragData = item.text
-            //val toast = Toast.makeText(this@SecondFragment, dragData, Toast.LENGTH_SHORT)
-            //toast.show()
-
-            view.invalidate()
-
             val v = event.localState as View
             val owner = v.parent as ViewGroup
-            owner.removeView(v)
             val destination = view as LinearLayout
-            destination.addView(v)
-            v.visibility = View.VISIBLE
+            if (destination.contentDescription == "motion_timeline") {
+                val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
+                motion1.contentDescription = v.contentDescription
+                if(v.contentDescription.substring(v.contentDescription.length-1, v.contentDescription.length).toInt() % 2 == 0) {
+                    Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
+                } else {
+                    Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
+                }
+                destination.addView(motion1)
+                createDragAndDropListener(motion1)
+            } else {
+                owner.removeView(v)
+            }
+            println("dropped ${v.contentDescription}")
             true
         }
         DragEvent.ACTION_DRAG_ENDED -> {
@@ -239,5 +234,14 @@ class SecondFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+fun createDragAndDropListener(view: View) {
+    view.setOnLongClickListener {
+        val dragShadowBuilder = View.DragShadowBuilder(it)
+        it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
+        it.visibility = View.INVISIBLE
+        true
     }
 }
