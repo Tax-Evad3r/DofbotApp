@@ -192,7 +192,7 @@ class SecondFragment : Fragment() {
                 Glide.with(this.requireContext()).load(res).into(motion1)
                 destination.addView(motion1)
                 createDragAndDropListener(motion1)
-            } else {
+            } else if (owner.contentDescription == "motion_timeline" && destination.contentDescription != "motion_timeline") {
                 owner.removeView(v)
             }
             println("dropped ${v.contentDescription}")
