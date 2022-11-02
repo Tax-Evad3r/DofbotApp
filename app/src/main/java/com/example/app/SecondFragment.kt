@@ -4,22 +4,25 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
+import android.content.Context
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.animation.doOnEnd
-import android.widget.Toast
-import androidx.navigation.fragment.findNavController
-import android.widget.RelativeLayout
-import androidx.core.view.children
-import androidx.core.view.get
+import androidx.core.text.isDigitsOnly
+import androidx.core.view.iterator
 import com.example.app.databinding.FragmentSecondBinding
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import java.io.IOException
+import androidx.core.animation.doOnEnd
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.bumptech.glide.Glide
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -52,6 +55,15 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //import motions from asset files (located in "main/assets/motion")
+        val availableMotions = importMotionFromFile(this.requireContext())
+
+        //debug print of all stored motions
+        println("Motion import done!")
+        for (motion in availableMotions) {
+            println(motion.toJson())
+        }
+
         val scale:Float = this.requireContext().resources.displayMetrics.density
         binding.scRightMotions.cameraDistance = 8000 * scale
         binding.scRightSounds.cameraDistance = 8000 * scale
@@ -70,7 +82,10 @@ class SecondFragment : Fragment() {
                     flipLeftOut.setTarget(binding.scRightMotions)
                     flipLeftIn.start()
                     flipLeftOut.start()
-                    flipLeftIn.doOnEnd { binding.scRightMotions.visibility = View.GONE }
+                    flipLeftIn.doOnEnd {
+                        binding.scRightMotions.visibility = View.GONE
+                        binding.scRightSounds.visibility = View.VISIBLE
+                    }
                 }
                 else
                 {
@@ -79,7 +94,10 @@ class SecondFragment : Fragment() {
                     flipRightOut.setTarget(binding.scRightSounds)
                     flipRightIn.start()
                     flipRightOut.start()
-                    flipRightIn.doOnEnd { binding.scRightSounds.visibility = View.GONE }
+                    flipRightIn.doOnEnd {
+                        binding.scRightSounds.visibility = View.GONE
+                        binding.scRightMotions.visibility = View.VISIBLE
+                    }
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -89,48 +107,70 @@ class SecondFragment : Fragment() {
 
         binding.llRightMotions.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
-        binding.motion.setOnLongClickListener {
-            val clipText = "Hello"
-            val item = ClipData.Item(clipText)
-            val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
-            val data = ClipData(clipText, mimeTypes, item)
 
-            val dragShadowBuilder = View.DragShadowBuilder(it)
-            it.startDragAndDrop(data, dragShadowBuilder, it, 0)
+        //FIX ME: get amount of motions from imports
+        for (i in 0..10) {
+            val destination = binding.llRightMotions
+            val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
+            motion1.contentDescription = "motion$i"
+            if(i % 2 == 0) {
+                Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
+            } else {
+                Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
+            }
+            destination.addView(motion1)
+            createDragAndDropListener(motion1)
+        }
 
-            it.visibility = View.INVISIBLE
-            true
+        binding.buttonQuickRun.setOnClickListener {
+
+            println("pressed quick run!")
+
+            //repurpose quick run as reset button during development
+            //define reset data
+            val resetData = Data(mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)))
+
+            //send reset data
+            SendData().send(resetData.toJson())
+
         }
 
         binding.buttonRun.setOnClickListener {
+
+            //debug print for all objects on timeline
             println("Current queue")
             println(binding.llBottom.childCount)
             for (i in 0 until binding.llBottom.childCount) {
                 println(binding.llBottom.getChildAt(i).contentDescription)
             }
 
-            //FIX ME: Proof of concept until drag and drop is fully implemented,
-            //        data should also probably not be stored as static variable
-
-            //initialize two predefined motions
-            val motion1 = Data(mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)),mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), mutableListOf(), mutableListOf(), mutableListOf())
-            val motion2 = Data(mutableListOf(mutableListOf(1000, 90), mutableListOf(2000, 180)), mutableListOf(), mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 90)), mutableListOf(), mutableListOf(mutableListOf(1000, 0), mutableListOf(2000, 180)))
+            //FIX ME: This may change before drag and drop is fully implemented
 
             //initialize empty initial response
             var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
 
-            //define motionCount as amount of motions on timeline
-            val motionCount = binding.llBottom.childCount
+            //list of motion id to add to request
+            val motionNumList = mutableListOf<Int>()
 
-            //if 1 or more motions on time line add 1:st motion to request
-            if (motionCount > 0) {
-                println("Adding motion1")
-                requestdata += motion1
+            //loop through all motions in timeline
+            for (tileNo in 0 until binding.llBottom.childCount) {
+                //get content description defined in xml
+                val desc = binding.llBottom.getChildAt(tileNo).contentDescription
+                //extract last char (this is currently motion number)
+                var motionNumParse = desc.substring(desc.length-1)
+                //ignore temp motion (might not be needed in the end)
+                if (motionNumParse.toIntOrNull() != null) {
+                    //parse substring to usable in for later
+                    var motionNum = motionNumParse.toInt()
+                    if (motionNum < availableMotions.size) {
+                        //if motion exist add to list
+                        motionNumList.add(motionNum)
+                    }
+                }
             }
-            //if 2 or more motions on time line add 2:nd motion to request
-            if (motionCount > 1) {
-                println("Adding motion2")
-                requestdata += motion2
+            //add motions to request
+            for (i in motionNumList) {
+                requestdata += availableMotions[i]
             }
 
             //convert request to json
@@ -140,23 +180,6 @@ class SecondFragment : Fragment() {
             //send request
             SendData().send(jsonRequestdata)
 
-        }
-
-        // for loop to create all buttons for movements
-        for (i in 0 until binding.llRightMotions.childCount) {
-            var x = binding.llRightMotions.getChildAt(i);
-            x.setOnLongClickListener {
-                val clipText = "Hello"
-                val item = ClipData.Item(clipText)
-                val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
-                val data = ClipData(clipText, mimeTypes, item)
-
-                val dragShadowBuilder = View.DragShadowBuilder(it)
-                it.startDragAndDrop(data, dragShadowBuilder, it, 0)
-
-                it.visibility = View.INVISIBLE
-                true
-            }
         }
     }
 
@@ -177,41 +200,23 @@ class SecondFragment : Fragment() {
             true
         }
         DragEvent.ACTION_DROP -> {
-            val item = event.clipData.getItemAt(0)
-            val dragData = item.text
-            //val toast = Toast.makeText(this@SecondFragment, dragData, Toast.LENGTH_SHORT)
-            //toast.show()
-
-            view.invalidate()
-
             val v = event.localState as View
             val owner = v.parent as ViewGroup
-            owner.removeView(v)
             val destination = view as LinearLayout
- /*           if (destination == binding.llBottom) {
-                val childcount = destination.childCount
-                val children = ArrayList<View>(childcount)
-
-                for (i in 1 until childcount) {
-                    if (destination.getChildAt(i) != null)
-                        children[i] = destination.getChildAt(i);
+            if (destination.contentDescription == "motion_timeline") {
+                val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
+                motion1.contentDescription = v.contentDescription
+                if(v.contentDescription.substring(v.contentDescription.length-1, v.contentDescription.length).toInt() % 2 == 0) {
+                    Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
+                } else {
+                    Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
                 }
-
-                destination.removeAllViews()
-
-                destination.addView(v)
-                v.visibility = View.VISIBLE
-
-                for (x in 1 until children.count()) {
-                    children[x] = event.localState as View
-                    destination.addView(children[x])
-                    children[x].visibility = View.VISIBLE
-                }
+                destination.addView(motion1)
+                createDragAndDropListener(motion1)
+            } else {
+                owner.removeView(v)
             }
-            else {*/
-                destination.addView(v)
-                v.visibility = View.VISIBLE
-            // }
+            println("dropped ${v.contentDescription}")
             true
         }
         DragEvent.ACTION_DRAG_ENDED -> {
@@ -228,5 +233,14 @@ class SecondFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+fun createDragAndDropListener(view: View) {
+    view.setOnLongClickListener {
+        val dragShadowBuilder = View.DragShadowBuilder(it)
+        it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
+        it.visibility = View.INVISIBLE
+        true
     }
 }
