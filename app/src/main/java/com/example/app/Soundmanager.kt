@@ -4,14 +4,18 @@ import android.content.Context
 import android.media.MediaPlayer
 
 
-    var mMediaPlayer: MediaPlayer? = null
+var mMediaPlayer: MediaPlayer? = null
 
     //binding.playButton.SetOnClickListener{}
     // 1. Plays the water sound
     fun playSound(context: Context? , filename: String?) {
         if (mMediaPlayer == null) {
+            var temp : Int = playParse(filename)
+           // "res/raw/george_ezra_shotgun_jesse_bloch_bootleg.mp3"
+            // R.raw.george_ezra_shotgun_jesse_bloch_bootleg
+           // var myUri : Uri = Uri.create(temp)
             mMediaPlayer =
-                MediaPlayer.create(context, R.raw.george_ezra_shotgun_jesse_bloch_bootleg)
+                MediaPlayer.create(context, temp)
             // mMediaPlayer!!.isLooping = true
 
             mMediaPlayer!!.start()
@@ -30,4 +34,18 @@ import android.media.MediaPlayer
             mMediaPlayer = null
         }
     }
+
+fun playParse(filename: String?): Int {
+    return Integer.parseInt("R.raw." + filename)
+}
+
+    // 4. Destroys the MediaPlayer instance when the app is closed
+   // override
+    fun onStop() {
+       // super.onStop()
+        if (mMediaPlayer != null) {
+            mMediaPlayer!!.release()
+            mMediaPlayer = null
+        }
+}
 

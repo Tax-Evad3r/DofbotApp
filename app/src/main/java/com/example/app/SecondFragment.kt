@@ -22,7 +22,7 @@ import com.example.app.databinding.FragmentSecondBinding
 class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
-    var mMediaPlayer: MediaPlayer? = null
+    var mfile  = "george_ezra_shotgun_jesse_bloch_bootleg"
 
 
 
@@ -66,10 +66,13 @@ class SecondFragment : Fragment() {
             true
         }
         binding.playButton.setOnClickListener{
-            playSound(this.context, null)
+            playSound(this.context, mfile)
         }
         binding.pauseButton.setOnClickListener{
             pauseSound()
+        }
+        binding.stopButton.setOnClickListener{
+            stopSound()
         }
         binding.buttonRun.setOnClickListener {
             println("Current queue")
@@ -224,32 +227,11 @@ class SecondFragment : Fragment() {
 
 
 
-    // 2. Pause playback
-    fun pauseSound() {
-        if (mMediaPlayer?.isPlaying == true) mMediaPlayer?.pause()
-    }
-
-    // 3. Stops playback
-    fun stopSound() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer!!.stop()
-            mMediaPlayer!!.release()
-            mMediaPlayer = null
-        }
-    }
-
-    // 4. Destroys the MediaPlayer instance when the app is closed
-    override fun onStop() {
-        super.onStop()
-        if (mMediaPlayer != null) {
-            mMediaPlayer!!.release()
-            mMediaPlayer = null
-        }
-    }
 
 
     override fun onDestroyView() {
         super.onDestroyView()
+        stopSound()
         _binding = null
     }
 
