@@ -81,23 +81,23 @@ import java.net.URL
                 }
             }
 
-            //if a servo does not have any movement add NO_ACTION with appropriate duration
-            if (bottomRotation.size == 0) {
+            //if a motion does not use all servos add NO_ACTION with appropriate duration
+            if (sumDuration(bottomRotation) < time) {
                 bottomRotation.add(mutableListOf(time, -1))
             }
-            if (joint1.size == 0) {
+            if (sumDuration(joint1) < time) {
                 joint1.add(mutableListOf(time, -1))
             }
-            if (joint2.size == 0) {
+            if (sumDuration(joint2) < time) {
                 joint2.add(mutableListOf(time, -1))
             }
-            if (joint3.size == 0) {
+            if (sumDuration(joint3) < time) {
                 joint3.add(mutableListOf(time, -1))
             }
-            if (clawRotation.size == 0) {
+            if (sumDuration(clawRotation) < time) {
                 clawRotation.add(mutableListOf(time, -1))
             }
-            if (clawGrip.size == 0) {
+            if (sumDuration(clawGrip) < time) {
                 clawGrip.add(mutableListOf(time, -1))
             }
 
@@ -123,6 +123,14 @@ import java.net.URL
 
             //return final data object containing both motions from lhs and rhs
             return Data(bottomRotation, joint1, joint2, joint3, clawRotation, clawGrip)
+        }
+
+        private fun sumDuration(servo : MutableList<MutableList<Int>>) : Int {
+            var sum = 0
+            for (event in servo) {
+                sum += event[0]
+            }
+            return sum;
         }
 
     }
