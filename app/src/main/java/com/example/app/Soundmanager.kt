@@ -1,5 +1,6 @@
 package com.example.app
 
+import android.app.Activity
 import android.content.Context
 import android.media.MediaPlayer
 
@@ -10,7 +11,7 @@ var mMediaPlayer: MediaPlayer? = null
     // 1. Plays the water sound
     fun playSound(context: Context? , filename: String?) {
         if (mMediaPlayer == null) {
-            var temp : Int = playParse(filename)
+            var temp = playParse(context,filename)
            // "res/raw/george_ezra_shotgun_jesse_bloch_bootleg.mp3"
             // R.raw.george_ezra_shotgun_jesse_bloch_bootleg
            // var myUri : Uri = Uri.create(temp)
@@ -35,8 +36,11 @@ var mMediaPlayer: MediaPlayer? = null
         }
     }
 
-fun playParse(filename: String?): Int {
-    return Integer.parseInt("R.raw." + filename)
+fun playParse(context: Context? , filename: String?): Int {
+    if (context != null) {
+        return context.resources.getIdentifier(filename, "raw", "com.example.app")
+    }
+    return 0
 }
 
     // 4. Destroys the MediaPlayer instance when the app is closed
