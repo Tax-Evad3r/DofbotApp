@@ -102,6 +102,8 @@ class SecondFragment : Fragment() {
 
         binding.llRightMotions.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
+        binding.llRightSounds.setOnDragListener(dragListener)
+        binding.llBottomSounds.setOnDragListener(dragListener)
 
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
@@ -111,6 +113,11 @@ class SecondFragment : Fragment() {
             Glide.with(this.requireContext()).load(res).into(motion1)
             destination.addView(motion1)
             createDragAndDropListener(motion1)
+        }
+
+        // Do most of the same as above but for sound files
+        for (v : View in binding.llRightSounds) {
+            createDragAndDropListener(v)
         }
 
         binding.buttonQuickRun.setOnClickListener {
@@ -185,16 +192,23 @@ class SecondFragment : Fragment() {
             val v = event.localState as View
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
-            if (destination.contentDescription == "motion_timeline") {
+            if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
                 val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
                 motion1.contentDescription = v.contentDescription
                 val res = this.resources.getIdentifier("motion${getMotionId(v)}", "drawable", "com.example.app")
                 Glide.with(this.requireContext()).load(res).into(motion1)
                 destination.addView(motion1)
                 createDragAndDropListener(motion1)
-            } else if (owner.contentDescription == "motion_timeline" && destination.contentDescription != "motion_timeline") {
+            } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
+            {
+                val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
+                sounds1.contentDescription = v.contentDescription
+                destination.addView(sounds1)
+                createDragAndDropListener(sounds1)
+            } else if (owner.contentDescription == "motion_timeline" && destination.contentDescription == "motion_lib" || owner.contentDescription == "sounds_timeline" && destination.contentDescription == "sounds_lib") {
                 owner.removeView(v)
             }
+
             println("dropped ${v.contentDescription}")
             true
         }

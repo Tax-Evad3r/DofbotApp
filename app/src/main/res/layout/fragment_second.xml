@@ -62,6 +62,42 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <HorizontalScrollView
+        android:id="@+id/hsvSounds"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:layout_constraintBottom_toTopOf="@id/hsvBottom"
+        app:layout_constraintEnd_toStartOf="@+id/tabsRight"
+        app:layout_constraintStart_toEndOf="@+id/llLeft">
+
+        <LinearLayout
+            android:id="@+id/llBottomSounds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="sounds_timeline"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/dotted_button1"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="8dp"
+                android:background="@drawable/dotted_button"
+                android:contentDescription="placeholder_sounds">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="+"
+                    android:textSize="16sp" />
+            </FrameLayout>
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <ScrollView
         android:id="@+id/scRightMotions"
         android:layout_width="0dp"
@@ -77,7 +113,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:contentDescription="motion_lib">
         </LinearLayout>
     </ScrollView>
 
@@ -97,7 +134,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:contentDescription="sounds_lib">
 
 
             <ImageView
