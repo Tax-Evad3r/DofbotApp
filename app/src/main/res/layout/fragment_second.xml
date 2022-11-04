@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/scRightMotions"
+        app:layout_constraintEnd_toStartOf="@+id/tabsRight"
         app:layout_constraintStart_toEndOf="@+id/llLeft">
 
         <LinearLayout
@@ -44,6 +44,7 @@
 
             <FrameLayout
                 android:id="@+id/dotted_button"
+                android:contentDescription="placeholder_motion"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"

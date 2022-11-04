@@ -1,0 +1,8 @@
+{
+  "bottom_rotation": [],
+  "joint_1": [],
+  "joint_2": [],
+  "joint_3": [],
+  "claw_rotation": [[1000, 0], [2000, 90]],
+  "claw_grip": []
+}

@@ -1,14 +1,18 @@
 package com.example.app
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.*
+import java.io.IOException
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.net.URL
 
 @Serializable
@@ -28,19 +32,21 @@ import java.net.URL
 
         operator fun plus(dat1: Data) : Data {
 
+            //if rhs is empty return lhs directly
             if(this.bottom_rotation?.size == 0 && this.joint_1?.size == 0 && this.joint_2?.size == 0 && this.joint_3?.size == 0 && this. claw_rotation?.size == 0 && this.claw_grip?.size == 0) {
                 return dat1
             }
 
             //get longest time in first animation and add it to next
-            val maxTime : MutableList<Int> = ArrayList()
+            val maxTime : MutableList<Int> = mutableListOf()
 
+            //for each servo create temporary variable
+            //store all servo data from lhs and their durations
             val bottomRotation : MutableList<MutableList<Int>> = ArrayList()
             this.bottom_rotation?.forEach {
                 maxTime.add((it[0]))
                 bottomRotation.add(it)
             }
-
             val joint1 : MutableList<MutableList<Int>> = ArrayList()
             this.joint_1?.forEach {
                 maxTime.add((it[0]))
@@ -67,6 +73,7 @@ import java.net.URL
                 clawGrip.add(it)
             }
 
+            //find longest duration from all lhs servos
             var time = 0
             maxTime.forEach {
                 if (it > time) {
@@ -74,51 +81,56 @@ import java.net.URL
                 }
             }
 
-            if (bottomRotation.size == 0) {
+            //if a motion does not use all servos add NO_ACTION with appropriate duration
+            if (sumDuration(bottomRotation) < time) {
                 bottomRotation.add(mutableListOf(time, -1))
             }
-            if (joint1.size == 0) {
+            if (sumDuration(joint1) < time) {
                 joint1.add(mutableListOf(time, -1))
             }
-            if (joint2.size == 0) {
+            if (sumDuration(joint2) < time) {
                 joint2.add(mutableListOf(time, -1))
             }
-            if (joint3.size == 0) {
+            if (sumDuration(joint3) < time) {
                 joint3.add(mutableListOf(time, -1))
             }
-            if (clawRotation.size == 0) {
+            if (sumDuration(clawRotation) < time) {
                 clawRotation.add(mutableListOf(time, -1))
             }
-            if (clawGrip.size == 0) {
+            if (sumDuration(clawGrip) < time) {
                 clawGrip.add(mutableListOf(time, -1))
             }
 
+            //add all servo motions from rhs and displace with duration of first animation
             dat1.bottom_rotation?.forEach {
-                it[0] += time
-                bottomRotation.add(it)
+                bottomRotation.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.joint_1?.forEach {
-                it[0] += time
-                joint1.add(it)
+                joint1.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.joint_2?.forEach {
-                it[0] += time
-                joint2.add(it)
+                joint2.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.joint_3?.forEach {
-                it[0] += time
-                joint3.add(it)
+                joint3.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.claw_rotation?.forEach {
-                it[0] += time
-                clawRotation.add(it)
+                clawRotation.add(mutableListOf(it[0]+time, it[1]))
             }
             dat1.claw_grip?.forEach {
-                it[0] += time
-                clawGrip.add(it)
+                clawGrip.add(mutableListOf(it[0]+time, it[1]))
             }
 
+            //return final data object containing both motions from lhs and rhs
             return Data(bottomRotation, joint1, joint2, joint3, clawRotation, clawGrip)
+        }
+
+        private fun sumDuration(servo : MutableList<MutableList<Int>>) : Int {
+            var sum = 0
+            for (event in servo) {
+                sum += event[0]
+            }
+            return sum;
         }
 
     }
@@ -136,32 +148,65 @@ import java.net.URL
     class HttpConnection {
         fun send (jsonBody: String) : String {
 
-            val mURL = URL("http://172.18.42.63:5000/motion")
-            //val mURL = URL("http://192.168.50.172:5000/motion")
+            //val mURL = URL("http://172.26.105.103:5000/motion")
+            val mURL = URL("http://192.168.50.169:5000/motion")
             //val mURL = URL("http://10.255.145.74:5000/motion")
 
-            //make http connection
-            with(mURL.openConnection() as HttpURLConnection) {
-                // set request method
-                requestMethod = "POST"
-                //set content type of POST data
-                setRequestProperty("Content-Type", "application/json")
-                //set accepted return data type
-                setRequestProperty("Accept", "application/json")
+            try {
+                //make http connection
+                with(mURL.openConnection() as HttpURLConnection) {
+                    // set request method
+                    requestMethod = "POST"
+                    //set content type of POST data
+                    setRequestProperty("Content-Type", "application/json")
+                    //set accepted return data type
+                    setRequestProperty("Accept", "application/json")
+                    //set request timeout to prohibit app crashing
+                    connectTimeout = 5000
 
-                //write parameter data
-                val wr = OutputStreamWriter(outputStream)
-                wr.write(jsonBody)
-                wr.flush()
+                    //write parameter data
+                    val wr = OutputStreamWriter(outputStream)
+                    wr.write(jsonBody)
+                    wr.flush()
 
-                println("URL : $url")
-                println("Response Code : $responseCode")
+                    println("URL : $url")
+                    println("Response Code : $responseCode")
 
-                if (responseCode == 200)
-                    return "Success"
-                return "Fail bad response code"
+                    if (responseCode == 200)
+                        return "Success"
+                    return "Fail bad response code"
+                }
+            }catch (e : SocketTimeoutException) {
+                return "Could not connect to robot!"
             }
 
         }
 
     }
+
+fun importMotionFromFile(context: Context): List<Data> {
+
+    //retrieve all files in motions folder
+    val assetsList = context.assets.list("motions")
+
+    //create a list to hold all parsed motions
+    val motionList : MutableList<Data> = mutableListOf()
+
+    //if assets exist loop through and parse to list
+    if (assetsList != null) {
+        for (assetName in assetsList) {
+            lateinit var jsonString: String
+            try {
+                jsonString = context.assets.open("motions/$assetName")
+                    .bufferedReader()
+                    .use { it.readText() }
+                motionList.add(Json { ignoreUnknownKeys = true }.decodeFromString(jsonString))
+            } catch (ioException: IOException) {
+                println(ioException)
+            }
+        }
+    }
+
+    //returned parsed motions
+    return motionList
+}
