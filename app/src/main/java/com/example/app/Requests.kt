@@ -128,7 +128,9 @@ import java.net.URL
         private fun sumDuration(servo : MutableList<MutableList<Int>>) : Int {
             var sum = 0
             for (event in servo) {
-                sum += event[0]
+                if (event[0] > sum) {
+                    sum = event[0]
+                }
             }
             return sum;
         }
