@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.animation.doOnEnd
+import androidx.core.view.contains
 import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -169,15 +170,22 @@ class SecondFragment : Fragment() {
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
             if (destination.contentDescription == "motion_timeline") {
-                val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
-                motion1.contentDescription = v.contentDescription
-                if(v.contentDescription.substring(v.contentDescription.length-1, v.contentDescription.length).toInt() % 2 == 0) {
-                    Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
-                } else {
-                    Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
+                if (!destination.contains(v)) {
+                    val motion1 = LayoutInflater.from(this.context)
+                        .inflate(R.layout.motion_template, destination, false) as ImageView
+                    motion1.contentDescription = v.contentDescription
+                    if (v.contentDescription.substring(
+                            v.contentDescription.length - 1,
+                            v.contentDescription.length
+                        ).toInt() % 2 == 0
+                    ) {
+                        Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
+                    } else {
+                        Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
+                    }
+                    destination.addView(motion1)
+                    createDragAndDropListener(motion1)
                 }
-                destination.addView(motion1)
-                createDragAndDropListener(motion1)
             } else {
                 owner.removeView(v)
             }
