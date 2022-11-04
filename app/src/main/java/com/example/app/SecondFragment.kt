@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import com.example.app.databinding.FragmentSecondBinding
 import androidx.core.animation.doOnEnd
+import androidx.core.view.contains
 import androidx.core.view.iterator
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -186,12 +187,19 @@ class SecondFragment : Fragment() {
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
             if (destination.contentDescription == "motion_timeline") {
-                val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
-                motion1.contentDescription = v.contentDescription
-                val res = this.resources.getIdentifier("motion${getMotionId(v)}", "drawable", "com.example.app")
-                Glide.with(this.requireContext()).load(res).into(motion1)
-                destination.addView(motion1)
-                createDragAndDropListener(motion1)
+                if (!destination.contains(v)) {
+                    val motion1 = LayoutInflater.from(this.context)
+                        .inflate(R.layout.motion_template, destination, false) as ImageView
+                    motion1.contentDescription = v.contentDescription
+                    val res = this.resources.getIdentifier(
+                        "motion${getMotionId(v)}",
+                        "drawable",
+                        "com.example.app"
+                    )
+                    Glide.with(this.requireContext()).load(res).into(motion1)
+                    destination.addView(motion1)
+                    createDragAndDropListener(motion1)
+                }
             } else if (owner.contentDescription == "motion_timeline" && destination.contentDescription != "motion_timeline") {
                 owner.removeView(v)
             }
