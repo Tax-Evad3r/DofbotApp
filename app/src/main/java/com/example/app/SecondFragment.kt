@@ -4,7 +4,6 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -117,6 +116,7 @@ class SecondFragment : Fragment() {
         binding.llRightSounds.setOnDragListener(dragListener)
         binding.llBottomSounds.setOnDragListener(dragListener)
 
+        //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
             val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
@@ -127,9 +127,13 @@ class SecondFragment : Fragment() {
             createDragAndDropListener(motion1)
         }
 
-        // Do most of the same as above but for sound files
-        for (v : View in binding.llRightSounds) {
-            createDragAndDropListener(v)
+        //create new view for each sound depending on amount of imported sounds
+        for (i in importedSounds.indices) {
+            val destination = binding.llRightSounds
+            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
+            sound.contentDescription = "sound$i"
+            destination.addView(sound)
+            createDragAndDropListener(sound)
         }
 
         binding.buttonQuickRun.setOnClickListener {
@@ -146,9 +150,6 @@ class SecondFragment : Fragment() {
         }
         binding.playButton.setOnClickListener{
             playSound(this.requireContext(), mfile)
-        }
-        binding.pauseButton.setOnClickListener{
-            pauseSound()
         }
         binding.stopButton.setOnClickListener{
             stopSound()
@@ -172,7 +173,7 @@ class SecondFragment : Fragment() {
 
             //loop through all motions in timeline (skip first since it is not a motion)
             for (motion in binding.llBottom) {
-                val motionId = getMotionId(motion)
+                val motionId = getId(motion)
                 if( motionId != -1) {
                     motionNumList.add(motionId)
                 }
@@ -188,6 +189,14 @@ class SecondFragment : Fragment() {
 
             //send request
             SendData().send(jsonRequestdata)
+            
+            //play sounds from timeline
+            for (sound in binding.llBottomSounds) {
+                val soundId = getId(sound)
+                if( soundId != -1) {
+                    playSound(this.requireContext(), importedSounds[soundId])
+                }
+            }
 
         }
     }
@@ -215,7 +224,7 @@ class SecondFragment : Fragment() {
             if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
                 val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
                 motion1.contentDescription = v.contentDescription
-                val res = this.resources.getIdentifier("motion${getMotionId(v)}", "drawable", "com.example.app")
+                val res = this.resources.getIdentifier("motion${getId(v)}", "drawable", "com.example.app")
                 Glide.with(this.requireContext()).load(res).into(motion1)
                 destination.addView(motion1)
                 createDragAndDropListener(motion1)
@@ -260,7 +269,8 @@ fun createDragAndDropListener(view: View) {
     }
 }
 
-fun getMotionId(view: View) : Int {
+//helper function for extracting id from string (eg. "motion1" returns 1)
+fun getId(view: View) : Int {
     var motionNumParse = view.contentDescription.filter { it.isDigit() }
     //ignore temp motion (might not be needed in the end)
     if (motionNumParse.toString().toIntOrNull() != null) {

@@ -137,70 +137,6 @@
             android:orientation="vertical"
             android:contentDescription="sounds_lib">
 
-
-            <ImageView
-                android:id="@+id/sounds"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/holo_red_dark"
-                android:contentDescription="sounds"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/sounds1"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="sounds"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/sounds2"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="sounds"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/sounds3"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="sounds"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/sounds4"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="sounds"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/sounds5"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="sounds"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <ImageView
-                android:id="@+id/sounds6"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:background="@android:color/black"
-                android:contentDescription="sounds"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
         </LinearLayout>
     </ScrollView>
 
@@ -294,13 +230,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:src="@android:drawable/ic_media_play" />
-
-        <ImageButton
-            android:id="@+id/pauseButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:src="@android:drawable/btn_star" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
