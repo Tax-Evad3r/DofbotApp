@@ -4,6 +4,8 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
+import android.graphics.Color.rgb
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -27,7 +29,6 @@ import com.bumptech.glide.Glide
 class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
-    var mfile  = "george_ezra_shotgun_jesse_bloch_bootleg"
 
     private lateinit var flipLeftIn:AnimatorSet
     private lateinit var flipLeftOut:AnimatorSet
@@ -57,12 +58,11 @@ class SecondFragment : Fragment() {
         val availableMotions = importMotionFromFile(this.requireContext())
         val importedSounds = importSounds(this.context)
 
-        println("importing done")
+        //debug print of all imported sounds
+        println("Sound import done!")
         for (sound in importedSounds) {
             println("Found sound: $sound")
         }
-
-       // mMediaPlayer = MediaPlayer.create(context , R.raw.mixkit_sci_fi_positive_notification_266)
 
         //debug print of all stored motions
         println("Motion import done!")
@@ -131,6 +131,7 @@ class SecondFragment : Fragment() {
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
             val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
+            sound.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
             sound.contentDescription = "sound$i"
             destination.addView(sound)
             createDragAndDropListener(sound)
@@ -148,12 +149,7 @@ class SecondFragment : Fragment() {
             SendData().send(resetData.toJson())
 
         }
-        binding.playButton.setOnClickListener{
-            playSound(this.requireContext(), mfile)
-        }
-        binding.stopButton.setOnClickListener{
-            stopSound()
-        }
+
         binding.buttonRun.setOnClickListener {
 
             //debug print for all objects on timeline
@@ -231,6 +227,8 @@ class SecondFragment : Fragment() {
             } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
             {
                 val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
+                val back = v.background as ColorDrawable
+                sounds1.setBackgroundColor(back.color)
                 sounds1.contentDescription = v.contentDescription
                 destination.addView(sounds1)
                 createDragAndDropListener(sounds1)

@@ -7,5 +7,5 @@
     android:layout_height="100dp"
     android:layout_margin="8dp"
     android:contentDescription="sound_template"
-    android:background="@android:color/black"
+    android:src="@drawable/note"
      />
