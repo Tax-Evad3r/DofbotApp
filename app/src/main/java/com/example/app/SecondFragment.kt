@@ -4,6 +4,7 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -19,12 +20,15 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.bumptech.glide.Glide
 
+
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+
 class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
+    var mfile  = "george_ezra_shotgun_jesse_bloch_bootleg"
 
     private lateinit var flipLeftIn:AnimatorSet
     private lateinit var flipLeftOut:AnimatorSet
@@ -132,7 +136,15 @@ class SecondFragment : Fragment() {
             SendData().send(resetData.toJson())
 
         }
-
+        binding.playButton.setOnClickListener{
+            playSound(this.context, mfile)
+        }
+        binding.pauseButton.setOnClickListener{
+            pauseSound()
+        }
+        binding.stopButton.setOnClickListener{
+            stopSound()
+        }
         binding.buttonRun.setOnClickListener {
 
             //debug print for all objects on timeline
@@ -223,8 +235,10 @@ class SecondFragment : Fragment() {
 
 
 }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        stopSound()
         _binding = null
     }
 }
