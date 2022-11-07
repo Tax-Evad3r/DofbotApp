@@ -39,18 +39,18 @@
             android:id="@+id/llBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:contentDescription="motion_timeline">
+            android:contentDescription="motion_timeline"
+            android:orientation="horizontal">
 
             <FrameLayout
                 android:id="@+id/dotted_button"
-                android:contentDescription="placeholder_motion"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_margin="8dp"
-                android:layout_gravity="center_vertical"
                 android:layout_alignParentEnd="true"
-                android:background="@drawable/dotted_button" >
+                android:layout_gravity="center_vertical"
+                android:layout_margin="8dp"
+                android:background="@drawable/dotted_button"
+                android:contentDescription="placeholder_motion">
 
                 <TextView
                     android:layout_width="match_parent"
