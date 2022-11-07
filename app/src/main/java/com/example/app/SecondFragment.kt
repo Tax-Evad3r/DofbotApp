@@ -4,6 +4,8 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
+import android.graphics.Color.rgb
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -20,9 +22,11 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.bumptech.glide.Glide
 
+
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+
 class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
@@ -53,6 +57,13 @@ class SecondFragment : Fragment() {
 
         //import motions from asset files (located in "main/assets/motion")
         val availableMotions = importMotionFromFile(this.requireContext())
+        val importedSounds = importSounds(this.context)
+
+        //debug print of all imported sounds
+        println("Sound import done!")
+        for (sound in importedSounds) {
+            println("Found sound: $sound")
+        }
 
         //debug print of all stored motions
         println("Motion import done!")
@@ -103,7 +114,12 @@ class SecondFragment : Fragment() {
 
         binding.llRightMotions.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
+        binding.llRightSounds.setOnDragListener(dragListener)
+        binding.llBottomSounds.setOnDragListener(dragListener)
+        binding.trashlayout.setOnDragListener(dragListener)
+        binding.trash.visibility = View.INVISIBLE;
 
+        //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
             val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
@@ -112,6 +128,16 @@ class SecondFragment : Fragment() {
             Glide.with(this.requireContext()).load(res).into(motion1)
             destination.addView(motion1)
             createDragAndDropListener(motion1)
+        }
+
+        //create new view for each sound depending on amount of imported sounds
+        for (i in importedSounds.indices) {
+            val destination = binding.llRightSounds
+            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
+            sound.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
+            sound.contentDescription = "sound$i"
+            destination.addView(sound)
+            createDragAndDropListener(sound)
         }
 
         binding.buttonQuickRun.setOnClickListener {
@@ -146,7 +172,7 @@ class SecondFragment : Fragment() {
 
             //loop through all motions in timeline (skip first since it is not a motion)
             for (motion in binding.llBottom) {
-                val motionId = getMotionId(motion)
+                val motionId = getId(motion)
                 if( motionId != -1) {
                     motionNumList.add(motionId)
                 }
@@ -162,7 +188,18 @@ class SecondFragment : Fragment() {
 
             //send request
             SendData().send(jsonRequestdata)
+            
+            //create sound list
+            val soundsList = mutableListOf<String>()
 
+            //loop through all sounds in timeline (skip first since it is not a sound)
+            for (sound in binding.llBottomSounds) {
+                val soundId = getId(sound)
+                if( soundId != -1) {
+                    soundsList.add(importedSounds[soundId])
+                }
+            }
+            playSounds(this.requireContext(), soundsList)
         }
     }
 
@@ -173,36 +210,49 @@ class SecondFragment : Fragment() {
         }
         DragEvent.ACTION_DRAG_ENTERED -> {
             val v = event.localState as View
+            binding.llBottom.alpha = 0.3f
             v.visibility = View.VISIBLE;
+            val owner = v.parent as ViewGroup
+            if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")
+                binding.trash.visibility = View.VISIBLE;
             view.invalidate()
             true
         }
         DragEvent.ACTION_DRAG_LOCATION -> true
         DragEvent.ACTION_DRAG_EXITED -> {
+            binding.llBottom.alpha = 1.0f
             view.invalidate()
             true
         }
         DragEvent.ACTION_DROP -> {
+            binding.llBottom.alpha = 1.0f
+            binding.trash.visibility = View.INVISIBLE;
+
             val v = event.localState as View
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
-            if (destination.contentDescription == "motion_timeline") {
-                if (!destination.contains(v)) {
-                    val motion1 = LayoutInflater.from(this.context)
-                        .inflate(R.layout.motion_template, destination, false) as ImageView
-                    motion1.contentDescription = v.contentDescription
-                    val res = this.resources.getIdentifier(
-                        "motion${getMotionId(v)}",
-                        "drawable",
-                        "com.example.app"
-                    )
-                    Glide.with(this.requireContext()).load(res).into(motion1)
-                    destination.addView(motion1)
-                    createDragAndDropListener(motion1)
-                }
-            } else if (owner.contentDescription == "motion_timeline" && destination.contentDescription != "motion_timeline") {
+
+            if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
+                owner.removeView(v)
+            } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
+                val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
+                motion1.contentDescription = v.contentDescription
+                val res = this.resources.getIdentifier("motion${getId(v)}", "drawable", "com.example.app")
+                Glide.with(this.requireContext()).load(res).into(motion1)
+                destination.addView(motion1)
+                createDragAndDropListener(motion1)
+            } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
+            {
+                val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
+                val back = v.background as ColorDrawable
+                sounds1.setBackgroundColor(back.color)
+                sounds1.contentDescription = v.contentDescription
+                destination.addView(sounds1)
+                createDragAndDropListener(sounds1)
+            } else if (owner.contentDescription == "motion_timeline" && destination.contentDescription == "motion_lib" || owner.contentDescription == "sounds_timeline" && destination.contentDescription == "sounds_lib") {
                 owner.removeView(v)
             }
+
             println("dropped ${v.contentDescription}")
             true
         }
@@ -215,11 +265,17 @@ class SecondFragment : Fragment() {
         else -> false
     }
 
-
 }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        stopSound()
         _binding = null
+    }
+
+    override fun onStop() {
+        super.onStop()
+        stopPlayerOnStop()
     }
 }
 
@@ -232,7 +288,8 @@ fun createDragAndDropListener(view: View) {
     }
 }
 
-fun getMotionId(view: View) : Int {
+//helper function for extracting id from string (eg. "motion1" returns 1)
+fun getId(view: View) : Int {
     var motionNumParse = view.contentDescription.filter { it.isDigit() }
     //ignore temp motion (might not be needed in the end)
     if (motionNumParse.toString().toIntOrNull() != null) {
