@@ -37,7 +37,7 @@
 
         <LinearLayout
             android:id="@+id/llBottom"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="motion_timeline"
             android:orientation="horizontal">
@@ -218,5 +218,15 @@
             android:layout_weight="2" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/trash"
+        android:layout_width="79dp"
+        android:layout_height="49dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        app:layout_constraintBottom_toBottomOf="@+id/hsvBottom"
+        app:layout_constraintEnd_toEndOf="@+id/scRightMotions"
+        app:layout_constraintStart_toStartOf="@+id/llLeft"
+        app:layout_constraintTop_toTopOf="@+id/llTop" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

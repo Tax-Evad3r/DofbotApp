@@ -115,6 +115,8 @@ class SecondFragment : Fragment() {
         binding.llBottom.setOnDragListener(dragListener)
         binding.llRightSounds.setOnDragListener(dragListener)
         binding.llBottomSounds.setOnDragListener(dragListener)
+        binding.trash.setOnDragListener(dragListener)
+        binding.trash.visibility = View.INVISIBLE;
 
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
@@ -204,20 +206,33 @@ class SecondFragment : Fragment() {
         }
         DragEvent.ACTION_DRAG_ENTERED -> {
             val v = event.localState as View
+            binding.llBottom.alpha = 0.3f
             v.visibility = View.VISIBLE;
+            val owner = v.parent as ViewGroup
+            if (owner.contentDescription == "motion_timeline")
+                binding.trash.visibility = View.VISIBLE;
             view.invalidate()
             true
         }
         DragEvent.ACTION_DRAG_LOCATION -> true
         DragEvent.ACTION_DRAG_EXITED -> {
+            binding.llBottom.alpha = 1.0f
             view.invalidate()
             true
         }
         DragEvent.ACTION_DROP -> {
+            binding.llBottom.alpha = 1.0f
+            binding.trash.visibility = View.INVISIBLE;
+
             val v = event.localState as View
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
-            if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
+
+            if (owner.contentDescription == "motion_timeline") {
+                val destination = view as ImageView
+                owner.removeView(v)
+            }
+                if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
                 val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
                 motion1.contentDescription = v.contentDescription
                 val res = this.resources.getIdentifier("motion${getId(v)}", "drawable", "com.example.app")
