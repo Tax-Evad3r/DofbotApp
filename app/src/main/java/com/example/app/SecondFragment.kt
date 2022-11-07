@@ -56,6 +56,14 @@ class SecondFragment : Fragment() {
 
         //import motions from asset files (located in "main/assets/motion")
         val availableMotions = importMotionFromFile(this.requireContext())
+        val importedSounds = importSounds(this.context)
+
+        println("importing done")
+        for (sound in importedSounds) {
+            println("Found sound: $sound")
+        }
+
+       // mMediaPlayer = MediaPlayer.create(context , R.raw.mixkit_sci_fi_positive_notification_266)
 
         //debug print of all stored motions
         println("Motion import done!")
@@ -137,7 +145,7 @@ class SecondFragment : Fragment() {
 
         }
         binding.playButton.setOnClickListener{
-            playSound(this.context, mfile)
+            playSound(this.requireContext(), mfile)
         }
         binding.pauseButton.setOnClickListener{
             pauseSound()

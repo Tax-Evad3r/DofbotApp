@@ -1,55 +1,63 @@
 package com.example.app
 
-import android.app.Activity
-import android.content.Context
+import android.content.*
 import android.media.MediaPlayer
+import java.io.IOException
 
 
 var mMediaPlayer: MediaPlayer? = null
 
-    //binding.playButton.SetOnClickListener{}
-    // 1. Plays the water sound
-    fun playSound(context: Context? , filename: String?) {
-        if (mMediaPlayer == null) {
-            var temp = playParse(context,filename)
-           // "res/raw/george_ezra_shotgun_jesse_bloch_bootleg.mp3"
-            // R.raw.george_ezra_shotgun_jesse_bloch_bootleg
-           // var myUri : Uri = Uri.create(temp)
-            mMediaPlayer =
-                MediaPlayer.create(context, temp)
-            // mMediaPlayer!!.isLooping = true
-
+fun playSound(context: Context, filename: String?) {
+    if (mMediaPlayer == null) {
+        try {
+            var afd = context.assets.openFd("sounds/george_ezra_shotgun_jesse_bloch_bootleg.mp3")
+            mMediaPlayer = MediaPlayer()
+            mMediaPlayer!!.setDataSource(afd.fileDescriptor)
+            mMediaPlayer!!.prepare()
             mMediaPlayer!!.start()
-        } else mMediaPlayer!!.start()
-    }
-    // 2. Pause playback
-    fun pauseSound() {
-        if (mMediaPlayer?.isPlaying == true) mMediaPlayer?.pause()
-    }
-
-    // 3. Stops playback
-    fun stopSound() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer!!.stop()
-            mMediaPlayer!!.release()
-            mMediaPlayer = null
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
-    }
-
-fun playParse(context: Context? , filename: String?): Int {
-    if (context != null) {
-        return context.resources.getIdentifier(filename, "raw", "com.example.app")
-    }
-    return 0
+    } else mMediaPlayer!!.start()
 }
 
-    // 4. Destroys the MediaPlayer instance when the app is closed
-   // override
-    fun onStop() {
-       // super.onStop()
-        if (mMediaPlayer != null) {
-            mMediaPlayer!!.release()
-            mMediaPlayer = null
+// 2. Pause playback
+fun pauseSound() {
+    if (mMediaPlayer?.isPlaying == true) mMediaPlayer?.pause()
+}
+
+// 3. Stops playback
+fun stopSound() {
+    if (mMediaPlayer != null) {
+        mMediaPlayer!!.stop()
+        mMediaPlayer!!.release()
+        mMediaPlayer = null
+    }
+}
+
+fun importSounds(context: Context?): MutableList<String> {
+    //retrieve all files in sounds folder
+    val assetsList = context!!.assets.list("sounds")
+
+    //create a list to hold all found sounds
+    val soundList : MutableList<String> = mutableListOf()
+
+    //if assets exist loop through and add to list
+    if (assetsList != null) {
+        for (assetName in assetsList) {
+            soundList.add(assetName)
         }
+    }
+
+    //returned found
+    return soundList
+}
+
+// Destroys the MediaPlayer instance when the app is closed
+fun onStop() {
+    if (mMediaPlayer != null) {
+        mMediaPlayer!!.release()
+        mMediaPlayer = null
+    }
 }
 
