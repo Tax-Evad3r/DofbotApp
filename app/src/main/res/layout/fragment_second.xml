@@ -219,14 +219,21 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/trash"
-        android:layout_width="79dp"
-        android:layout_height="49dp"
-        android:src="@android:drawable/ic_menu_close_clear_cancel"
+    <LinearLayout
+        android:id="@+id/trashlayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/hsvBottom"
         app:layout_constraintEnd_toEndOf="@+id/scRightMotions"
         app:layout_constraintStart_toStartOf="@+id/llLeft"
-        app:layout_constraintTop_toTopOf="@+id/llTop" />
+        app:layout_constraintTop_toTopOf="@+id/llTop">
+
+        <ImageView
+            android:id="@+id/trash"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/trash" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
