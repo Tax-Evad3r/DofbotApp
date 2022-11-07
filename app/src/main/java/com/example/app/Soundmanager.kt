@@ -4,8 +4,9 @@ import android.content.Context
 import android.media.MediaPlayer
 import java.io.IOException
 
-
 var mMediaPlayer: MediaPlayer? = null
+
+//TODO: This needs more cleanup
 
 //Create new mediaplayer with the sound right sound file.
 fun playSound(context: Context, filename: String?) {
@@ -13,9 +14,9 @@ fun playSound(context: Context, filename: String?) {
         stopSound()
     }
     try {
-        var afd = context.assets.openFd("sounds/george_ezra_shotgun_jesse_bloch_bootleg.mp3")
+        var afd = context.assets.openFd("sounds/$filename")
         mMediaPlayer = MediaPlayer()
-        mMediaPlayer!!.setDataSource(afd.fileDescriptor)
+        mMediaPlayer!!.setDataSource(afd)
         mMediaPlayer!!.prepare()
         mMediaPlayer!!.start()
     } catch (e: IOException) {
@@ -23,11 +24,37 @@ fun playSound(context: Context, filename: String?) {
     }
 }
 
+//Create new mediaplayer with the sound right sound file.
+fun playSounds(context: Context, list: MutableList<String>) {
+    if (list.size > 0) {
+        if (mMediaPlayer != null) {
+            stopSound()
+        }
+        val next = list.removeAt(0)
+        try {
+            var afd = context.assets.openFd("sounds/$next")
+            mMediaPlayer = MediaPlayer()
+            mMediaPlayer!!.setDataSource(afd)
+            mMediaPlayer!!.setOnCompletionListener {
+                playSounds(context, list)
+            }
+            mMediaPlayer!!.prepare()
+            mMediaPlayer!!.start()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+}
+
 //Stops playback
 fun stopSound() {
-    mMediaPlayer!!.stop()
-    mMediaPlayer!!.release()
-    mMediaPlayer = null
+    try {
+        mMediaPlayer!!.stop()
+        mMediaPlayer!!.release()
+        mMediaPlayer = null
+    } catch (e : Exception) {
+        e.printStackTrace()
+    }
 }
 
 fun importSounds(context: Context?): MutableList<String> {
@@ -48,14 +75,10 @@ fun importSounds(context: Context?): MutableList<String> {
     return soundList
 }
 
-//TODO: fix override.
-
 // Destroys the MediaPlayer instance when the app is closed
-//override
-fun onStop() {
+fun stopPlayerOnStop() {
     if (mMediaPlayer != null) {
-        mMediaPlayer!!.release()
-        mMediaPlayer = null
+        stopSound()
     }
 }
 

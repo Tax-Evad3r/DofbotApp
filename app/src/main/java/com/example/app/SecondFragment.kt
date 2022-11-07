@@ -186,14 +186,17 @@ class SecondFragment : Fragment() {
             //send request
             SendData().send(jsonRequestdata)
             
-            //play sounds from timeline
+            //create sound list
+            val soundsList = mutableListOf<String>()
+
+            //loop through all sounds in timeline (skip first since it is not a sound)
             for (sound in binding.llBottomSounds) {
                 val soundId = getId(sound)
                 if( soundId != -1) {
-                    playSound(this.requireContext(), importedSounds[soundId])
+                    soundsList.add(importedSounds[soundId])
                 }
             }
-
+            playSounds(this.requireContext(), soundsList)
         }
     }
 
@@ -248,13 +251,17 @@ class SecondFragment : Fragment() {
         else -> false
     }
 
-
 }
 
     override fun onDestroyView() {
         super.onDestroyView()
         stopSound()
         _binding = null
+    }
+
+    override fun onStop() {
+        super.onStop()
+        stopPlayerOnStop()
     }
 }
 
