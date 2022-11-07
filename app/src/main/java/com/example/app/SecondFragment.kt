@@ -4,7 +4,8 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
-import android.content.Context
+import android.graphics.Color.rgb
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -13,20 +14,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.text.isDigitsOnly
-import androidx.core.view.iterator
 import com.example.app.databinding.FragmentSecondBinding
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import java.io.IOException
 import androidx.core.animation.doOnEnd
+import androidx.core.view.iterator
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.bumptech.glide.Glide
 
+
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+
 class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
@@ -57,6 +56,13 @@ class SecondFragment : Fragment() {
 
         //import motions from asset files (located in "main/assets/motion")
         val availableMotions = importMotionFromFile(this.requireContext())
+        val importedSounds = importSounds(this.context)
+
+        //debug print of all imported sounds
+        println("Sound import done!")
+        for (sound in importedSounds) {
+            println("Found sound: $sound")
+        }
 
         //debug print of all stored motions
         println("Motion import done!")
@@ -107,19 +113,28 @@ class SecondFragment : Fragment() {
 
         binding.llRightMotions.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
+        binding.llRightSounds.setOnDragListener(dragListener)
+        binding.llBottomSounds.setOnDragListener(dragListener)
 
-        //FIX ME: get amount of motions from imports
-        for (i in 0..10) {
+        //create new view for each motion depending on amount of imported motions
+        for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
             val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
             motion1.contentDescription = "motion$i"
-            if(i % 2 == 0) {
-                Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
-            } else {
-                Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
-            }
+            val res = this.resources.getIdentifier("motion$i", "drawable", "com.example.app")
+            Glide.with(this.requireContext()).load(res).into(motion1)
             destination.addView(motion1)
             createDragAndDropListener(motion1)
+        }
+
+        //create new view for each sound depending on amount of imported sounds
+        for (i in importedSounds.indices) {
+            val destination = binding.llRightSounds
+            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
+            sound.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
+            sound.contentDescription = "sound$i"
+            destination.addView(sound)
+            createDragAndDropListener(sound)
         }
 
         binding.buttonQuickRun.setOnClickListener {
@@ -152,20 +167,11 @@ class SecondFragment : Fragment() {
             //list of motion id to add to request
             val motionNumList = mutableListOf<Int>()
 
-            //loop through all motions in timeline
-            for (tileNo in 0 until binding.llBottom.childCount) {
-                //get content description defined in xml
-                val desc = binding.llBottom.getChildAt(tileNo).contentDescription
-                //extract last char (this is currently motion number)
-                var motionNumParse = desc.substring(desc.length-1)
-                //ignore temp motion (might not be needed in the end)
-                if (motionNumParse.toIntOrNull() != null) {
-                    //parse substring to usable in for later
-                    var motionNum = motionNumParse.toInt()
-                    if (motionNum < availableMotions.size) {
-                        //if motion exist add to list
-                        motionNumList.add(motionNum)
-                    }
+            //loop through all motions in timeline (skip first since it is not a motion)
+            for (motion in binding.llBottom) {
+                val motionId = getId(motion)
+                if( motionId != -1) {
+                    motionNumList.add(motionId)
                 }
             }
             //add motions to request
@@ -179,6 +185,14 @@ class SecondFragment : Fragment() {
 
             //send request
             SendData().send(jsonRequestdata)
+            
+            //play sounds from timeline
+            for (sound in binding.llBottomSounds) {
+                val soundId = getId(sound)
+                if( soundId != -1) {
+                    playSound(this.requireContext(), importedSounds[soundId])
+                }
+            }
 
         }
     }
@@ -203,19 +217,25 @@ class SecondFragment : Fragment() {
             val v = event.localState as View
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
-            if (destination.contentDescription == "motion_timeline") {
+            if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
                 val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
                 motion1.contentDescription = v.contentDescription
-                if(v.contentDescription.substring(v.contentDescription.length-1, v.contentDescription.length).toInt() % 2 == 0) {
-                    Glide.with(this.requireContext()).load(R.drawable.gif_temp).into(motion1)
-                } else {
-                    Glide.with(this.requireContext()).load(R.drawable.gif_temp2).into(motion1)
-                }
+                val res = this.resources.getIdentifier("motion${getId(v)}", "drawable", "com.example.app")
+                Glide.with(this.requireContext()).load(res).into(motion1)
                 destination.addView(motion1)
                 createDragAndDropListener(motion1)
-            } else {
+            } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
+            {
+                val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
+                val back = v.background as ColorDrawable
+                sounds1.setBackgroundColor(back.color)
+                sounds1.contentDescription = v.contentDescription
+                destination.addView(sounds1)
+                createDragAndDropListener(sounds1)
+            } else if (owner.contentDescription == "motion_timeline" && destination.contentDescription == "motion_lib" || owner.contentDescription == "sounds_timeline" && destination.contentDescription == "sounds_lib") {
                 owner.removeView(v)
             }
+
             println("dropped ${v.contentDescription}")
             true
         }
@@ -230,8 +250,10 @@ class SecondFragment : Fragment() {
 
 
 }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        stopSound()
         _binding = null
     }
 }
@@ -243,4 +265,15 @@ fun createDragAndDropListener(view: View) {
         it.visibility = View.INVISIBLE
         true
     }
+}
+
+//helper function for extracting id from string (eg. "motion1" returns 1)
+fun getId(view: View) : Int {
+    var motionNumParse = view.contentDescription.filter { it.isDigit() }
+    //ignore temp motion (might not be needed in the end)
+    if (motionNumParse.toString().toIntOrNull() != null) {
+        //parse substring to usable in for later
+        return motionNumParse.toString().toInt()
+    }
+    return -1
 }
