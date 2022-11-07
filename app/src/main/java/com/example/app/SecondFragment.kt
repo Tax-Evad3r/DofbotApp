@@ -4,6 +4,7 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
+import android.graphics.Color.rgb
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -118,6 +119,7 @@ class SecondFragment : Fragment() {
         // Do most of the same as above but for sound files
         for (v : View in binding.llRightSounds) {
             createDragAndDropListener(v)
+            v.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
         }
 
         binding.buttonQuickRun.setOnClickListener {
