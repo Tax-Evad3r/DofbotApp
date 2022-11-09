@@ -2,9 +2,34 @@ package com.example.app
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.os.Handler
+import android.os.Looper
 import java.io.IOException
+import java.time.Duration
 
 var mMediaPlayer: MediaPlayer? = null
+
+//Create new MediaPlayer and play a single sound
+fun playSound(context: Context, name : String, duration: Long) {
+
+    //if an existing player is found destroy it
+    if (mMediaPlayer != null) {
+        stopSound()
+    }
+    //create new player with the given sound and add a postDelay listener to stop playback after some time
+    try {
+        var afd = context.assets.openFd("sounds/$name")
+        mMediaPlayer = MediaPlayer()
+        mMediaPlayer!!.setDataSource(afd)
+        Handler(Looper.getMainLooper()).postDelayed({
+            stopPlayerOnStop()
+        }, duration)
+        mMediaPlayer!!.prepare()
+        mMediaPlayer!!.start()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+}
 
 //Create new MediaPlayer use source files provided as list
 fun playSounds(context: Context, list: MutableList<String>) {

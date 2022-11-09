@@ -4,6 +4,7 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.ClipData
 import android.content.ClipDescription
+import android.content.Context
 import android.graphics.Color.rgb
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -138,6 +139,7 @@ class SecondFragment : Fragment() {
             sound.contentDescription = "sound$i"
             destination.addView(sound)
             createDragAndDropListener(sound)
+            createClickListener(this.requireContext(), sound, importedSounds[getId(sound)])
         }
 
         binding.buttonQuickRun.setOnClickListener {
@@ -285,6 +287,12 @@ fun createDragAndDropListener(view: View) {
         it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
         it.visibility = View.INVISIBLE
         true
+    }
+}
+
+fun createClickListener(context : Context, view: View, name : String) {
+    view.setOnClickListener {
+        playSound(context, name, 2000)
     }
 }
 
