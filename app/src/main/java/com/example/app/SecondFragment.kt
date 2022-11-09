@@ -117,7 +117,7 @@ class SecondFragment : Fragment() {
         binding.llBottom.setOnDragListener(dragListener)
         binding.llRightSounds.setOnDragListener(dragListener)
         binding.llBottomSounds.setOnDragListener(dragListener)
-        binding.trashlayout.setOnDragListener(dragListener)
+        binding.lltrash.setOnDragListener(dragListener)
         binding.trash.visibility = View.INVISIBLE;
 
         //create new view for each motion depending on amount of imported motions
@@ -212,29 +212,45 @@ class SecondFragment : Fragment() {
         }
         DragEvent.ACTION_DRAG_ENTERED -> {
             val v = event.localState as View
-            binding.llBottom.alpha = 0.3f
             v.visibility = View.VISIBLE;
             val owner = v.parent as ViewGroup
+            val destination = view as LinearLayout
             if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")
-                binding.trash.visibility = View.VISIBLE;
+                binding.trash.visibility = View.VISIBLE
+            if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
+            {
+                binding.llBottom.alpha = 0.3f
+            }
+            else if (destination.contentDescription == "sounds_timeline" && owner.contentDescription == "sounds_lib")
+            {
+                binding.llBottomSounds.alpha = 0.3f
+            }
+            else if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline"))
+            {
+                binding.lltrash.alpha = 0.3f
+            }
             view.invalidate()
             true
         }
         DragEvent.ACTION_DRAG_LOCATION -> true
         DragEvent.ACTION_DRAG_EXITED -> {
             binding.llBottom.alpha = 1.0f
+            binding.llBottomSounds.alpha = 1.0f
+            binding.lltrash.alpha = 1.0f
             view.invalidate()
             true
         }
         DragEvent.ACTION_DROP -> {
             binding.llBottom.alpha = 1.0f
+            binding.llBottomSounds.alpha = 1.0f
+            binding.lltrash.alpha = 1.0f
             binding.trash.visibility = View.INVISIBLE;
 
             val v = event.localState as View
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
 
-            if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
+            if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")) {
                 owner.removeView(v)
             } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
                 val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
@@ -251,8 +267,6 @@ class SecondFragment : Fragment() {
                 sounds1.contentDescription = v.contentDescription
                 destination.addView(sounds1)
                 createDragAndDropListener(sounds1)
-            } else if (owner.contentDescription == "motion_timeline" && destination.contentDescription == "motion_lib" || owner.contentDescription == "sounds_timeline" && destination.contentDescription == "sounds_lib") {
-                owner.removeView(v)
             }
 
             println("dropped ${v.contentDescription}")
