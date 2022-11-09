@@ -269,7 +269,7 @@ class SecondFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        stopSound()
+        stopPlayerOnStop()
         _binding = null
     }
 

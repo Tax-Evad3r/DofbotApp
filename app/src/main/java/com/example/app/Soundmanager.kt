@@ -6,31 +6,17 @@ import java.io.IOException
 
 var mMediaPlayer: MediaPlayer? = null
 
-//TODO: This needs more cleanup
-
-//Create new mediaplayer with the sound right sound file.
-fun playSound(context: Context, filename: String?) {
-    if (mMediaPlayer != null) {
-        stopSound()
-    }
-    try {
-        var afd = context.assets.openFd("sounds/$filename")
-        mMediaPlayer = MediaPlayer()
-        mMediaPlayer!!.setDataSource(afd)
-        mMediaPlayer!!.prepare()
-        mMediaPlayer!!.start()
-    } catch (e: IOException) {
-        e.printStackTrace()
-    }
-}
-
-//Create new mediaplayer with the sound right sound file.
+//Create new MediaPlayer use source files provided as list
 fun playSounds(context: Context, list: MutableList<String>) {
+    //only continue if provided list contains any sounds
     if (list.size > 0) {
+        //if an existing player is found destroy it
         if (mMediaPlayer != null) {
             stopSound()
         }
+        //get next sound as filename from list
         val next = list.removeAt(0)
+        //create new player with the next sound and add onComplete listener to recursively play next sound when done.
         try {
             var afd = context.assets.openFd("sounds/$next")
             mMediaPlayer = MediaPlayer()
@@ -46,7 +32,7 @@ fun playSounds(context: Context, list: MutableList<String>) {
     }
 }
 
-//Stops playback
+//Stop playback and remove current MediaPlayer
 fun stopSound() {
     try {
         mMediaPlayer!!.stop()
@@ -57,6 +43,7 @@ fun stopSound() {
     }
 }
 
+//locate all sounds then create list containing all filenames for later use
 fun importSounds(context: Context?): MutableList<String> {
     //retrieve all files in sounds folder
     val assetsList = context!!.assets.list("sounds")
@@ -75,7 +62,7 @@ fun importSounds(context: Context?): MutableList<String> {
     return soundList
 }
 
-// Destroys the MediaPlayer instance when the app is closed
+//helper function for onStop and onViewDestroyed overloads (in SecondFragment)
 fun stopPlayerOnStop() {
     if (mMediaPlayer != null) {
         stopSound()
