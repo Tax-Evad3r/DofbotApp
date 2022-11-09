@@ -244,7 +244,7 @@ class SecondFragment : Fragment() {
             binding.llBottom.alpha = 1.0f
             binding.llBottomSounds.alpha = 1.0f
             binding.lltrash.alpha = 1.0f
-            binding.trash.visibility = View.INVISIBLE;
+            binding.trash.visibility = View.INVISIBLE
 
             val v = event.localState as View
             val owner = v.parent as ViewGroup
@@ -274,7 +274,8 @@ class SecondFragment : Fragment() {
         }
         DragEvent.ACTION_DRAG_ENDED -> {
             val v = event.localState as View
-            v.visibility = View.VISIBLE;
+            v.visibility = View.VISIBLE
+            binding.trash.visibility = View.INVISIBLE
             view.invalidate()
             true
         }
