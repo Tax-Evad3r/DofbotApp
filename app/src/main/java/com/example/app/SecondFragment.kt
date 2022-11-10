@@ -2,11 +2,13 @@ package com.example.app
 
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Context
 import android.graphics.Color.rgb
 import android.graphics.drawable.ColorDrawable
+import android.media.Image
 import android.os.Bundle
 import android.view.DragEvent
 import androidx.fragment.app.Fragment
@@ -15,10 +17,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintSet.Motion
 import com.example.app.databinding.FragmentSecondBinding
 import androidx.core.animation.doOnEnd
 import androidx.core.view.contains
 import androidx.core.view.iterator
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.bumptech.glide.Glide
@@ -37,9 +44,46 @@ class SecondFragment : Fragment() {
     private lateinit var flipRightIn:AnimatorSet
     private lateinit var flipRightOut:AnimatorSet
 
+    private var motionList : MutableList<Int> = mutableListOf(0,1,2,3)
+    private lateinit var motionAdapter : MotionAdapter
+
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private val itemTouchHelper by lazy {
+        val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(UP or DOWN or START or END, 0) {
+
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                val adapter = recyclerView.adapter as MotionAdapter
+                val from = viewHolder.adapterPosition
+                val to = target.adapterPosition
+                adapter.moveItem(from, to)
+                adapter.notifyItemMoved(from, to)
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            }
+
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+
+                if (actionState == ACTION_STATE_DRAG) {
+                    viewHolder?.itemView?.alpha = 0.5f
+                }
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+
+                viewHolder.itemView.alpha = 1.0f
+            }
+        }
+
+        ItemTouchHelper(simpleItemTouchCallback)
+    }
 
     override fun onCreateView(
 
@@ -50,11 +94,46 @@ class SecondFragment : Fragment() {
 
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
 
+        //binding.recycleView.adapter = MotionAdapter(this.requireContext(), motionList)
+        //binding.recycleView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+       // (binding.recycleView.adapter as MotionAdapter).notifyDataSetChanged()
+        //binding.recycleView.adapter = motionAdapter
+
+       // motionAdapter = MotionAdapter(this.requireContext(), motionList)
+        //binding.recycleView.adapter = motionAdapter
+
+
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+/*
+        for (i in 0..10)
+        {
+            //motionAdapter.addMotion(i%4)
+            //newList.add(i%4)
+            motionList.add(i % 4) // should (i % availableMotions.size)
+            //motionAdapter.differ.submitList(motionList)
+
+        }*/
+
+        itemTouchHelper.attachToRecyclerView(binding.recycleView)
+        motionAdapter = MotionAdapter(this.requireContext())
+        motionAdapter.differ.submitList(motionList)
+        binding.recycleView.layoutManager = LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL,false)
+        binding.recycleView.adapter = motionAdapter
+
+        println("List size: $motionList")
+        /*val newList = mutableListOf<Int>()
+        newList.addAll(motionList)
+        for (i in 0..10)
+        {
+            //motionAdapter.addMotion(i%4)
+            newList.add(i%4)
+        }
+        motionAdapter.submitList(newList)*/
 
         //import motions from asset files (located in "main/assets/motion")
         val availableMotions = importMotionFromFile(this.requireContext())
@@ -71,7 +150,7 @@ class SecondFragment : Fragment() {
         for (motion in availableMotions) {
             println(motion.toJson())
         }
-
+        //(binding.recycleView.adapter as MotionAdapter).notifyDataSetChanged()
         val scale:Float = this.requireContext().resources.displayMetrics.density
         binding.scRightMotions.cameraDistance = 8000 * scale
         binding.scRightSounds.cameraDistance = 8000 * scale
@@ -202,6 +281,17 @@ class SecondFragment : Fragment() {
                 }
             }
             playSounds(this.requireContext(), soundsList)
+        }
+        var tmp = 0
+        binding.buttonStart.setOnClickListener {
+            //val motionAdapter = binding.recycleView.adapter
+            //val currentSize = binding.recycleView.adapter.getItemCount()
+           // val currentSize = motionAdapter?.itemCount
+            //motionList.add(tmp++)
+           // motionAdapter?.notifyItemInserted(motionList.size)
+           //motionAdapter?.notifyDataSetChanged()
+            //motionAdapter.addMotion(tmp)
+            //println("List size: ${motionList.size}")
         }
     }
 
