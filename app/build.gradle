@@ -2,8 +2,9 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlinx-serialization'
-}
 
+}
+apply plugin: 'kotlin-kapt'
 android {
     namespace 'com.example.app'
     compileSdk 32
@@ -33,6 +34,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        dataBinding true
     }
 }
 
