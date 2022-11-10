@@ -7,6 +7,22 @@
     tools:context=".SecondFragment">
 
 
+    <HorizontalScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/hsvSounds"
+        app:layout_constraintEnd_toStartOf="@id/tabsRight"
+        app:layout_constraintStart_toEndOf="@id/llLeft">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabsRight"
         android:layout_width="0dp"
@@ -44,8 +60,8 @@
 
             <FrameLayout
                 android:id="@+id/dotted_button"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
@@ -80,8 +96,8 @@
 
             <FrameLayout
                 android:id="@+id/dotted_button1"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
