@@ -18,6 +18,7 @@ import android.widget.LinearLayout
 import com.example.app.databinding.FragmentSecondBinding
 import androidx.core.animation.doOnEnd
 import androidx.core.view.contains
+import androidx.core.view.get
 import androidx.core.view.iterator
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -253,20 +254,26 @@ class SecondFragment : Fragment() {
             if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")) {
                 owner.removeView(v)
             } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
+                val placeHolder = destination[destination.childCount-1]
+                destination.removeView(placeHolder)
                 val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
                 motion1.contentDescription = v.contentDescription
                 val res = this.resources.getIdentifier("motion${getId(v)}", "drawable", "com.example.app")
                 Glide.with(this.requireContext()).load(res).into(motion1)
                 destination.addView(motion1)
                 createDragAndDropListener(motion1)
+                destination.addView(placeHolder)
             } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
             {
+                val placeHolder = destination[destination.childCount-1]
+                destination.removeView(placeHolder)
                 val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
                 val back = v.background as ColorDrawable
                 sounds1.setBackgroundColor(back.color)
                 sounds1.contentDescription = v.contentDescription
                 destination.addView(sounds1)
                 createDragAndDropListener(sounds1)
+                destination.addView(placeHolder)
             }
 
             println("dropped ${v.contentDescription}")
