@@ -2,26 +2,27 @@ package com.example.app
 
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
+import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color.rgb
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.DragEvent
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import com.example.app.databinding.FragmentSecondBinding
 import androidx.core.animation.doOnEnd
-import androidx.core.view.contains
 import androidx.core.view.iterator
+import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import com.bumptech.glide.Glide
 
 
 /**
@@ -153,6 +154,47 @@ class SecondFragment : Fragment() {
             //send reset data
             SendData().send(resetData.toJson())
 
+        }
+
+        val dialogClickListener =
+            DialogInterface.OnClickListener { dialog, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        //yes button pressed
+
+                        //create variables for both timelines
+                        val soundTimeline = binding.llBottomSounds
+                        val motionTimeline = binding.llBottom
+
+                        //save add symbol in both timelines
+                        val placeHolderSounds = soundTimeline.getChildAt(soundTimeline.childCount-1)
+                        soundTimeline.removeView(placeHolderSounds)
+                        val placeHolderMotion = motionTimeline.getChildAt(motionTimeline.childCount-1)
+                        motionTimeline.removeView(placeHolderMotion)
+
+                        //remove all items in both timelines
+                        for (sound in soundTimeline) {
+                            soundTimeline.removeView(sound)
+                        }
+                        for (motion in motionTimeline) {
+                            motionTimeline.removeView(motion)
+                        }
+
+                        //restore add symbol in each timeline
+                        soundTimeline.addView(placeHolderSounds)
+                        motionTimeline.addView(placeHolderMotion)
+                    }
+                }
+            }
+
+        binding.buttonReset.setOnClickListener {
+
+            println("pressed reset!")
+
+            //pop confirm dialog when user wants to reset
+            val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show()
         }
 
         binding.buttonRun.setOnClickListener {
