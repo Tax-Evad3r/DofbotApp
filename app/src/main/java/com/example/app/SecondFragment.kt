@@ -44,7 +44,7 @@ class SecondFragment : Fragment() {
     private lateinit var flipRightIn:AnimatorSet
     private lateinit var flipRightOut:AnimatorSet
 
-    private var motionList : MutableList<Int> = mutableListOf(0,1,2,3)
+    private var motionList : MutableList<Int> = mutableListOf()
     private lateinit var motionAdapter : MotionAdapter
 
 
@@ -197,7 +197,8 @@ class SecondFragment : Fragment() {
         binding.llRightSounds.setOnDragListener(dragListener)
         binding.llBottomSounds.setOnDragListener(dragListener)
         binding.lltrash.setOnDragListener(dragListener)
-        binding.trash.visibility = View.INVISIBLE;
+        binding.recycleView.setOnDragListener(dragListener)
+        binding.trash.visibility = View.INVISIBLE
 
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
@@ -291,7 +292,15 @@ class SecondFragment : Fragment() {
            // motionAdapter?.notifyItemInserted(motionList.size)
            //motionAdapter?.notifyDataSetChanged()
             //motionAdapter.addMotion(tmp)
-            //println("List size: ${motionList.size}")
+
+            val newList = mutableListOf<Int>()
+            newList.addAll(motionAdapter.differ.currentList)
+            for (i in 0..10) {
+                //motionAdapter.addMotion(i%4)
+                newList.add(i % 4)
+            }
+            motionAdapter.differ.submitList(newList)
+            println("List size: ${motionAdapter.differ.currentList.size}")
         }
     }
 
