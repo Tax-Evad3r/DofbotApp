@@ -159,7 +159,28 @@ class SecondFragment : Fragment() {
 
         }
 
-        val dialogClickListener =
+        val eraseMotion =
+            DialogInterface.OnClickListener { _, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        //yes button pressed
+
+                        //create variables for both timelines
+                        val motionTimeline = binding.llBottom
+
+                        //save add symbol in both timelines
+                        val placeHolderMotion = motionTimeline.getChildAt(motionTimeline.childCount-1)
+                        motionTimeline.removeView(placeHolderMotion)
+
+                        binding.llBottom.removeAllViews()
+
+                        //restore add symbol in each timeline
+                        motionTimeline.addView(placeHolderMotion)
+                    }
+                }
+            }
+
+        val eraseSound =
             DialogInterface.OnClickListener { _, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
@@ -167,32 +188,33 @@ class SecondFragment : Fragment() {
 
                         //create variables for both timelines
                         val soundTimeline = binding.llBottomSounds
-                        val motionTimeline = binding.llBottom
 
                         //save add symbol in both timelines
                         val placeHolderSounds = soundTimeline.getChildAt(soundTimeline.childCount-1)
                         soundTimeline.removeView(placeHolderSounds)
-                        val placeHolderMotion = motionTimeline.getChildAt(motionTimeline.childCount-1)
-                        motionTimeline.removeView(placeHolderMotion)
 
                         binding.llBottomSounds.removeAllViews()
-                        binding.llBottom.removeAllViews()
 
                         //restore add symbol in each timeline
                         soundTimeline.addView(placeHolderSounds)
-                        motionTimeline.addView(placeHolderMotion)
                     }
                 }
             }
 
-        binding.buttonReset.setOnClickListener {
-
-            println("pressed reset!")
+        binding.buttonEraseMotion.setOnClickListener {
 
             //pop confirm dialog when user wants to reset
             val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show()
+            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", eraseMotion)
+                .setNegativeButton("No", eraseMotion).show()
+        }
+
+        binding.buttonEraseSound.setOnClickListener {
+
+            //pop confirm dialog when user wants to reset
+            val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", eraseSound)
+                .setNegativeButton("No", eraseSound).show()
         }
 
         binding.buttonRun.setOnClickListener {

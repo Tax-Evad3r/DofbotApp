@@ -208,11 +208,19 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/button_reset"
+            android:id="@+id/button_erase_motion"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="reset"
+            android:text="Erase \n Motion Bar"
+            app:cornerRadius="8dp" />
+
+        <Button
+            android:id="@+id/button_erase_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Erase \n Sound Bar"
             app:cornerRadius="8dp" />
 
         <Space
