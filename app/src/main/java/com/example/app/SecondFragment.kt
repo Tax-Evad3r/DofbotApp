@@ -17,11 +17,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.animation.doOnEnd
-<<<<<<< HEAD
-=======
 import androidx.core.view.contains
 import androidx.core.view.get
->>>>>>> 2ea0ef222f31d23ab1cc90bc7fb015fd49aea199
 import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -162,7 +159,7 @@ class SecondFragment : Fragment() {
         }
 
         val dialogClickListener =
-            DialogInterface.OnClickListener { dialog, which ->
+            DialogInterface.OnClickListener { _, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
                         //yes button pressed
