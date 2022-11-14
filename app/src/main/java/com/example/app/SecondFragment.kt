@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.animation.doOnEnd
+import androidx.core.view.children
 import androidx.core.view.contains
 import androidx.core.view.get
 import androidx.core.view.iterator
@@ -174,13 +175,8 @@ class SecondFragment : Fragment() {
                         val placeHolderMotion = motionTimeline.getChildAt(motionTimeline.childCount-1)
                         motionTimeline.removeView(placeHolderMotion)
 
-                        //remove all items in both timelines
-                        for (sound in soundTimeline) {
-                            soundTimeline.removeView(sound)
-                        }
-                        for (motion in motionTimeline) {
-                            motionTimeline.removeView(motion)
-                        }
+                        binding.llBottomSounds.removeAllViews()
+                        binding.llBottom.removeAllViews()
 
                         //restore add symbol in each timeline
                         soundTimeline.addView(placeHolderSounds)
