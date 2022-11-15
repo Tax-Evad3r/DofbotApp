@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.animation.doOnEnd
 import androidx.core.view.children
 import androidx.core.view.contains
@@ -138,8 +139,12 @@ class SecondFragment : Fragment() {
         //create new view for each sound depending on amount of imported sounds
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
-            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
-            sound.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
+            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as TextView
+            //sound.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
+            //name = text.substring(startIndex: Int, endIndex: Int): String
+            sound.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))//sound lables
+
+
             sound.contentDescription = "sound$i"
             destination.addView(sound)
             createDragAndDropListener(sound)
@@ -328,10 +333,12 @@ class SecondFragment : Fragment() {
             {
                 val placeHolder = destination[destination.childCount-1]
                 destination.removeView(placeHolder)
-                val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
-                val back = v.background as ColorDrawable
-                sounds1.setBackgroundColor(back.color)
+                val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as TextView
+                //val back = v.background as ColorDrawable
+                //sounds1.setBackgroundColor(back.color)
                 sounds1.contentDescription = v.contentDescription
+                val v1 = event.localState as TextView
+                sounds1.text = v1.text
                 destination.addView(sounds1)
                 createDragAndDropListener(sounds1)
                 destination.addView(placeHolder)
