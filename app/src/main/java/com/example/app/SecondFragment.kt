@@ -26,7 +26,7 @@ import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-
+import com.google.android.material.button.MaterialButton
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.

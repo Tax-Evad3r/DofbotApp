@@ -44,7 +44,9 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Motions" />
+            android:text="Motions"
+            tools:layout_editor_absoluteX="604dp"
+            tools:layout_editor_absoluteY="99dp" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -181,48 +183,69 @@
             android:layout_height="match_parent"
             android:layout_weight="2" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonRun"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:alpha="0.7"
+            android:backgroundTint="#79839E"
             android:padding="8dp"
-            android:text="run"
-            app:cornerRadius="8dp" />
+            android:shadowColor="@color/black"
+            android:text="Physical \n Test Run"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp" />
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_quick_run"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="quick run"
-            app:cornerRadius="8dp" />
+            android:alpha="0.7"
+            android:backgroundTint="#79839E"
+            android:shadowColor="@color/black"
+            android:text="Virtual \n Test Run"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp" />
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_erase_motion"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Erase \n Motion Bar"
-            app:cornerRadius="8dp" />
+            android:backgroundTint="#79839E"
+            android:alpha="0.7"
+            android:shadowColor="@color/black"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp"
+            />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_erase_sound"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Erase \n Sound Bar"
-            app:cornerRadius="8dp" />
+            android:backgroundTint="#79839E"
+            android:alpha="0.7"
+            android:shadowColor="@color/black"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp"/>
 
         <Space
             android:layout_width="wrap_content"
@@ -244,21 +267,31 @@
             android:layout_height="wrap_content"
             android:layout_weight="2" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Start"
-            app:cornerRadius="8dp" />
+            android:alpha="0.7"
+            android:backgroundTint="#79839E"
+            android:shadowColor="@color/black"
+            android:text="Starts When"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="End"
-            app:cornerRadius="8dp" />
+            android:alpha="0.7"
+            android:backgroundTint="#79839E"
+            android:shadowColor="@color/black"
+            android:text="Ends When"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp" />
 
         <Space
             android:layout_width="match_parent"
