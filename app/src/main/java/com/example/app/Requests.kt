@@ -132,7 +132,7 @@ import java.net.URL
                     sum = event[0]
                 }
             }
-            return sum;
+            return sum
         }
 
     }
@@ -185,6 +185,42 @@ import java.net.URL
         }
 
     }
+
+fun  animationDuration(motion:Data):Int{
+
+    //get longest time in first animation and add it to next
+    val maxTime : MutableList<Int> = mutableListOf()
+
+    //for each servo create temporary variable
+    //store all servo data from lhs and their durations
+    motion.bottom_rotation?.forEach {
+        maxTime.add((it[0]))
+    }
+    motion.joint_1?.forEach {
+        maxTime.add((it[0]))
+    }
+    motion.joint_2?.forEach {
+        maxTime.add((it[0]))
+    }
+    motion.joint_3?.forEach {
+        maxTime.add((it[0]))
+    }
+    motion.claw_rotation?.forEach {
+        maxTime.add((it[0]))
+    }
+    motion.claw_grip?.forEach {
+        maxTime.add((it[0]))
+    }
+
+    //find longest duration from all lhs servos
+    var time = 0
+    maxTime.forEach {
+        if (it > time) {
+            time = it
+        }
+    }
+    return time
+}
 
 fun importMotionFromFile(context: Context): List<Data> {
 
