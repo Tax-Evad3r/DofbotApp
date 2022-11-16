@@ -150,9 +150,8 @@ import java.net.URL
     class HttpConnection {
         fun send (jsonBody: String) : String {
 
-            //val mURL = URL("http://172.26.105.103:5000/motion")
+            // TODO: ipaddress should be fetched from settings in app.
             val mURL = URL("http://192.168.50.169:5000/motion")
-            //val mURL = URL("http://10.255.145.74:5000/motion")
 
             try {
                 //make http connection

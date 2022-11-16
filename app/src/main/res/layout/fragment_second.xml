@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/aidabakgrund"
     tools:context=".SecondFragment">
 
 
@@ -33,24 +34,34 @@
         app:layout_constraintStart_toEndOf="@id/llLeft"
         app:layout_constraintTop_toTopOf="@+id/hsvSounds" />
 
-    <com.google.android.material.tabs.TabLayout
+    <LinearLayout
         android:id="@+id/tabsRight"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:alpha="0.8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.tabs.TabItem
+        <Button
+            android:id="@+id/motions"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
+            android:backgroundTint="#964D56"
             android:text="Motions" />
 
-        <com.google.android.material.tabs.TabItem
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+             />
+
+        <Button
+            android:id="@+id/sounds"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
+            android:backgroundTint="#BF793B"
             android:text="Sounds" />
 
-    </com.google.android.material.tabs.TabLayout>
+    </LinearLayout>
 
     <HorizontalScrollView
         android:id="@+id/hsvBottom"
@@ -180,40 +191,69 @@
             android:layout_height="match_parent"
             android:layout_weight="2" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonRun"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:alpha="0.7"
+            android:backgroundTint="#79839E"
             android:padding="8dp"
-            android:text="run"
-            app:cornerRadius="8dp" />
+            android:shadowColor="@color/black"
+            android:text="Physical\nTest Run"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp" />
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_quick_run"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="quick run"
-            app:cornerRadius="8dp" />
+            android:alpha="0.7"
+            android:backgroundTint="#79839E"
+            android:shadowColor="@color/black"
+            android:text="Virtual\nTest Run"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp" />
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/button_reset"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_erase_motion"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="reset"
-            app:cornerRadius="8dp" />
+            android:text="Erase\nMotion Bar"
+            android:backgroundTint="#79839E"
+            android:alpha="0.7"
+            android:shadowColor="@color/black"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_erase_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Erase\nSound Bar"
+            android:backgroundTint="#79839E"
+            android:alpha="0.7"
+            android:shadowColor="@color/black"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp"/>
 
         <Space
             android:layout_width="wrap_content"
@@ -235,21 +275,31 @@
             android:layout_height="wrap_content"
             android:layout_weight="2" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Start"
-            app:cornerRadius="8dp" />
+            android:alpha="0.7"
+            android:backgroundTint="#79839E"
+            android:shadowColor="@color/black"
+            android:text="Starts When"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="End"
-            app:cornerRadius="8dp" />
+            android:alpha="0.7"
+            android:backgroundTint="#79839E"
+            android:shadowColor="@color/black"
+            android:text="Ends When"
+            app:cornerRadius="8dp"
+            app:strokeColor="#F2F2F2"
+            app:strokeWidth="3dp" />
 
         <Space
             android:layout_width="match_parent"

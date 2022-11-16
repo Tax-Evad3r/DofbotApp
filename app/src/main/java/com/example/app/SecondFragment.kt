@@ -7,6 +7,7 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Color
 import android.graphics.Color.rgb
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -16,17 +17,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.animation.doOnEnd
-import androidx.core.view.children
-import androidx.core.view.contains
 import androidx.core.view.get
 import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
+import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-
+import com.google.android.material.button.MaterialButton
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -90,37 +91,30 @@ class SecondFragment : Fragment() {
         flipLeftOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_out) as AnimatorSet
         flipRightIn = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_in) as AnimatorSet
         flipRightOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_out) as AnimatorSet
-
-        binding.tabsRight.addOnTabSelectedListener(object : OnTabSelectedListener{
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab?.position != 0)
-                {
-                    binding.scRightSounds.visibility = View.VISIBLE
-                    flipLeftIn.setTarget(binding.scRightSounds)
-                    flipLeftOut.setTarget(binding.scRightMotions)
-                    flipLeftIn.start()
-                    flipLeftOut.start()
-                    flipLeftIn.doOnEnd {
-                        binding.scRightMotions.visibility = View.GONE
-                        binding.scRightSounds.visibility = View.VISIBLE
-                    }
-                }
-                else
-                {
-                    binding.scRightMotions.visibility = View.VISIBLE
-                    flipRightIn.setTarget(binding.scRightMotions)
-                    flipRightOut.setTarget(binding.scRightSounds)
-                    flipRightIn.start()
-                    flipRightOut.start()
-                    flipRightIn.doOnEnd {
-                        binding.scRightSounds.visibility = View.GONE
-                        binding.scRightMotions.visibility = View.VISIBLE
-                    }
-                }
+        binding.motions.setOnClickListener(){
+            binding.scRightMotions.visibility = View.VISIBLE
+            flipRightIn.setTarget(binding.scRightMotions)
+            flipRightOut.setTarget(binding.scRightSounds)
+            flipRightIn.start()
+            flipRightOut.start()
+            flipRightIn.doOnEnd {
+                binding.scRightSounds.visibility = View.GONE
+                binding.scRightMotions.visibility = View.VISIBLE
             }
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
+        }
+
+        binding.sounds.setOnClickListener(){
+
+            binding.scRightSounds.visibility = View.VISIBLE
+            flipLeftIn.setTarget(binding.scRightSounds)
+            flipLeftOut.setTarget(binding.scRightMotions)
+            flipLeftIn.start()
+            flipLeftOut.start()
+            flipLeftIn.doOnEnd {
+                binding.scRightMotions.visibility = View.GONE
+                binding.scRightSounds.visibility = View.VISIBLE
+            }
+        }
 
 
         binding.llRightMotions.setOnDragListener(dragListener)
@@ -144,8 +138,12 @@ class SecondFragment : Fragment() {
         //create new view for each sound depending on amount of imported sounds
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
-            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
-            sound.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
+            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as TextView
+            //sound.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
+            //name = text.substring(startIndex: Int, endIndex: Int): String
+            sound.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))//sound lables
+
+
             sound.contentDescription = "sound$i"
             destination.addView(sound)
             createDragAndDropListener(sound)
@@ -165,7 +163,28 @@ class SecondFragment : Fragment() {
 
         }
 
-        val dialogClickListener =
+        val eraseMotion =
+            DialogInterface.OnClickListener { _, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        //yes button pressed
+
+                        //create variables for both timelines
+                        val motionTimeline = binding.llBottom
+
+                        //save add symbol in both timelines
+                        val placeHolderMotion = motionTimeline.getChildAt(motionTimeline.childCount-1)
+                        motionTimeline.removeView(placeHolderMotion)
+
+                        binding.llBottom.removeAllViews()
+
+                        //restore add symbol in each timeline
+                        motionTimeline.addView(placeHolderMotion)
+                    }
+                }
+            }
+
+        val eraseSound =
             DialogInterface.OnClickListener { _, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
@@ -173,32 +192,33 @@ class SecondFragment : Fragment() {
 
                         //create variables for both timelines
                         val soundTimeline = binding.llBottomSounds
-                        val motionTimeline = binding.llBottom
 
                         //save add symbol in both timelines
                         val placeHolderSounds = soundTimeline.getChildAt(soundTimeline.childCount-1)
                         soundTimeline.removeView(placeHolderSounds)
-                        val placeHolderMotion = motionTimeline.getChildAt(motionTimeline.childCount-1)
-                        motionTimeline.removeView(placeHolderMotion)
 
                         binding.llBottomSounds.removeAllViews()
-                        binding.llBottom.removeAllViews()
 
                         //restore add symbol in each timeline
                         soundTimeline.addView(placeHolderSounds)
-                        motionTimeline.addView(placeHolderMotion)
                     }
                 }
             }
 
-        binding.buttonReset.setOnClickListener {
-
-            println("pressed reset!")
+        binding.buttonEraseMotion.setOnClickListener {
 
             //pop confirm dialog when user wants to reset
             val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show()
+            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", eraseMotion)
+                .setNegativeButton("No", eraseMotion).show()
+        }
+
+        binding.buttonEraseSound.setOnClickListener {
+
+            //pop confirm dialog when user wants to reset
+            val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", eraseSound)
+                .setNegativeButton("No", eraseSound).show()
         }
 
         //plays a animation on each child of llBottom except for "+"
@@ -363,10 +383,12 @@ class SecondFragment : Fragment() {
             {
                 val placeHolder = destination[destination.childCount-1]
                 destination.removeView(placeHolder)
-                val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as ImageView
-                val back = v.background as ColorDrawable
-                sounds1.setBackgroundColor(back.color)
+                val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as TextView
+                //val back = v.background as ColorDrawable
+                //sounds1.setBackgroundColor(back.color)
                 sounds1.contentDescription = v.contentDescription
+                val v1 = event.localState as TextView
+                sounds1.text = v1.text
                 destination.addView(sounds1)
                 createDragAndDropListener(sounds1)
                 destination.addView(placeHolder)
