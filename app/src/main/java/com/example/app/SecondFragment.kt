@@ -7,9 +7,6 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
-import android.graphics.Color.rgb
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.DragEvent
 import android.view.LayoutInflater
@@ -24,6 +21,8 @@ import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.textview.MaterialTextView
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -136,7 +135,7 @@ class SecondFragment : Fragment() {
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
-            val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
+            val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
             motion1.contentDescription = "motion$i"
             val res = this.resources.getIdentifier("motion$i", "drawable", "com.example.app")
             Glide.with(this.requireContext()).load(res).into(motion1)
@@ -147,7 +146,7 @@ class SecondFragment : Fragment() {
         //create new view for each sound depending on amount of imported sounds
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
-            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as TextView
+            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
             //sound.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
             //name = text.substring(startIndex: Int, endIndex: Int): String
             sound.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))//sound lables
