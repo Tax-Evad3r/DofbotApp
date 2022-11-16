@@ -24,10 +24,6 @@ import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
-import com.google.android.material.tabs.TabItem
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import com.google.android.material.button.MaterialButton
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -42,6 +38,7 @@ class SecondFragment : Fragment() {
     private lateinit var flipRightIn:AnimatorSet
     private lateinit var flipRightOut:AnimatorSet
 
+    private var tabSelected = 0 // 0=motion, 1 = sound
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -91,28 +88,40 @@ class SecondFragment : Fragment() {
         flipLeftOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_out) as AnimatorSet
         flipRightIn = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_in) as AnimatorSet
         flipRightOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_out) as AnimatorSet
+
+
+        binding.llBottomSounds.alpha = 0.1f
+        binding.soundsText.alpha = 0.1f
         binding.motions.setOnClickListener(){
-            binding.scRightMotions.visibility = View.VISIBLE
-            flipRightIn.setTarget(binding.scRightMotions)
-            flipRightOut.setTarget(binding.scRightSounds)
-            flipRightIn.start()
-            flipRightOut.start()
-            flipRightIn.doOnEnd {
-                binding.scRightSounds.visibility = View.GONE
+            if (tabSelected == 1) {
+                setTimelineAlpha(binding,0)
                 binding.scRightMotions.visibility = View.VISIBLE
+                flipRightIn.setTarget(binding.scRightMotions)
+                flipRightOut.setTarget(binding.scRightSounds)
+                flipRightIn.start()
+                flipRightOut.start()
+                flipRightIn.doOnEnd {
+                    binding.scRightSounds.visibility = View.GONE
+                    binding.scRightMotions.visibility = View.VISIBLE
+                    tabSelected = 0
+                }
             }
         }
 
         binding.sounds.setOnClickListener(){
-
-            binding.scRightSounds.visibility = View.VISIBLE
-            flipLeftIn.setTarget(binding.scRightSounds)
-            flipLeftOut.setTarget(binding.scRightMotions)
-            flipLeftIn.start()
-            flipLeftOut.start()
-            flipLeftIn.doOnEnd {
-                binding.scRightMotions.visibility = View.GONE
+            if (tabSelected == 0) {
+                setTimelineAlpha(binding,1)
                 binding.scRightSounds.visibility = View.VISIBLE
+                flipLeftIn.setTarget(binding.scRightSounds)
+                flipLeftOut.setTarget(binding.scRightMotions)
+                flipLeftIn.start()
+                flipLeftOut.start()
+                flipLeftIn.doOnEnd {
+                    binding.scRightMotions.visibility = View.GONE
+                    binding.scRightSounds.visibility = View.VISIBLE
+                    tabSelected = 1
+                    setTimelineAlpha(binding,tabSelected)
+                }
             }
         }
 
@@ -351,15 +360,14 @@ class SecondFragment : Fragment() {
         }
         DragEvent.ACTION_DRAG_LOCATION -> true
         DragEvent.ACTION_DRAG_EXITED -> {
-            binding.llBottom.alpha = 1.0f
-            binding.llBottomSounds.alpha = 1.0f
+            setTimelineAlpha(binding,tabSelected)
+
             binding.lltrash.alpha = 1.0f
             view.invalidate()
             true
         }
         DragEvent.ACTION_DROP -> {
-            binding.llBottom.alpha = 1.0f
-            binding.llBottomSounds.alpha = 1.0f
+            setTimelineAlpha(binding,tabSelected)
             binding.lltrash.alpha = 1.0f
             binding.trash.visibility = View.INVISIBLE
 
@@ -445,4 +453,22 @@ fun getId(view: View) : Int {
         return motionNumParse.toString().toInt()
     }
     return -1
+}
+
+fun setTimelineAlpha(binding : FragmentSecondBinding, tabSelected : Int)
+{
+    if (tabSelected == 0) // motion tab selected
+    {
+        binding.llBottom.alpha = 1.0f
+        binding.motionsText.alpha = 1.0f
+        binding.llBottomSounds.alpha = 0.1f
+        binding.soundsText.alpha = 0.1f
+    }
+    else // sound tab selected
+    {
+        binding.llBottom.alpha = 0.1f
+        binding.motionsText.alpha = 0.1f
+        binding.llBottomSounds.alpha = 1.0f
+        binding.soundsText.alpha = 1.0f
+    }
 }
