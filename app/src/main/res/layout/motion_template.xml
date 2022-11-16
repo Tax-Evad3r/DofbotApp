@@ -7,6 +7,6 @@
     android:layout_height="100dp"
     android:layout_margin="8dp"
     app:strokeColor="#964D56"
-    app:strokeWidth="3dp"
+    app:strokeWidth="8dp"
     android:contentDescription="motion_template"
     />
