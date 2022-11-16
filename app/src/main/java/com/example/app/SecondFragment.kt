@@ -42,6 +42,7 @@ class SecondFragment : Fragment() {
     private lateinit var flipRightIn:AnimatorSet
     private lateinit var flipRightOut:AnimatorSet
 
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -65,6 +66,11 @@ class SecondFragment : Fragment() {
         val availableMotions = importMotionFromFile(this.requireContext())
         val importedSounds = importSounds(this.context)
 
+        //motion duration array
+        var motionDuration:MutableList<Int> = mutableListOf()
+        for (motion in availableMotions) {
+            motionDuration.add(animationDuration(motion))
+        }
         //debug print of all imported sounds
         println("Sound import done!")
         for (sound in importedSounds) {
@@ -116,7 +122,7 @@ class SecondFragment : Fragment() {
         binding.llRightSounds.setOnDragListener(dragListener)
         binding.llBottomSounds.setOnDragListener(dragListener)
         binding.lltrash.setOnDragListener(dragListener)
-        binding.trash.visibility = View.INVISIBLE;
+        binding.trash.visibility = View.INVISIBLE
 
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
@@ -215,6 +221,56 @@ class SecondFragment : Fragment() {
                 .setNegativeButton("No", eraseSound).show()
         }
 
+        //plays a animation on each child of llBottom except for "+"
+        fun motionRunAnimations(){
+            val startAnimation = R.animator.run_animation_start         //reference to animator
+            val runAnimation = R.animator.run_animation_run           //reference to animator
+            val endAnimation = R.animator.run_animation_end             //reference to animator
+
+            var delay:Long = 0                                          //time in ms
+            binding.hsvBottom.smoothScrollTo(0,0)
+            for (i in 0 until binding.llBottom.childCount) {
+                if(i == binding.llBottom.childCount-1){//element the empty + square
+                    continue
+                }
+                val motionStart:AnimatorSet = AnimatorInflater.loadAnimator(activity, startAnimation) as AnimatorSet
+                val motionRun:AnimatorSet = AnimatorInflater.loadAnimator(activity, runAnimation) as AnimatorSet
+                val motionEnd:AnimatorSet = AnimatorInflater.loadAnimator(activity, endAnimation) as AnimatorSet
+                val x = binding.llBottom.getChildAt(i)
+                val duration:Long = motionDuration[getId(x)].toLong()       //time in ms
+                var startAnimationDuration:Long                             //time in ms
+                var endAnimationDelay:Long = 0                              //time in ms
+
+                if(duration > 1000){
+                    startAnimationDuration = 1000
+                    endAnimationDelay = duration - 1000
+                }
+                else{
+                    startAnimationDuration = duration
+                }
+
+                motionStart.duration = startAnimationDuration
+                motionStart.startDelay = delay
+                motionStart.setTarget(x)
+                motionStart.start()
+
+                motionRun.duration = endAnimationDelay
+                motionRun.startDelay = delay + startAnimationDuration
+                motionRun.setTarget(x)
+                motionRun.start()
+
+                motionEnd.startDelay = delay + endAnimationDelay
+                motionEnd.setTarget(x)
+                motionEnd.doOnEnd {
+                    binding.hsvBottom.smoothScrollTo(x.right - x.width - 100, 0)
+                }
+                motionEnd.start()
+
+                delay = delay + duration
+            }
+        }
+
+
         binding.buttonRun.setOnClickListener {
 
             //debug print for all objects on timeline
@@ -262,6 +318,7 @@ class SecondFragment : Fragment() {
                 }
             }
             playSounds(this.requireContext(), soundsList)
+            motionRunAnimations()
         }
     }
 
@@ -272,7 +329,7 @@ class SecondFragment : Fragment() {
         }
         DragEvent.ACTION_DRAG_ENTERED -> {
             val v = event.localState as View
-            v.visibility = View.VISIBLE;
+            v.visibility = View.VISIBLE
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
             if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")
