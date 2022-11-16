@@ -34,24 +34,34 @@
         app:layout_constraintStart_toEndOf="@id/llLeft"
         app:layout_constraintTop_toTopOf="@+id/hsvSounds" />
 
-    <com.google.android.material.tabs.TabLayout
+    <LinearLayout
         android:id="@+id/tabsRight"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:alpha="0.8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.tabs.TabItem
+        <Button
+            android:id="@+id/motions"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
+            android:backgroundTint="#964D56"
             android:text="Motions" />
 
-        <com.google.android.material.tabs.TabItem
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+             />
+
+        <Button
+            android:id="@+id/sounds"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
+            android:backgroundTint="#BF793B"
             android:text="Sounds" />
 
-    </com.google.android.material.tabs.TabLayout>
+    </LinearLayout>
 
     <HorizontalScrollView
         android:id="@+id/hsvBottom"

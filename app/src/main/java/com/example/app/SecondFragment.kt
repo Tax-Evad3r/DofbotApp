@@ -7,6 +7,7 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Color
 import android.graphics.Color.rgb
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -16,14 +17,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.animation.doOnEnd
-import androidx.core.view.children
-import androidx.core.view.contains
 import androidx.core.view.get
 import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
+import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 
@@ -84,37 +85,30 @@ class SecondFragment : Fragment() {
         flipLeftOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_left_out) as AnimatorSet
         flipRightIn = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_in) as AnimatorSet
         flipRightOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_out) as AnimatorSet
-
-        binding.tabsRight.addOnTabSelectedListener(object : OnTabSelectedListener{
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab?.position != 0)
-                {
-                    binding.scRightSounds.visibility = View.VISIBLE
-                    flipLeftIn.setTarget(binding.scRightSounds)
-                    flipLeftOut.setTarget(binding.scRightMotions)
-                    flipLeftIn.start()
-                    flipLeftOut.start()
-                    flipLeftIn.doOnEnd {
-                        binding.scRightMotions.visibility = View.GONE
-                        binding.scRightSounds.visibility = View.VISIBLE
-                    }
-                }
-                else
-                {
-                    binding.scRightMotions.visibility = View.VISIBLE
-                    flipRightIn.setTarget(binding.scRightMotions)
-                    flipRightOut.setTarget(binding.scRightSounds)
-                    flipRightIn.start()
-                    flipRightOut.start()
-                    flipRightIn.doOnEnd {
-                        binding.scRightSounds.visibility = View.GONE
-                        binding.scRightMotions.visibility = View.VISIBLE
-                    }
-                }
+        binding.motions.setOnClickListener(){
+            binding.scRightMotions.visibility = View.VISIBLE
+            flipRightIn.setTarget(binding.scRightMotions)
+            flipRightOut.setTarget(binding.scRightSounds)
+            flipRightIn.start()
+            flipRightOut.start()
+            flipRightIn.doOnEnd {
+                binding.scRightSounds.visibility = View.GONE
+                binding.scRightMotions.visibility = View.VISIBLE
             }
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
+        }
+
+        binding.sounds.setOnClickListener(){
+
+            binding.scRightSounds.visibility = View.VISIBLE
+            flipLeftIn.setTarget(binding.scRightSounds)
+            flipLeftOut.setTarget(binding.scRightMotions)
+            flipLeftIn.start()
+            flipLeftOut.start()
+            flipLeftIn.doOnEnd {
+                binding.scRightMotions.visibility = View.GONE
+                binding.scRightSounds.visibility = View.VISIBLE
+            }
+        }
 
 
         binding.llRightMotions.setOnDragListener(dragListener)
