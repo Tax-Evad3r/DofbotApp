@@ -14,5 +14,7 @@
     <color name ="text_dark">#505053</color>
     <color name ="motion">#964D56</color>
     <color name ="sound">#BF793B</color>
-    <color name ="box_background">#F2F2F2</color>
+    <color name ="tabs_motion">#964D56</color>
+    <color name ="tabs_sound">#BF793B</color>
+
 </resources>
