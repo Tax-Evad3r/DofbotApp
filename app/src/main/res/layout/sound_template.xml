@@ -11,6 +11,7 @@
     android:textSize="12pt"
     android:fontStyle="italic"
     android:textColor="@color/white"
-    android:text="sound" />
+    android:text="sound"
+    />
 
 
