@@ -141,19 +141,15 @@ class SecondFragment : Fragment() {
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
             val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
-            //sound.setBackgroundColor(rgb((0..255).random(),(0..255).random(),(0..255).random()))
-            //name = text.substring(startIndex: Int, endIndex: Int): String
-            sound.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))//sound lables
-
-
+            sound.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))
             sound.contentDescription = "sound$i"
             destination.addView(sound)
             createDragAndDropListener(sound)
             createClickListener(this.requireContext(), sound, importedSounds[getId(sound)])
         }
 
+        //Create alert dialog box that is displayed when connection error occurs
         val connectionError: AlertDialog.Builder = AlertDialog.Builder(context)
-        connectionError.setMessage("Error: Could not connect to robot!").setPositiveButton("Ok", null)
 
         binding.buttonQuickRun.setOnClickListener {
 
