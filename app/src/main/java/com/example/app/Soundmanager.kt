@@ -108,14 +108,12 @@ fun calculateSoundsLength(context: Context, list: MutableList<String>) : Long
                 mMediaPlayer = MediaPlayer()
                 mMediaPlayer!!.setDataSource(afd)
                 mMediaPlayer!!.prepare()
-                println("duration $duration")
                 duration += mMediaPlayer!!.duration
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
     }
-    println("duration $duration")
     return duration
 }
 
