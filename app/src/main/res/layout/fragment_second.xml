@@ -104,7 +104,9 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="+"
-                    android:textSize="16sp" />
+                    android:textSize="20sp"
+                    android:textColor="#964D56"
+                    android:textStyle="bold"/>
             </FrameLayout>
         </LinearLayout>
     </HorizontalScrollView>
@@ -140,7 +142,9 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="+"
-                    android:textSize="16sp" />
+                    android:textSize="20sp"
+                    android:textColor="#BF793B"
+                    android:textStyle="bold"/>
             </FrameLayout>
         </LinearLayout>
     </HorizontalScrollView>
