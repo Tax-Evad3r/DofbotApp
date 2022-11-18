@@ -1,6 +1,7 @@
 package com.example.app
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,7 @@ class FirstFragment : Fragment() {
     ): View {
 
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        binding.ipInput.setText(IPADDRESS)
         return binding.root
 
     }
@@ -34,6 +36,7 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirst.setOnClickListener {
+            IPADDRESS = binding.ipInput.text.toString()
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
 

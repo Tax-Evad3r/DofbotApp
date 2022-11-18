@@ -1,5 +1,6 @@
 package com.example.app
 
+import android.app.AlertDialog
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,8 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.net.URL
+
+var IPADDRESS = "192.168.1.196:5000"
 
 @Serializable
     data class Data(
@@ -132,26 +135,31 @@ import java.net.URL
                     sum = event[0]
                 }
             }
-            return sum;
+            return sum
         }
 
     }
 
     class SendData : ViewModel() {
 
-        fun send(jsonBody: String) {
+        fun send(jsonBody: String, connectionError : AlertDialog.Builder){
             // Create a new coroutine to move the execution off the UI thread
             viewModelScope.launch(Dispatchers.IO) {
-                println(HttpConnection().send(jsonBody))
+                val ret = HttpConnection().send(jsonBody)
+                // If connection error is thrown launch new coroutine to display error message
+                if (ret < 0) {
+                    viewModelScope.launch(Dispatchers.Main) {
+                        connectionError.show()
+                    }
+                }
             }
         }
     }
 
     class HttpConnection {
-        fun send (jsonBody: String) : String {
+        fun send (jsonBody: String) : Int {
 
-            // TODO: ipaddress should be fetched from settings in app.
-            val mURL = URL("http://192.168.50.169:5000/motion")
+            val mURL = URL("http://$IPADDRESS/motion")
 
             try {
                 //make http connection
@@ -174,11 +182,13 @@ import java.net.URL
                     println("Response Code : $responseCode")
 
                     if (responseCode == 200)
-                        return "Success"
-                    return "Fail bad response code"
+                        return 1
+                    return -1
                 }
             }catch (e : SocketTimeoutException) {
-                return "Could not connect to robot!"
+                return -2
+            } catch (e : Exception) {
+                return -1
             }
 
         }
