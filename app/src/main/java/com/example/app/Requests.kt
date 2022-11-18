@@ -149,6 +149,7 @@ var IPADDRESS = "192.168.1.196:5000"
                 // If connection error is thrown launch new coroutine to display error message
                 if (ret < 0) {
                     viewModelScope.launch(Dispatchers.Main) {
+                        connectionError.setMessage("Error: Could not connect to robot!").setPositiveButton("Ok", null)
                         connectionError.show()
                     }
                 }

@@ -8,7 +8,7 @@
     tools:context=".SecondFragment">
 
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/motionsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,12 +16,13 @@
         android:padding="8dp"
         android:text="Motions:"
         android:textSize="16sp"
+        android:background="#BF79839E"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/hsvBottom"
         app:layout_constraintStart_toEndOf="@id/llLeft"
         app:layout_constraintTop_toTopOf="@+id/hsvBottom" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/soundsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,6 +30,7 @@
         android:padding="8dp"
         android:text="Sounds:"
         android:textSize="16sp"
+        android:background="#BF79839E"
         app:layout_constraintBottom_toBottomOf="@id/hsvSounds"
         app:layout_constraintEnd_toStartOf="@id/hsvSounds"
         app:layout_constraintStart_toEndOf="@id/llLeft"
@@ -104,7 +106,9 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="+"
-                    android:textSize="16sp" />
+                    android:textSize="40sp"
+                    android:textColor="#964D56"
+                    android:textStyle="bold"/>
             </FrameLayout>
         </LinearLayout>
     </HorizontalScrollView>
@@ -140,7 +144,8 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="+"
-                    android:textSize="16sp" />
+                    android:textSize="40sp"
+                    android:textColor="#BF793B"/>
             </FrameLayout>
         </LinearLayout>
     </HorizontalScrollView>
