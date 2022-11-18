@@ -159,6 +159,9 @@ class SecondFragment : Fragment() {
             createClickListener(this.requireContext(), sound, importedSounds[getId(sound)])
         }
 
+        val connectionError: AlertDialog.Builder = AlertDialog.Builder(context)
+        connectionError.setMessage("Error: Could not connect to robot!").setPositiveButton("Ok", null)
+
         binding.buttonQuickRun.setOnClickListener {
 
             println("pressed quick run!")
@@ -168,7 +171,7 @@ class SecondFragment : Fragment() {
             val resetData = Data(mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)), mutableListOf(mutableListOf(2000, 90)))
 
             //send reset data
-            SendData().send(resetData.toJson())
+            SendData().send(resetData.toJson(), connectionError)
 
         }
 
@@ -267,7 +270,7 @@ class SecondFragment : Fragment() {
             println("Sending json= $jsonRequestdata")
 
             //send request
-            SendData().send(jsonRequestdata)
+            SendData().send(jsonRequestdata, connectionError)
             
             //create sound list
             val soundsList = mutableListOf<String>()
