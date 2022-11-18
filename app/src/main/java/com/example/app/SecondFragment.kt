@@ -19,6 +19,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.view.get
 import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.imageview.ShapeableImageView
@@ -229,54 +230,7 @@ class SecondFragment : Fragment() {
                 .setNegativeButton("No", eraseSound).show()
         }
 
-        //plays a animation on each child of llBottom except for "+"
-        fun motionRunAnimations(){
-            val startAnimation = R.animator.run_animation_start         //reference to animator
-            val runAnimation = R.animator.run_animation_run           //reference to animator
-            val endAnimation = R.animator.run_animation_end             //reference to animator
 
-            var delay:Long = 0                                          //time in ms
-            binding.hsvBottom.smoothScrollTo(0,0)
-            for (i in 0 until binding.llBottom.childCount) {
-                if(i == binding.llBottom.childCount-1){//element the empty + square
-                    continue
-                }
-                val motionStart:AnimatorSet = AnimatorInflater.loadAnimator(activity, startAnimation) as AnimatorSet
-                val motionRun:AnimatorSet = AnimatorInflater.loadAnimator(activity, runAnimation) as AnimatorSet
-                val motionEnd:AnimatorSet = AnimatorInflater.loadAnimator(activity, endAnimation) as AnimatorSet
-                val x = binding.llBottom.getChildAt(i)
-                val duration:Long = motionDuration[getId(x)].toLong()       //time in ms
-                var startAnimationDuration:Long                             //time in ms
-                var endAnimationDelay:Long = 0                              //time in ms
-
-                if(duration > 1000){
-                    startAnimationDuration = 1000
-                    endAnimationDelay = duration - 1000
-                }
-                else{
-                    startAnimationDuration = duration
-                }
-
-                motionStart.duration = startAnimationDuration
-                motionStart.startDelay = delay
-                motionStart.setTarget(x)
-                motionStart.start()
-
-                motionRun.duration = endAnimationDelay
-                motionRun.startDelay = delay + startAnimationDuration
-                motionRun.setTarget(x)
-                motionRun.start()
-
-                motionEnd.startDelay = delay + endAnimationDelay
-                motionEnd.setTarget(x)
-                motionEnd.doOnEnd {
-                    binding.hsvBottom.smoothScrollTo(x.right - x.width - 100, 0)
-                }
-                motionEnd.start()
-
-                delay = delay + duration
-            }
-        }
 
 
         binding.buttonRun.setOnClickListener {
@@ -326,7 +280,7 @@ class SecondFragment : Fragment() {
                 }
             }
             playSounds(this.requireContext(), soundsList)
-            motionRunAnimations()
+            motionRunAnimations(binding,this.requireActivity(),motionDuration)
         }
     }
 
@@ -469,5 +423,55 @@ fun setTimelineAlpha(binding : FragmentSecondBinding, tabSelected : Int)
         binding.motionsText.alpha = 0.1f
         binding.llBottomSounds.alpha = 1.0f
         binding.soundsText.alpha = 1.0f
+    }
+}
+
+
+//plays a animation on each child of llBottom except for "+"
+fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, motionDuration : MutableList<Int> ){
+    val startAnimation = R.animator.run_animation_start         //reference to animator
+    val runAnimation = R.animator.run_animation_run           //reference to animator
+    val endAnimation = R.animator.run_animation_end             //reference to animator
+
+    var delay:Long = 0                                          //time in ms
+    binding.hsvBottom.smoothScrollTo(0,0)
+    for (i in 0 until binding.llBottom.childCount) {
+        if(i == binding.llBottom.childCount-1){//element the empty + square
+            continue
+        }
+        val motionStart:AnimatorSet = AnimatorInflater.loadAnimator(activity, startAnimation) as AnimatorSet
+        val motionRun:AnimatorSet = AnimatorInflater.loadAnimator(activity, runAnimation) as AnimatorSet
+        val motionEnd:AnimatorSet = AnimatorInflater.loadAnimator(activity, endAnimation) as AnimatorSet
+        val x = binding.llBottom.getChildAt(i)
+        val duration:Long = motionDuration[getId(x)].toLong()       //time in ms
+        var startAnimationDuration:Long                             //time in ms
+        var endAnimationDelay:Long = 0                              //time in ms
+
+        if(duration > 1000){
+            startAnimationDuration = 1000
+            endAnimationDelay = duration - 1000
+        }
+        else{
+            startAnimationDuration = duration
+        }
+
+        motionStart.duration = startAnimationDuration
+        motionStart.startDelay = delay
+        motionStart.setTarget(x)
+        motionStart.start()
+
+        motionRun.duration = endAnimationDelay
+        motionRun.startDelay = delay + startAnimationDuration
+        motionRun.setTarget(x)
+        motionRun.start()
+
+        motionEnd.startDelay = delay + endAnimationDelay
+        motionEnd.setTarget(x)
+        motionEnd.doOnEnd {
+            binding.hsvBottom.smoothScrollTo(x.right - x.width - 100, 0)
+        }
+        motionEnd.start()
+
+        delay += duration
     }
 }
