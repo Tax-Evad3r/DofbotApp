@@ -7,6 +7,7 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Context
 import android.content.DialogInterface
+import android.net.Uri
 import android.os.Bundle
 import android.view.DragEvent
 import android.view.LayoutInflater
@@ -139,7 +140,7 @@ class SecondFragment : Fragment() {
             val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
             motion1.contentDescription = "motion$i"
             val res = this.resources.getIdentifier("motion$i", "drawable", "com.example.app")
-            Glide.with(this.requireContext()).load(res).into(motion1)
+            Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion$i.gif")).into(motion1)
             destination.addView(motion1)
             createDragAndDropListener(motion1)
         }
@@ -228,9 +229,6 @@ class SecondFragment : Fragment() {
             builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", eraseSound)
                 .setNegativeButton("No", eraseSound).show()
         }
-
-
-
 
         binding.buttonRun.setOnClickListener {
 
@@ -335,7 +333,7 @@ class SecondFragment : Fragment() {
                 val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
                 motion1.contentDescription = v.contentDescription
                 val res = this.resources.getIdentifier("motion${getId(v)}", "drawable", "com.example.app")
-                Glide.with(this.requireContext()).load(res).into(motion1)
+                Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(motion1)
                 destination.addView(motion1)
                 createDragAndDropListener(motion1)
                 destination.addView(placeHolder)
