@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<com.google.android.material.textview.MaterialTextView
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/sound999"
@@ -11,6 +11,12 @@
     android:textSize="12pt"
     android:fontStyle="italic"
     android:textColor="@color/white"
-    android:text="sound" />
+    android:textAlignment="center"
+    android:text="sound"
+    app:strokeColor="#964D56"
+    app:strokeWidth="6dp"
+    android:background="@drawable/textborder"
+    android:shadowColor="@color/black"
+    />
 
 

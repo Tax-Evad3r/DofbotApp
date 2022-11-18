@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="button" parent="ThemeOverlay.Material3.Button" >
+        <item name="android:textColor">@color/text_light</item>
+        <item name="android:alpha">0.7</item>
+        <item name="android:backgroundTint">@color/button</item>
+        <item name="android:shadowColor">@color/black</item>
+    </style>
+
+</resources>
