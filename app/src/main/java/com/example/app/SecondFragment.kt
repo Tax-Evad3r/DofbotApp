@@ -21,6 +21,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.animation.doOnEnd
+import androidx.core.text.HtmlCompat
 import androidx.core.view.get
 import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
@@ -224,7 +225,7 @@ class SecondFragment : Fragment() {
 
             //pop confirm dialog when user wants to reset
             val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", eraseMotion)
+            builder.setMessage(HtmlCompat.fromHtml("Are you sure you want to erase all <b>motions</b>?", HtmlCompat.FROM_HTML_MODE_LEGACY)).setPositiveButton("Yes", eraseMotion)
                 .setNegativeButton("No", eraseMotion).show()
         }
 
@@ -232,7 +233,7 @@ class SecondFragment : Fragment() {
 
             //pop confirm dialog when user wants to reset
             val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", eraseSound)
+            builder.setMessage(HtmlCompat.fromHtml("Are you sure you want to erase all <b>sounds</b>?", HtmlCompat.FROM_HTML_MODE_LEGACY)).setPositiveButton("Yes", eraseSound)
                 .setNegativeButton("No", eraseSound).show()
         }
 
