@@ -218,7 +218,7 @@ class SecondFragment : Fragment() {
 
             //pop confirm dialog when user wants to reset
             val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", eraseMotion)
+            builder.setMessage("Are you sure you want to erase all motions?").setPositiveButton("Yes", eraseMotion)
                 .setNegativeButton("No", eraseMotion).show()
         }
 
@@ -226,7 +226,7 @@ class SecondFragment : Fragment() {
 
             //pop confirm dialog when user wants to reset
             val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-            builder.setMessage("Are you sure you want to reset?").setPositiveButton("Yes", eraseSound)
+            builder.setMessage("Are you sure you want to erase all sounds?").setPositiveButton("Yes", eraseSound)
                 .setNegativeButton("No", eraseSound).show()
         }
 
