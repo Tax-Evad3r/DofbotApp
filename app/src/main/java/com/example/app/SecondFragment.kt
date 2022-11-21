@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.DragEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -29,6 +30,7 @@ import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
 import java.lang.Long.max
+import kotlin.math.abs
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -387,13 +389,34 @@ class SecondFragment : Fragment() {
         stopPlayerOnStop()
     }
 }
-
+var initX : Float = 0.0F
+var initY : Float = 0.0F
 fun createDragAndDropListener(view: View) {
-    view.setOnLongClickListener {
-        val dragShadowBuilder = View.DragShadowBuilder(it)
-        it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
-        it.visibility = View.INVISIBLE
-        true
+    view.setOnTouchListener {
+        it, motionEvent ->
+        when (motionEvent.action) {
+            MotionEvent.ACTION_DOWN -> {
+                initX = motionEvent.x
+                initY = motionEvent.y
+                val dragShadowBuilder = View.DragShadowBuilder(it)
+                it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
+                it.visibility = View.INVISIBLE
+                true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                true
+            }
+            MotionEvent.ACTION_UP -> {
+                if (abs(motionEvent.x - initX) < 100 && abs(motionEvent.y - initY) < 100) {
+                    it.performClick()
+                }
+                true
+            }
+            else -> {
+                false
+            }
+        }
+
     }
 }
 
