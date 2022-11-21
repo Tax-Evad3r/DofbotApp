@@ -93,3 +93,27 @@ fun stopPlayerOnStop() {
     }
 }
 
+fun calculateSoundsLength(context: Context, list: MutableList<String>) : Long
+{
+    var duration : Long = 0
+    if (list.size > 0) {
+        //if an existing player is found destroy it
+        if (mMediaPlayer != null) {
+            stopSound()
+        }
+        for (next in list) {
+            //create new player with the next sound and add onComplete listener to recursively play next sound when done.
+            try {
+                var afd = context.assets.openFd("sounds/$next")
+                mMediaPlayer = MediaPlayer()
+                mMediaPlayer!!.setDataSource(afd)
+                mMediaPlayer!!.prepare()
+                duration += mMediaPlayer!!.duration
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+    return duration
+}
+

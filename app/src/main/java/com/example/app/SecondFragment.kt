@@ -9,6 +9,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
+import java.lang.Long.max
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -239,7 +242,7 @@ class SecondFragment : Fragment() {
                 println(binding.llBottom.getChildAt(i).contentDescription)
             }
 
-            //FIX ME: This may change before drag and drop is fully implemented
+            setTimelineAlpha(binding, 2)
 
             //initialize empty initial response
             var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
@@ -276,8 +279,13 @@ class SecondFragment : Fragment() {
                     soundsList.add(importedSounds[soundId])
                 }
             }
+            val soundsDuration = calculateSoundsLength(this.requireContext(), soundsList)
             playSounds(this.requireContext(), soundsList)
-            motionRunAnimations(binding,this.requireActivity(),motionDuration)
+            val motionAnimationTime = motionRunAnimations(binding,this.requireActivity(),motionDuration)
+            Handler(Looper.getMainLooper()).postDelayed({
+                setTimelineAlpha(binding, tabSelected)
+            }, max(soundsDuration,motionAnimationTime))
+
         }
     }
 
@@ -407,25 +415,34 @@ fun getId(view: View) : Int {
 
 fun setTimelineAlpha(binding : FragmentSecondBinding, tabSelected : Int)
 {
-    if (tabSelected == 0) // motion tab selected
-    {
-        binding.llBottom.alpha = 1.0f
-        binding.motionsText.alpha = 1.0f
-        binding.llBottomSounds.alpha = 0.1f
-        binding.soundsText.alpha = 0.1f
-    }
-    else // sound tab selected
-    {
-        binding.llBottom.alpha = 0.1f
-        binding.motionsText.alpha = 0.1f
-        binding.llBottomSounds.alpha = 1.0f
-        binding.soundsText.alpha = 1.0f
+    when (tabSelected) {
+        0 // motion tab selected
+        -> {
+            binding.llBottom.alpha = 1.0f
+            binding.motionsText.alpha = 1.0f
+            binding.llBottomSounds.alpha = 0.1f
+            binding.soundsText.alpha = 0.1f
+        }
+        1 // sound tab selected
+        -> {
+            binding.llBottom.alpha = 0.1f
+            binding.motionsText.alpha = 0.1f
+            binding.llBottomSounds.alpha = 1.0f
+            binding.soundsText.alpha = 1.0f
+        }
+        2 // both is visible
+        -> {
+            binding.llBottom.alpha = 1.0f
+            binding.motionsText.alpha = 1.0f
+            binding.llBottomSounds.alpha = 1.0f
+            binding.soundsText.alpha = 1.0f
+        }
     }
 }
 
 
 //plays a animation on each child of llBottom except for "+"
-fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, motionDuration : MutableList<Int> ){
+fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, motionDuration : MutableList<Int> ) : Long {
     val startAnimation = R.animator.run_animation_start         //reference to animator
     val runAnimation = R.animator.run_animation_run           //reference to animator
     val endAnimation = R.animator.run_animation_end             //reference to animator
@@ -471,4 +488,5 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
 
         delay += duration
     }
+    return delay
 }
