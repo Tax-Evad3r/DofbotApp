@@ -93,9 +93,10 @@ fun stopPlayerOnStop() {
     }
 }
 
-fun calculateSoundsLength(context: Context, list: MutableList<String>) : Long
+fun calculateSoundsLength(context: Context, list: MutableList<String>) : MutableList<Int>
 {
-    var duration : Long = 0
+    //var duration : Long = 0
+    var duration = mutableListOf<Int>()
     if (list.size > 0) {
         //if an existing player is found destroy it
         if (mMediaPlayer != null) {
@@ -108,7 +109,7 @@ fun calculateSoundsLength(context: Context, list: MutableList<String>) : Long
                 mMediaPlayer = MediaPlayer()
                 mMediaPlayer!!.setDataSource(afd)
                 mMediaPlayer!!.prepare()
-                duration += mMediaPlayer!!.duration
+                duration.add(mMediaPlayer!!.duration)
             } catch (e: IOException) {
                 e.printStackTrace()
             }

@@ -283,12 +283,16 @@ class SecondFragment : Fragment() {
                     soundsList.add(importedSounds[soundId])
                 }
             }
-            val soundsDuration = calculateSoundsLength(this.requireContext(), soundsList)
+            val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), soundsList)
             playSounds(this.requireContext(), soundsList)
-            val motionAnimationTime = motionRunAnimations(binding,this.requireActivity(),motionDuration)
+            soundRunAnimations(binding,this.requireActivity(),soundsDuration)
+
+            val motionAnimationTime = motionRunAnimations(binding,this.requireActivity(), motionDuration)
+
+
             Handler(Looper.getMainLooper()).postDelayed({
                 setTimelineAlpha(binding, tabSelected, timelineAlpha)
-            }, max(soundsDuration,motionAnimationTime))
+            }, max(soundsDuration.sum().toLong(),motionAnimationTime))
 
         }
     }
@@ -451,6 +455,7 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
     val runAnimation = R.animator.run_animation_run           //reference to animator
     val endAnimation = R.animator.run_animation_end             //reference to animator
 
+
     var delay:Long = 0                                          //time in ms
     binding.hsvBottom.smoothScrollTo(0,0)
     for (i in 0 until binding.llBottom.childCount) {
@@ -493,4 +498,58 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
         delay += duration
     }
     return delay
+}
+
+
+//plays a animation on each child of llBottom except for "+"
+fun soundRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, soundsDuration : MutableList<Int> ) {
+    val startAnimation = R.animator.run_animation_start         //reference to animator
+    val runAnimation = R.animator.run_animation_start         //reference to animator
+    val endAnimation = R.animator.run_animation_end             //reference to animator
+
+
+
+    var delay:Long = 0                                          //time in ms
+    binding.hsvSounds.smoothScrollTo(0,0)
+    for (i in 0 until binding.llBottomSounds.childCount) {
+        if (i == binding.llBottomSounds.childCount - 1){//element the empty + square
+            continue
+        }
+        val soundStart:AnimatorSet = AnimatorInflater.loadAnimator(activity, startAnimation) as AnimatorSet
+        val soundsRun:AnimatorSet = AnimatorInflater.loadAnimator(activity, runAnimation) as AnimatorSet
+        val soundEnd:AnimatorSet = AnimatorInflater.loadAnimator(activity, endAnimation) as AnimatorSet
+
+        val x = binding.llBottomSounds.getChildAt(i)
+        val duration:Long = soundsDuration[getId(x)].toLong()       //time in ms
+        var startAnimationDuration:Long                             //time in ms
+        var endAnimationDelay:Long = 0                              //time in ms
+
+        if(duration > 2000){
+            startAnimationDuration = 2000
+            endAnimationDelay = duration - 2000
+        }
+        else{
+            startAnimationDuration = duration
+        }
+
+        soundStart.duration = startAnimationDuration
+        soundStart.startDelay = delay
+        soundStart.setTarget(x)
+        soundStart.start()
+
+        soundsRun.duration = endAnimationDelay
+        soundsRun.startDelay = delay + startAnimationDuration
+        soundsRun.setTarget(x)
+        soundsRun.start()
+
+        soundEnd.duration = delay + endAnimationDelay
+        soundEnd.startDelay = delay + endAnimationDelay
+        soundEnd.setTarget(x)
+        soundEnd.doOnEnd {
+            binding.hsvSounds.smoothScrollTo(x.right - x.width - 100, 0)
+        }
+        soundEnd.start()
+
+        delay += duration
+    }
 }
