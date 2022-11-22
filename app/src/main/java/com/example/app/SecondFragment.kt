@@ -48,6 +48,11 @@ class SecondFragment : Fragment() {
 
     private var tabSelected = 0 // 0=motion, 1 = sound
 
+    private lateinit var availableMotions : List<Data>
+    private lateinit var importedSounds : MutableList<String>
+
+    private lateinit var connectionError: AlertDialog.Builder
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -68,8 +73,8 @@ class SecondFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //import motions from asset files (located in "main/assets/motion")
-        val availableMotions = importMotionFromFile(this.requireContext())
-        val importedSounds = importSounds(this.context)
+        availableMotions = importMotionFromFile(this.requireContext())
+        importedSounds = importSounds(this.context)
 
         //motion duration array
         var motionDuration:MutableList<Int> = mutableListOf()
@@ -127,8 +132,10 @@ class SecondFragment : Fragment() {
         binding.llBottom.setOnDragListener(dragListener)
         binding.llRightSounds.setOnDragListener(dragListener)
         binding.llBottomSounds.setOnDragListener(dragListener)
-        binding.lltrash.setOnDragListener(dragListener)
+        binding.llTrash.setOnDragListener(dragListener)
         binding.trash.visibility = View.INVISIBLE
+        binding.llPlay.setOnDragListener(dragListener)
+        binding.play.visibility = View.INVISIBLE
 
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
@@ -148,11 +155,10 @@ class SecondFragment : Fragment() {
             newSoundView.contentDescription = "sound$i"
             destination.addView(newSoundView)
             createDragAndDropListener(newSoundView)
-            createClickListener(this.requireContext(), newSoundView, importedSounds[getId(newSoundView)])
         }
 
         //Create alert dialog box that is displayed when connection error occurs
-        val connectionError: AlertDialog.Builder = AlertDialog.Builder(context)
+        connectionError = AlertDialog.Builder(context)
 
         binding.buttonQuickRun.setOnClickListener {
 
@@ -283,8 +289,12 @@ class SecondFragment : Fragment() {
             v.visibility = View.VISIBLE
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
-            if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")
+            if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
                 binding.trash.visibility = View.VISIBLE
+            }
+            if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
+                binding.play.visibility = View.VISIBLE
+            }
             if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
             {
                 binding.llBottom.alpha = 0.3f
@@ -295,7 +305,11 @@ class SecondFragment : Fragment() {
             }
             else if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline"))
             {
-                binding.lltrash.alpha = 0.3f
+                binding.llTrash.alpha = 0.3f
+            }
+            else if (destination.contentDescription == "play" && (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib"))
+            {
+                binding.llPlay.alpha = 0.3f
             }
             view.invalidate()
             true
@@ -304,14 +318,17 @@ class SecondFragment : Fragment() {
         DragEvent.ACTION_DRAG_EXITED -> {
             setTimelineAlpha(binding,tabSelected)
 
-            binding.lltrash.alpha = 1.0f
+            binding.llTrash.alpha = 1.0f
+            binding.llPlay.alpha = 1.0f
             view.invalidate()
             true
         }
         DragEvent.ACTION_DROP -> {
             setTimelineAlpha(binding,tabSelected)
-            binding.lltrash.alpha = 1.0f
+            binding.llTrash.alpha = 1.0f
             binding.trash.visibility = View.INVISIBLE
+            binding.llPlay.alpha = 1.0f
+            binding.play.visibility = View.INVISIBLE
 
             val v = event.localState as View
             val owner = v.parent as ViewGroup
@@ -319,6 +336,12 @@ class SecondFragment : Fragment() {
 
             if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")) {
                 owner.removeView(v)
+            } else if (destination.contentDescription == "play" && owner.contentDescription == "motion_lib") {
+                var requestdata = availableMotions[getId(v)]
+                val jsonRequestdata = requestdata.toJson()
+                SendData().send(jsonRequestdata, connectionError)
+            } else if (destination.contentDescription == "play" && owner.contentDescription == "sounds_lib") {
+                playSound(this.requireContext(), importedSounds[getId(v)], 2000)
             } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
                 val placeHolder = destination[destination.childCount-1]
                 destination.removeView(placeHolder)
@@ -373,12 +396,6 @@ fun createDragAndDropListener(view: View) {
         it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
         it.visibility = View.INVISIBLE
         true
-    }
-}
-
-fun createClickListener(context : Context, view: View, name : String) {
-    view.setOnClickListener {
-        playSound(context, name, 2000)
     }
 }
 
