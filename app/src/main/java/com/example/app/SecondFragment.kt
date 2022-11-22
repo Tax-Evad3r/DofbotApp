@@ -365,34 +365,14 @@ class SecondFragment : Fragment() {
         stopPlayerOnStop()
     }
 }
-var initX : Float = 0.0F
-var initY : Float = 0.0F
+@SuppressLint("ClickableViewAccessibility")
 fun createDragAndDropListener(view: View) {
     view.setOnTouchListener {
-        it, motionEvent ->
-        when (motionEvent.action) {
-            MotionEvent.ACTION_DOWN -> {
-                initX = motionEvent.x
-                initY = motionEvent.y
-                val dragShadowBuilder = View.DragShadowBuilder(it)
-                it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
-                it.visibility = View.INVISIBLE
-                true
-            }
-            MotionEvent.ACTION_MOVE -> {
-                true
-            }
-            MotionEvent.ACTION_UP -> {
-                if (abs(motionEvent.x - initX) < 100 && abs(motionEvent.y - initY) < 100) {
-                    it.performClick()
-                }
-                true
-            }
-            else -> {
-                false
-            }
-        }
-
+            it, _ ->
+        val dragShadowBuilder = View.DragShadowBuilder(it)
+        it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
+        it.visibility = View.INVISIBLE
+        true
     }
 }
 
