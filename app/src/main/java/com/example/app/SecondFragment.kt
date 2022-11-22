@@ -369,6 +369,7 @@ class SecondFragment : Fragment() {
             val v = event.localState as View
             v.visibility = View.VISIBLE
             binding.trash.visibility = View.INVISIBLE
+            binding.play.visibility = View.INVISIBLE
             view.invalidate()
             true
         }
