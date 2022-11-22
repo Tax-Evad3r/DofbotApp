@@ -2,6 +2,7 @@ package com.example.app
 
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipDescription
@@ -75,17 +76,6 @@ class SecondFragment : Fragment() {
         for (motion in availableMotions) {
             motionDuration.add(animationDuration(motion))
         }
-        //debug print of all imported sounds
-        println("Sound import done!")
-        for (sound in importedSounds) {
-            println("Found sound: $sound")
-        }
-
-        //debug print of all stored motions
-        println("Motion import done!")
-        for (motion in availableMotions) {
-            println(motion.toJson())
-        }
 
         val scale:Float = this.requireContext().resources.displayMetrics.density
         binding.scRightMotions.cameraDistance = 8000 * scale
@@ -143,31 +133,28 @@ class SecondFragment : Fragment() {
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
-            val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
-            motion1.contentDescription = "motion$i"
-            val res = this.resources.getIdentifier("motion$i", "drawable", "com.example.app")
-            Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion$i.gif")).into(motion1)
-            destination.addView(motion1)
-            createDragAndDropListener(motion1)
+            val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
+            newMotionView.contentDescription = "motion$i"
+            Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion$i.gif")).into(newMotionView)
+            destination.addView(newMotionView)
+            createDragAndDropListener(newMotionView)
         }
 
         //create new view for each sound depending on amount of imported sounds
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
-            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
-            sound.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))
-            sound.contentDescription = "sound$i"
-            destination.addView(sound)
-            createDragAndDropListener(sound)
-            createClickListener(this.requireContext(), sound, importedSounds[getId(sound)])
+            val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
+            newSoundView.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))
+            newSoundView.contentDescription = "sound$i"
+            destination.addView(newSoundView)
+            createDragAndDropListener(newSoundView)
+            createClickListener(this.requireContext(), newSoundView, importedSounds[getId(newSoundView)])
         }
 
         //Create alert dialog box that is displayed when connection error occurs
         val connectionError: AlertDialog.Builder = AlertDialog.Builder(context)
 
         binding.buttonQuickRun.setOnClickListener {
-
-            println("pressed quick run!")
 
             //repurpose quick run as reset button during development
             //define reset data
@@ -238,13 +225,6 @@ class SecondFragment : Fragment() {
 
         binding.buttonRun.setOnClickListener {
 
-            //debug print for all objects on timeline
-            println("Current queue")
-            println(binding.llBottom.childCount)
-            for (i in 0 until binding.llBottom.childCount) {
-                println(binding.llBottom.getChildAt(i).contentDescription)
-            }
-
             setTimelineAlpha(binding, 2)
 
             //initialize empty initial response
@@ -267,6 +247,7 @@ class SecondFragment : Fragment() {
 
             //convert request to json
             val jsonRequestdata = requestdata.toJson()
+            //TODO: Remove when debug is no longer needed!
             println("Sending json= $jsonRequestdata")
 
             //send request
@@ -341,29 +322,24 @@ class SecondFragment : Fragment() {
             } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
                 val placeHolder = destination[destination.childCount-1]
                 destination.removeView(placeHolder)
-                val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
-                motion1.contentDescription = v.contentDescription
-                val res = this.resources.getIdentifier("motion${getId(v)}", "drawable", "com.example.app")
-                Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(motion1)
-                destination.addView(motion1)
-                createDragAndDropListener(motion1)
+                val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
+                newMotionView.contentDescription = v.contentDescription
+                Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(newMotionView)
+                destination.addView(newMotionView)
+                createDragAndDropListener(newMotionView)
                 destination.addView(placeHolder)
             } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
             {
                 val placeHolder = destination[destination.childCount-1]
                 destination.removeView(placeHolder)
-                val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as TextView
-                //val back = v.background as ColorDrawable
-                //sounds1.setBackgroundColor(back.color)
-                sounds1.contentDescription = v.contentDescription
+                val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
+                newSoundView.contentDescription = v.contentDescription
                 val v1 = event.localState as TextView
-                sounds1.text = v1.text
-                destination.addView(sounds1)
-                createDragAndDropListener(sounds1)
+                newSoundView.text = v1.text
+                destination.addView(newSoundView)
+                createDragAndDropListener(newSoundView)
                 destination.addView(placeHolder)
             }
-
-            println("dropped ${v.contentDescription}")
             true
         }
         DragEvent.ACTION_DRAG_ENDED -> {
