@@ -17,6 +17,7 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -503,53 +504,62 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
 
 //plays a animation on each child of llBottom except for "+"
 fun soundRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, soundsDuration : MutableList<Int> ) {
-    val startAnimation = R.animator.run_animation_start         //reference to animator
-    val runAnimation = R.animator.run_animation_start         //reference to animator
-    val endAnimation = R.animator.run_animation_end             //reference to animator
+    val startAnim = R.animator.timeline_start
+    val endAnim = R.animator.timeline_end
 
-
-
-    var delay:Long = 0                                          //time in ms
+    var delay : Long = 0                                          //time in ms
     binding.hsvSounds.smoothScrollTo(0,0)
+    soundAnimation(binding.hsvSounds,activity,0, soundsDuration)
+    /*
     for (i in 0 until binding.llBottomSounds.childCount) {
-        if (i == binding.llBottomSounds.childCount - 1){//element the empty + square
+        if(i == binding.llBottomSounds.childCount-1){//element the empty + square
             continue
         }
-        val soundStart:AnimatorSet = AnimatorInflater.loadAnimator(activity, startAnimation) as AnimatorSet
-        val soundsRun:AnimatorSet = AnimatorInflater.loadAnimator(activity, runAnimation) as AnimatorSet
-        val soundEnd:AnimatorSet = AnimatorInflater.loadAnimator(activity, endAnimation) as AnimatorSet
+        var soundStart : AnimatorSet = AnimatorInflater.loadAnimator(activity, startAnim) as AnimatorSet
+        var soundEnd : AnimatorSet = AnimatorInflater.loadAnimator(activity, endAnim) as AnimatorSet
+        val sound = binding.llBottomSounds.getChildAt(i)
+        val duration = soundsDuration[getId(sound)]
 
-        val x = binding.llBottomSounds.getChildAt(i)
-        val duration:Long = soundsDuration[getId(x)].toLong()       //time in ms
-        var startAnimationDuration:Long                             //time in ms
-        var endAnimationDelay:Long = 0                              //time in ms
 
-        if(duration > 2000){
-            startAnimationDuration = 2000
-            endAnimationDelay = duration - 2000
-        }
-        else{
-            startAnimationDuration = duration
-        }
-
-        soundStart.duration = startAnimationDuration
+        soundStart.setTarget(sound)
+        soundStart.duration = 500 + delay
         soundStart.startDelay = delay
-        soundStart.setTarget(x)
-        soundStart.start()
+        println("delay: $delay, duration: ${soundStart.duration}, startdelay: ${soundStart.startDelay}")
 
-        soundsRun.duration = endAnimationDelay
-        soundsRun.startDelay = delay + startAnimationDuration
-        soundsRun.setTarget(x)
-        soundsRun.start()
+        soundEnd.setTarget(sound)
+        soundEnd.duration = 1000 + delay
+        soundEnd.startDelay = 750 + delay
 
-        soundEnd.duration = delay + endAnimationDelay
-        soundEnd.startDelay = delay + endAnimationDelay
-        soundEnd.setTarget(x)
         soundEnd.doOnEnd {
-            binding.hsvSounds.smoothScrollTo(x.right - x.width - 100, 0)
+            binding.hsvSounds.smoothScrollTo(sound.right - sound.width - 100, 0)
         }
+        soundStart.start()
         soundEnd.start()
+        delay += 1000
+    }
+    */
+}
+fun soundAnimation(hsv : HorizontalScrollView, activity : FragmentActivity, position : Int, soundsDuration : MutableList<Int>)
+{
+    var bar = hsv[0] as LinearLayout
+    if (position < bar.childCount-1) {
+        var soundStart: AnimatorSet = AnimatorInflater.loadAnimator(activity, R.animator.timeline_start) as AnimatorSet
+        var soundEnd: AnimatorSet = AnimatorInflater.loadAnimator(activity, R.animator.timeline_end) as AnimatorSet
 
-        delay += duration
+        var view = bar.getChildAt(position)
+        val duration = soundsDuration[getId(view)].toLong()
+
+        soundStart.setTarget(view)
+        soundStart.duration = duration/2
+
+        soundEnd.setTarget(view)
+        soundEnd.duration = duration
+        soundEnd.startDelay = duration/2
+        soundEnd.doOnEnd {
+            hsv.smoothScrollTo(view.right - view.width - 100, 0)
+            soundAnimation(hsv, activity, position + 1, soundsDuration)
+        }
+        soundStart.start()
+        soundEnd.start()
     }
 }
