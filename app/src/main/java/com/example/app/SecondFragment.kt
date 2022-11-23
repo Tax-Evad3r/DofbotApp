@@ -295,105 +295,110 @@ class SecondFragment : Fragment() {
     }
 
     private val dragListener = View.OnDragListener { view, event ->
-    when(event.action){
-        DragEvent.ACTION_DRAG_STARTED -> {
-            event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
-        }
-        DragEvent.ACTION_DRAG_ENTERED -> {
-            val v = event.localState as View
-            v.visibility = View.VISIBLE
-            val owner = v.parent as ViewGroup
-            val destination = view as LinearLayout
-            if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
-                binding.trash.visibility = View.VISIBLE
-                binding.llTrash.visibility = View.VISIBLE
-            }
-            if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
-                binding.play.visibility = View.VISIBLE
-            }
-            if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
-            {
-                binding.llBottom.alpha = 0.3f
-            }
-            else if (destination.contentDescription == "sounds_timeline" && owner.contentDescription == "sounds_lib")
-            {
-                binding.llBottomSounds.alpha = 0.3f
-            }
-            else if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline"))
-            {
-                binding.llTrash.alpha = 0.3f
-            }
-            else if (destination.contentDescription == "play" && (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib"))
-            {
-                binding.llPlay.alpha = 0.3f
-            }
-            view.invalidate()
-            true
-        }
-        DragEvent.ACTION_DRAG_LOCATION -> true
-        DragEvent.ACTION_DRAG_EXITED -> {
-            setTimelineAlpha(binding,tabSelected)
+        if (event.localState != null){
+            when(event.action){
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                }
+                DragEvent.ACTION_DRAG_ENTERED -> {
 
-            binding.llTrash.alpha = 1.0f
-            binding.llPlay.alpha = 1.0f
-            view.invalidate()
-            true
-        }
-        DragEvent.ACTION_DROP -> {
-            setTimelineAlpha(binding,tabSelected)
-            binding.llTrash.alpha = 1.0f
-            binding.trash.visibility = View.INVISIBLE
-            binding.llTrash.visibility = View.INVISIBLE
-            binding.llPlay.alpha = 1.0f
-            binding.play.visibility = View.INVISIBLE
+                        val v = event.localState as View
+                        v.visibility = View.VISIBLE
+                        val owner = v.parent as ViewGroup
+                        val destination = view as LinearLayout
+                        if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
+                            binding.trash.visibility = View.VISIBLE
+                            binding.llTrash.visibility = View.VISIBLE
+                        }
+                        if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
+                            binding.play.visibility = View.VISIBLE
+                        }
+                        if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
+                        {
+                            binding.llBottom.alpha = 0.3f
+                        }
+                        else if (destination.contentDescription == "sounds_timeline" && owner.contentDescription == "sounds_lib")
+                        {
+                            binding.llBottomSounds.alpha = 0.3f
+                        }
+                        else if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline"))
+                        {
+                            binding.llTrash.alpha = 0.3f
+                        }
+                        else if (destination.contentDescription == "play" && (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib"))
+                        {
+                            binding.llPlay.alpha = 0.3f
+                        }
+                        view.invalidate()
 
-            val v = event.localState as View
-            val owner = v.parent as ViewGroup
-            val destination = view as LinearLayout
+                    true
+                }
+                DragEvent.ACTION_DRAG_LOCATION -> true
+                DragEvent.ACTION_DRAG_EXITED -> {
+                    setTimelineAlpha(binding,tabSelected)
 
-            if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")) {
-                owner.removeView(v)
-            } else if (destination.contentDescription == "play" && owner.contentDescription == "motion_lib") {
-                var requestdata = availableMotions[getId(v)]
-                val jsonRequestdata = requestdata.toJson()
-                SendData().send(jsonRequestdata, connectionError)
-            } else if (destination.contentDescription == "play" && owner.contentDescription == "sounds_lib") {
-                playSound(this.requireContext(), importedSounds[getId(v)], 2000)
-            } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
-                val placeHolder = destination[destination.childCount-1]
-                destination.removeView(placeHolder)
-                val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
-                newMotionView.contentDescription = v.contentDescription
-                Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(newMotionView)
-                destination.addView(newMotionView)
-                createDragAndDropListener(newMotionView)
-                destination.addView(placeHolder)
-            } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
-            {
-                val placeHolder = destination[destination.childCount-1]
-                destination.removeView(placeHolder)
-                val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
-                newSoundView.contentDescription = v.contentDescription
-                val v1 = event.localState as TextView
-                newSoundView.text = v1.text
-                destination.addView(newSoundView)
-                createDragAndDropListener(newSoundView)
-                destination.addView(placeHolder)
+                    binding.llTrash.alpha = 1.0f
+                    binding.llPlay.alpha = 1.0f
+                    view.invalidate()
+                    true
+                }
+                DragEvent.ACTION_DROP -> {
+                    setTimelineAlpha(binding,tabSelected)
+                    binding.llTrash.alpha = 1.0f
+                    binding.trash.visibility = View.INVISIBLE
+                    binding.llTrash.visibility = View.INVISIBLE
+                    binding.llPlay.alpha = 1.0f
+                    binding.play.visibility = View.INVISIBLE
+
+                    val v = event.localState as View
+                    val owner = v.parent as ViewGroup
+                    val destination = view as LinearLayout
+
+                    if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")) {
+                        owner.removeView(v)
+                    } else if (destination.contentDescription == "play" && owner.contentDescription == "motion_lib") {
+                        var requestdata = availableMotions[getId(v)]
+                        val jsonRequestdata = requestdata.toJson()
+                        SendData().send(jsonRequestdata, connectionError)
+                    } else if (destination.contentDescription == "play" && owner.contentDescription == "sounds_lib") {
+                        playSound(this.requireContext(), importedSounds[getId(v)], 2000)
+                    } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
+                        val placeHolder = destination[destination.childCount-1]
+                        destination.removeView(placeHolder)
+                        val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
+                        newMotionView.contentDescription = v.contentDescription
+                        Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(newMotionView)
+                        destination.addView(newMotionView)
+                        createDragAndDropListener(newMotionView)
+                        destination.addView(placeHolder)
+                    } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
+                    {
+                        val placeHolder = destination[destination.childCount-1]
+                        destination.removeView(placeHolder)
+                        val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
+                        newSoundView.contentDescription = v.contentDescription
+                        val v1 = event.localState as TextView
+                        newSoundView.text = v1.text
+                        destination.addView(newSoundView)
+                        createDragAndDropListener(newSoundView)
+                        destination.addView(placeHolder)
+                    }
+                    true
+                }
+                DragEvent.ACTION_DRAG_ENDED -> {
+                    val v = event.localState as View
+                    v.visibility = View.VISIBLE
+                    binding.trash.visibility = View.INVISIBLE
+                    binding.llTrash.visibility = View.INVISIBLE
+                    binding.play.visibility = View.INVISIBLE
+                    view.invalidate()
+                    true
+                }
+                else -> false
             }
-            true
+        } else {
+            false
         }
-        DragEvent.ACTION_DRAG_ENDED -> {
-            val v = event.localState as View
-            v.visibility = View.VISIBLE
-            binding.trash.visibility = View.INVISIBLE
-            binding.llTrash.visibility = View.INVISIBLE
-            binding.play.visibility = View.INVISIBLE
-            view.invalidate()
-            true
-        }
-        else -> false
-    }
-
 }
 
     override fun onDestroyView() {
