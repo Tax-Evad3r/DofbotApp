@@ -144,7 +144,7 @@ class SecondFragment : Fragment() {
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
-            val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
+            val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motionlib_template, destination, false) as ShapeableImageView
             motion1.contentDescription = "motion$i"
             val res = this.resources.getIdentifier("motion$i", "drawable", "com.example.app")
             Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion$i.gif")).into(motion1)
@@ -155,7 +155,7 @@ class SecondFragment : Fragment() {
         //create new view for each sound depending on amount of imported sounds
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
-            val sound = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
+            val sound = LayoutInflater.from(this.context).inflate(R.layout.soundlib_template, destination, false) as MaterialTextView
             sound.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))
             sound.contentDescription = "sound$i"
             destination.addView(sound)
