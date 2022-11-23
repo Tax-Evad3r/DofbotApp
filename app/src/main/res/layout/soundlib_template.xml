@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.textview.MaterialTextView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sound999"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_margin="8dp"
+    android:contentDescription="sound_template"
+    android:textStyle="bold"
+    android:textSize="12pt"
+    android:fontStyle="italic"
+    android:textColor="@color/white"
+    android:textAlignment="center"
+    android:paddingTop="30dp"
+    android:text="sound"
+    app:strokeColor="#964D56"
+    app:strokeWidth="6dp"
+    android:background="@drawable/textborder"
+    android:shadowColor="@color/black"
+    />
+
+
