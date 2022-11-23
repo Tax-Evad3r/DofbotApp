@@ -320,7 +320,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/lltrash"
+        android:id="@+id/llTrash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="trash"
@@ -335,6 +335,24 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:src="@drawable/trash" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="play"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/hsvSounds"
+        app:layout_constraintEnd_toEndOf="@+id/scRightMotions"
+        app:layout_constraintStart_toEndOf="@+id/llTrash"
+        app:layout_constraintTop_toBottomOf="@+id/llTop">
+
+        <ImageView
+            android:id="@+id/play"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/play" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

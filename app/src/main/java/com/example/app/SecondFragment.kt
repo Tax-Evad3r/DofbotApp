@@ -2,6 +2,7 @@ package com.example.app
 
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipDescription
@@ -15,6 +16,7 @@ import android.os.Looper
 import android.util.TypedValue
 import android.view.DragEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -31,6 +33,7 @@ import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
 import java.lang.Long.max
+import kotlin.math.abs
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -47,6 +50,11 @@ class SecondFragment : Fragment() {
 
     private var tabSelected = 0 // 0=motion, 1 = sound
     private var timelineAlpha = 0.3f
+
+    private lateinit var availableMotions : List<Data>
+    private lateinit var importedSounds : MutableList<String>
+
+    private lateinit var connectionError: AlertDialog.Builder
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -68,24 +76,13 @@ class SecondFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //import motions from asset files (located in "main/assets/motion")
-        val availableMotions = importMotionFromFile(this.requireContext())
-        val importedSounds = importSounds(this.context)
+        availableMotions = importMotionFromFile(this.requireContext())
+        importedSounds = importSounds(this.context)
 
         //motion duration array
         var motionDuration:MutableList<Int> = mutableListOf()
         for (motion in availableMotions) {
             motionDuration.add(animationDuration(motion))
-        }
-        //debug print of all imported sounds
-        println("Sound import done!")
-        for (sound in importedSounds) {
-            println("Found sound: $sound")
-        }
-
-        //debug print of all stored motions
-        println("Motion import done!")
-        for (motion in availableMotions) {
-            println(motion.toJson())
         }
 
         val scale:Float = this.requireContext().resources.displayMetrics.density
@@ -138,37 +135,35 @@ class SecondFragment : Fragment() {
         binding.llBottom.setOnDragListener(dragListener)
         binding.llRightSounds.setOnDragListener(dragListener)
         binding.llBottomSounds.setOnDragListener(dragListener)
-        binding.lltrash.setOnDragListener(dragListener)
+        binding.llTrash.setOnDragListener(dragListener)
         binding.trash.visibility = View.INVISIBLE
+        binding.llPlay.setOnDragListener(dragListener)
+        binding.play.visibility = View.INVISIBLE
 
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
-            val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motionlib_template, destination, false) as ShapeableImageView
-            motion1.contentDescription = "motion$i"
-            val res = this.resources.getIdentifier("motion$i", "drawable", "com.example.app")
-            Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion$i.gif")).into(motion1)
-            destination.addView(motion1)
-            createDragAndDropListener(motion1)
+            val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
+            newMotionView.contentDescription = "motion$i"
+            Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion$i.gif")).into(newMotionView)
+            destination.addView(newMotionView)
+            createDragAndDropListener(newMotionView)
         }
 
         //create new view for each sound depending on amount of imported sounds
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
-            val sound = LayoutInflater.from(this.context).inflate(R.layout.soundlib_template, destination, false) as MaterialTextView
-            sound.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))
-            sound.contentDescription = "sound$i"
-            destination.addView(sound)
-            createDragAndDropListener(sound)
-            createClickListener(this.requireContext(), sound, importedSounds[getId(sound)])
+            val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
+            newSoundView.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))
+            newSoundView.contentDescription = "sound$i"
+            destination.addView(newSoundView)
+            createDragAndDropListener(newSoundView)
         }
 
         //Create alert dialog box that is displayed when connection error occurs
-        val connectionError: AlertDialog.Builder = AlertDialog.Builder(context)
+        connectionError = AlertDialog.Builder(context)
 
         binding.buttonQuickRun.setOnClickListener {
-
-            println("pressed quick run!")
 
             //repurpose quick run as reset button during development
             //define reset data
@@ -268,6 +263,7 @@ class SecondFragment : Fragment() {
 
             //convert request to json
             val jsonRequestdata = requestdata.toJson()
+            //TODO: Remove when debug is no longer needed!
             println("Sending json= $jsonRequestdata")
 
             //send request
@@ -303,8 +299,12 @@ class SecondFragment : Fragment() {
             v.visibility = View.VISIBLE
             val owner = v.parent as ViewGroup
             val destination = view as LinearLayout
-            if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")
+            if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
                 binding.trash.visibility = View.VISIBLE
+            }
+            if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
+                binding.play.visibility = View.VISIBLE
+            }
             if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
             {
                 binding.llBottom.alpha = 0.3f
@@ -315,7 +315,11 @@ class SecondFragment : Fragment() {
             }
             else if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline"))
             {
-                binding.lltrash.alpha = 0.3f
+                binding.llTrash.alpha = 0.3f
+            }
+            else if (destination.contentDescription == "play" && (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib"))
+            {
+                binding.llPlay.alpha = 0.3f
             }
             view.invalidate()
             true
@@ -324,14 +328,17 @@ class SecondFragment : Fragment() {
         DragEvent.ACTION_DRAG_EXITED -> {
             setTimelineAlpha(binding,tabSelected, timelineAlpha)
 
-            binding.lltrash.alpha = 1.0f
+            binding.llTrash.alpha = 1.0f
+            binding.llPlay.alpha = 1.0f
             view.invalidate()
             true
         }
         DragEvent.ACTION_DROP -> {
             setTimelineAlpha(binding,tabSelected, timelineAlpha)
-            binding.lltrash.alpha = 1.0f
+            binding.llTrash.alpha = 1.0f
             binding.trash.visibility = View.INVISIBLE
+            binding.llPlay.alpha = 1.0f
+            binding.play.visibility = View.INVISIBLE
 
             val v = event.localState as View
             val owner = v.parent as ViewGroup
@@ -339,38 +346,40 @@ class SecondFragment : Fragment() {
 
             if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")) {
                 owner.removeView(v)
+            } else if (destination.contentDescription == "play" && owner.contentDescription == "motion_lib") {
+                var requestdata = availableMotions[getId(v)]
+                val jsonRequestdata = requestdata.toJson()
+                SendData().send(jsonRequestdata, connectionError)
+            } else if (destination.contentDescription == "play" && owner.contentDescription == "sounds_lib") {
+                playSound(this.requireContext(), importedSounds[getId(v)], 2000)
             } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
                 val placeHolder = destination[destination.childCount-1]
                 destination.removeView(placeHolder)
-                val motion1 = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ImageView
-                motion1.contentDescription = v.contentDescription
-                val res = this.resources.getIdentifier("motion${getId(v)}", "drawable", "com.example.app")
-                Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(motion1)
-                destination.addView(motion1)
-                createDragAndDropListener(motion1)
+                val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
+                newMotionView.contentDescription = v.contentDescription
+                Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(newMotionView)
+                destination.addView(newMotionView)
+                createDragAndDropListener(newMotionView)
                 destination.addView(placeHolder)
             } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
             {
                 val placeHolder = destination[destination.childCount-1]
                 destination.removeView(placeHolder)
-                val sounds1 = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as TextView
-                //val back = v.background as ColorDrawable
-                //sounds1.setBackgroundColor(back.color)
-                sounds1.contentDescription = v.contentDescription
+                val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
+                newSoundView.contentDescription = v.contentDescription
                 val v1 = event.localState as TextView
-                sounds1.text = v1.text
-                destination.addView(sounds1)
-                createDragAndDropListener(sounds1)
+                newSoundView.text = v1.text
+                destination.addView(newSoundView)
+                createDragAndDropListener(newSoundView)
                 destination.addView(placeHolder)
             }
-
-            println("dropped ${v.contentDescription}")
             true
         }
         DragEvent.ACTION_DRAG_ENDED -> {
             val v = event.localState as View
             v.visibility = View.VISIBLE
             binding.trash.visibility = View.INVISIBLE
+            binding.play.visibility = View.INVISIBLE
             view.invalidate()
             true
         }
@@ -390,19 +399,14 @@ class SecondFragment : Fragment() {
         stopPlayerOnStop()
     }
 }
-
+@SuppressLint("ClickableViewAccessibility")
 fun createDragAndDropListener(view: View) {
-    view.setOnLongClickListener {
+    view.setOnTouchListener {
+            it, _ ->
         val dragShadowBuilder = View.DragShadowBuilder(it)
         it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
         it.visibility = View.INVISIBLE
         true
-    }
-}
-
-fun createClickListener(context : Context, view: View, name : String) {
-    view.setOnClickListener {
-        playSound(context, name, 2000)
     }
 }
 

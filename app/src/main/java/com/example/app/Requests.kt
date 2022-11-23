@@ -16,7 +16,7 @@ import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.net.URL
 
-var IPADDRESS = "192.168.1.196:5000"
+var IPADDRESS = "192.168.50.169:5000"
 
 @Serializable
     data class Data(
