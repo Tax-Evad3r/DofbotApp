@@ -8,6 +8,7 @@ import android.content.ClipDescription
 import android.content.Context
 import android.content.DialogInterface
 import android.content.res.Resources
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -25,13 +26,16 @@ import androidx.core.animation.doOnEnd
 import androidx.core.text.HtmlCompat
 import androidx.core.view.get
 import androidx.core.view.iterator
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
+import java.io.IOException
 import java.lang.Long.max
+import java.lang.Long.min
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -285,8 +289,8 @@ class SecondFragment : Fragment() {
                 }
             }
             val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), soundsList)
-            playSounds(this.requireContext(), soundsList)
-            soundRunAnimations(binding,this.requireActivity(),soundsDuration)
+
+            playAnimatedSounds(this, soundsList, soundsDuration, binding.hsvSounds, 0)
 
             val motionAnimationTime = motionRunAnimations(binding,this.requireActivity(), motionDuration)
 
@@ -502,43 +506,6 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
 }
 
 
-//plays a animation on each child of llBottom except for "+"
-fun soundRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, soundsDuration : MutableList<Int> ) {
-    val startAnim = R.animator.timeline_start
-    val endAnim = R.animator.timeline_end
-
-    var delay : Long = 0                                          //time in ms
-    binding.hsvSounds.smoothScrollTo(0,0)
-    soundAnimation(binding.hsvSounds,activity,0, soundsDuration)
-    /*
-    for (i in 0 until binding.llBottomSounds.childCount) {
-        if(i == binding.llBottomSounds.childCount-1){//element the empty + square
-            continue
-        }
-        var soundStart : AnimatorSet = AnimatorInflater.loadAnimator(activity, startAnim) as AnimatorSet
-        var soundEnd : AnimatorSet = AnimatorInflater.loadAnimator(activity, endAnim) as AnimatorSet
-        val sound = binding.llBottomSounds.getChildAt(i)
-        val duration = soundsDuration[getId(sound)]
-
-
-        soundStart.setTarget(sound)
-        soundStart.duration = 500 + delay
-        soundStart.startDelay = delay
-        println("delay: $delay, duration: ${soundStart.duration}, startdelay: ${soundStart.startDelay}")
-
-        soundEnd.setTarget(sound)
-        soundEnd.duration = 1000 + delay
-        soundEnd.startDelay = 750 + delay
-
-        soundEnd.doOnEnd {
-            binding.hsvSounds.smoothScrollTo(sound.right - sound.width - 100, 0)
-        }
-        soundStart.start()
-        soundEnd.start()
-        delay += 1000
-    }
-    */
-}
 fun soundAnimation(hsv : HorizontalScrollView, activity : FragmentActivity, position : Int, soundsDuration : MutableList<Int>)
 {
     var bar = hsv[0] as LinearLayout
@@ -547,19 +514,46 @@ fun soundAnimation(hsv : HorizontalScrollView, activity : FragmentActivity, posi
         var soundEnd: AnimatorSet = AnimatorInflater.loadAnimator(activity, R.animator.timeline_end) as AnimatorSet
 
         var view = bar.getChildAt(position)
-        val duration = soundsDuration[getId(view)].toLong()
+        val duration = min(soundsDuration[getId(view)].toLong(), 2000)
+        println("duration: $duration")
 
         soundStart.setTarget(view)
         soundStart.duration = duration/2
 
         soundEnd.setTarget(view)
-        soundEnd.duration = duration
+        soundEnd.duration = duration/2
         soundEnd.startDelay = duration/2
         soundEnd.doOnEnd {
             hsv.smoothScrollTo(view.right - view.width - 100, 0)
-            soundAnimation(hsv, activity, position + 1, soundsDuration)
+            //soundAnimation(hsv, activity, position + 1, soundsDuration)
         }
         soundStart.start()
         soundEnd.start()
+    }
+}
+
+fun playAnimatedSounds(fragment : SecondFragment, soundsList: MutableList<String>, soundsDuration: MutableList<Int>, hsv : HorizontalScrollView, position : Int) {
+    //only continue if provided list contains any sounds
+    if (0 < soundsList.size && position < soundsList.size) {
+        //if an existing player is found destroy it
+        if (mMediaPlayer != null) {
+            stopSound()
+        }
+        //get next sound as filename from list
+        val next = soundsList[position]
+        //create new player with the next sound and add onComplete listener to recursively play next sound when done.
+        try {
+            var afd = fragment.requireContext().assets.openFd("sounds/$next")
+            mMediaPlayer = MediaPlayer()
+            mMediaPlayer!!.setDataSource(afd)
+            mMediaPlayer!!.setOnCompletionListener {
+                playAnimatedSounds(fragment, soundsList, soundsDuration, hsv, position + 1)
+            }
+            mMediaPlayer!!.prepare()
+            mMediaPlayer!!.start()
+            soundAnimation(hsv, fragment.requireActivity(), position, soundsDuration)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 }
