@@ -51,7 +51,6 @@ class SecondFragment : Fragment() {
     private lateinit var flipRightOut:AnimatorSet
 
     private var tabSelected = 0 // 0=motion, 1 = sound
-    private var timelineAlpha = 0.3f
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -103,11 +102,11 @@ class SecondFragment : Fragment() {
         flipRightOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_out) as AnimatorSet
 
 
-        binding.llBottomSounds.alpha = timelineAlpha
-        binding.soundsText.alpha = timelineAlpha
+        binding.llBottomSounds.alpha = 0.3f
+        binding.soundsText.alpha = 0.3f
         binding.motions.setOnClickListener(){
             if (tabSelected == 1) {
-                setTimelineAlpha(binding,0, timelineAlpha)
+                setTimelineAlpha(binding,0)
                 binding.scRightMotions.visibility = View.VISIBLE
                 flipRightIn.setTarget(binding.scRightMotions)
                 flipRightOut.setTarget(binding.scRightSounds)
@@ -123,7 +122,7 @@ class SecondFragment : Fragment() {
 
         binding.sounds.setOnClickListener(){
             if (tabSelected == 0) {
-                setTimelineAlpha(binding,1, timelineAlpha)
+                setTimelineAlpha(binding,1)
                 binding.scRightSounds.visibility = View.VISIBLE
                 flipLeftIn.setTarget(binding.scRightSounds)
                 flipLeftOut.setTarget(binding.scRightMotions)
@@ -133,7 +132,7 @@ class SecondFragment : Fragment() {
                     binding.scRightMotions.visibility = View.GONE
                     binding.scRightSounds.visibility = View.VISIBLE
                     tabSelected = 1
-                    setTimelineAlpha(binding,tabSelected, timelineAlpha)
+                    setTimelineAlpha(binding,tabSelected)
                 }
             }
         }
@@ -251,7 +250,7 @@ class SecondFragment : Fragment() {
                 println(binding.llBottom.getChildAt(i).contentDescription)
             }
 
-            setTimelineAlpha(binding, 2, timelineAlpha)
+            setTimelineAlpha(binding, 2)
 
             //initialize empty initial response
             var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
@@ -289,15 +288,11 @@ class SecondFragment : Fragment() {
                 }
             }
             val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), soundsList)
+            var animationDone = mutableListOf<Boolean>(false,false)
+             playAnimatedSounds(this, binding, soundsList, soundsDuration, 0, tabSelected, animationDone)
 
-            playAnimatedSounds(this, soundsList, soundsDuration, binding.hsvSounds, 0)
-
-            val motionAnimationTime = motionRunAnimations(binding,this.requireActivity(), motionDuration)
-
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                setTimelineAlpha(binding, tabSelected, timelineAlpha)
-            }, max(soundsDuration.sum().toLong(),motionAnimationTime))
+            motionRunAnimations(binding,this.requireActivity(), motionDuration, animationDone, tabSelected)
+            animationsDone(binding,animationDone, tabSelected)
 
         }
     }
@@ -331,14 +326,14 @@ class SecondFragment : Fragment() {
         }
         DragEvent.ACTION_DRAG_LOCATION -> true
         DragEvent.ACTION_DRAG_EXITED -> {
-            setTimelineAlpha(binding,tabSelected, timelineAlpha)
+            setTimelineAlpha(binding,tabSelected)
 
             binding.lltrash.alpha = 1.0f
             view.invalidate()
             true
         }
         DragEvent.ACTION_DROP -> {
-            setTimelineAlpha(binding,tabSelected, timelineAlpha)
+            setTimelineAlpha(binding,tabSelected)
             binding.lltrash.alpha = 1.0f
             binding.trash.visibility = View.INVISIBLE
 
@@ -426,20 +421,20 @@ fun getId(view: View) : Int {
     return -1
 }
 
-fun setTimelineAlpha(binding : FragmentSecondBinding, tabSelected : Int, timelineAlpha : Float)
+fun setTimelineAlpha(binding : FragmentSecondBinding, tabSelected : Int)
 {
     when (tabSelected) {
         0 // motion tab selected
         -> {
             binding.llBottom.alpha = 1.0f
             binding.motionsText.alpha = 1.0f
-            binding.llBottomSounds.alpha = timelineAlpha
-            binding.soundsText.alpha = timelineAlpha
+            binding.llBottomSounds.alpha = 0.3f
+            binding.soundsText.alpha = 0.3f
         }
         1 // sound tab selected
         -> {
-            binding.llBottom.alpha = timelineAlpha
-            binding.motionsText.alpha = timelineAlpha
+            binding.llBottom.alpha = 0.3f
+            binding.motionsText.alpha = 0.3f
             binding.llBottomSounds.alpha = 1.0f
             binding.soundsText.alpha = 1.0f
         }
@@ -455,7 +450,7 @@ fun setTimelineAlpha(binding : FragmentSecondBinding, tabSelected : Int, timelin
 
 
 //plays a animation on each child of llBottom except for "+"
-fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, motionDuration : MutableList<Int> ) : Long {
+fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, motionDuration : MutableList<Int>, animationDone: MutableList<Boolean>, tabSelected: Int) {
     val startAnimation = R.animator.run_animation_start         //reference to animator
     val runAnimation = R.animator.run_animation_run           //reference to animator
     val endAnimation = R.animator.run_animation_end             //reference to animator
@@ -463,6 +458,11 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
 
     var delay:Long = 0                                          //time in ms
     binding.hsvBottom.smoothScrollTo(0,0)
+    if (binding.llBottom.childCount == 1)
+    {
+        animationDone[1] = true
+        animationsDone(binding, animationDone, tabSelected)
+    }
     for (i in 0 until binding.llBottom.childCount) {
         if(i == binding.llBottom.childCount-1){//element the empty + square
             continue
@@ -497,19 +497,23 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
         motionEnd.setTarget(x)
         motionEnd.doOnEnd {
             binding.hsvBottom.smoothScrollTo(x.right - x.width - 100, 0)
+            x.alpha = 0.3f
+            if (i == binding.llBottom.childCount-2)
+            animationDone[1] = true
+            animationsDone(binding, animationDone, tabSelected)
+
         }
         motionEnd.start()
 
         delay += duration
     }
-    return delay
 }
 
 
-fun soundAnimation(hsv : HorizontalScrollView, activity : FragmentActivity, position : Int, soundsDuration : MutableList<Int>)
+fun soundAnimation(binding : FragmentSecondBinding, activity : FragmentActivity, position : Int, soundsDuration : MutableList<Int>, animationDone : MutableList<Boolean>, tabSelected: Int)
 {
-    var bar = hsv[0] as LinearLayout
-    if (position < bar.childCount-1) {
+    var bar = binding.hsvSounds[0] as LinearLayout
+    if (bar.childCount > 1 && position < bar.childCount-1) {
         var soundStart: AnimatorSet = AnimatorInflater.loadAnimator(activity, R.animator.timeline_start) as AnimatorSet
         var soundEnd: AnimatorSet = AnimatorInflater.loadAnimator(activity, R.animator.timeline_end) as AnimatorSet
 
@@ -524,17 +528,28 @@ fun soundAnimation(hsv : HorizontalScrollView, activity : FragmentActivity, posi
         soundEnd.duration = duration/2
         soundEnd.startDelay = duration/2
         soundEnd.doOnEnd {
-            hsv.smoothScrollTo(view.right - view.width - 100, 0)
+            binding.hsvSounds.smoothScrollTo(view.right - view.width - 100, 0)
             //soundAnimation(hsv, activity, position + 1, soundsDuration)
+            view.alpha = 0.3f
+            if (position == bar.childCount-2)
+            {
+                animationDone[0] = true;
+                animationsDone(binding, animationDone, tabSelected)
+            }
         }
         soundStart.start()
         soundEnd.start()
     }
 }
 
-fun playAnimatedSounds(fragment : SecondFragment, soundsList: MutableList<String>, soundsDuration: MutableList<Int>, hsv : HorizontalScrollView, position : Int) {
+fun playAnimatedSounds(fragment : SecondFragment, binding : FragmentSecondBinding, soundsList: MutableList<String>, soundsDuration: MutableList<Int>, position : Int, tabSelected : Int, animationDone : MutableList<Boolean>){
     //only continue if provided list contains any sounds
-    if (0 < soundsList.size && position < soundsList.size) {
+    if (soundsList.size == 0)
+    {
+        animationDone[0] = true
+        animationsDone(binding, animationDone, tabSelected)
+    }
+    else if ( position < soundsList.size) {
         //if an existing player is found destroy it
         if (mMediaPlayer != null) {
             stopSound()
@@ -547,13 +562,27 @@ fun playAnimatedSounds(fragment : SecondFragment, soundsList: MutableList<String
             mMediaPlayer = MediaPlayer()
             mMediaPlayer!!.setDataSource(afd)
             mMediaPlayer!!.setOnCompletionListener {
-                playAnimatedSounds(fragment, soundsList, soundsDuration, hsv, position + 1)
+                playAnimatedSounds(fragment, binding, soundsList, soundsDuration,position + 1, tabSelected, animationDone)
             }
             mMediaPlayer!!.prepare()
             mMediaPlayer!!.start()
-            soundAnimation(hsv, fragment.requireActivity(), position, soundsDuration)
+            soundAnimation(binding, fragment.requireActivity(), position, soundsDuration, animationDone, tabSelected)
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+}
+
+fun animationsDone(binding: FragmentSecondBinding, animationDone : MutableList<Boolean>, tabSelected : Int)
+{
+    println("animationDone: ${animationDone[0]} and ${animationDone[1]}")
+    if (animationDone[0] && animationDone[1]) {
+        for (view in (binding.hsvSounds[0] as LinearLayout)) {
+            view.alpha = 1.0f
+        }
+        for (view in (binding.hsvBottom[0] as LinearLayout)) {
+            view.alpha = 1.0f
+        }
+        setTimelineAlpha(binding, tabSelected)
     }
 }
