@@ -405,7 +405,6 @@ fun createDragAndDropListener(view: View) {
             it, _ ->
         val dragShadowBuilder = View.DragShadowBuilder(it)
         it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
-        it.visibility = View.INVISIBLE
         true
     }
 }
