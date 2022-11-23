@@ -137,6 +137,7 @@ class SecondFragment : Fragment() {
         binding.llBottomSounds.setOnDragListener(dragListener)
         binding.llTrash.setOnDragListener(dragListener)
         binding.trash.visibility = View.INVISIBLE
+        binding.llTrash.visibility = View.INVISIBLE
         binding.llPlay.setOnDragListener(dragListener)
         binding.play.visibility = View.INVISIBLE
 
@@ -301,6 +302,7 @@ class SecondFragment : Fragment() {
             val destination = view as LinearLayout
             if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
                 binding.trash.visibility = View.VISIBLE
+                binding.llTrash.visibility = View.VISIBLE
             }
             if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
                 binding.play.visibility = View.VISIBLE
@@ -337,6 +339,7 @@ class SecondFragment : Fragment() {
             setTimelineAlpha(binding,tabSelected, timelineAlpha)
             binding.llTrash.alpha = 1.0f
             binding.trash.visibility = View.INVISIBLE
+            binding.llTrash.visibility = View.INVISIBLE
             binding.llPlay.alpha = 1.0f
             binding.play.visibility = View.INVISIBLE
 
@@ -379,6 +382,7 @@ class SecondFragment : Fragment() {
             val v = event.localState as View
             v.visibility = View.VISIBLE
             binding.trash.visibility = View.INVISIBLE
+            binding.llTrash.visibility = View.INVISIBLE
             binding.play.visibility = View.INVISIBLE
             view.invalidate()
             true
