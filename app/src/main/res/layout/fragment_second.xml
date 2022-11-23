@@ -324,10 +324,12 @@
 
     <LinearLayout
         android:id="@+id/llTrash"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="350dp"
+        android:layout_height="250dp"
         android:contentDescription="trash"
         android:orientation="vertical"
+        android:background="@drawable/dotted_button_trash"
+        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/hsvSounds"
         app:layout_constraintEnd_toEndOf="@+id/scRightMotions"
         app:layout_constraintStart_toStartOf="@+id/llLeft"
@@ -337,7 +339,17 @@
             android:id="@+id/trash"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@drawable/trash" />
+            android:gravity="center"
+            android:src="@drawable/trashcan" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            android:paddingHorizontal="20dp"/>
     </LinearLayout>
 
     <LinearLayout

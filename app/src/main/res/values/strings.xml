@@ -15,4 +15,5 @@
     <string name="Virtual"><b>Virtual</b>\nTest Run</string>
     <string name="EraseMotion"><b>Erase</b>\nMotion Bar</string>
     <string name="EraseSound"><b>Erase</b>\nSound Bar</string>
+    <string name="remove">Remove</string>
 </resources>
