@@ -1,0 +1,9 @@
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <objectAnimator
+        android:valueFrom="-50"
+        android:valueTo="0"
+        android:propertyName="translationY"
+        android:interpolator="@android:interpolator/accelerate_decelerate"
+        android:startOffset="750"
+        android:duration="1000" />
+</set>
