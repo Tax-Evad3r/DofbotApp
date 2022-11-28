@@ -340,7 +340,7 @@ class SecondFragment : Fragment() {
                 if (savedSound.toIntOrNull() != null) {
                     val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, binding.llBottomSounds, false) as MaterialTextView
                     newSoundView.contentDescription = "sound$savedSound"
-                    newSoundView.text = importedSounds[savedSound.toInt()]
+                    newSoundView.text = importedSounds[savedSound.toInt()].substring(0, importedSounds[savedSound.toInt()].indexOf("."))
                     binding.llBottomSounds.addView(newSoundView)
                     createDragAndDropListener(newSoundView)
                 }
