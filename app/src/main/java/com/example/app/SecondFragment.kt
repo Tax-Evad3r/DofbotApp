@@ -323,11 +323,6 @@ class SecondFragment : Fragment() {
             var messageSounds = messageTypes[0].split(",")
             var messageMotions = messageTypes[1].split(",")
 
-            println("Sounds: ")
-            println(messageSounds)
-            println("Motions: ")
-            println(messageMotions)
-
             val placeHolderSounds = binding.llBottomSounds[binding.llBottomSounds.childCount-1]
             binding.llBottomSounds.removeView(placeHolderSounds)
             val placeHolderMotions = binding.llBottom[binding.llBottom.childCount-1]
