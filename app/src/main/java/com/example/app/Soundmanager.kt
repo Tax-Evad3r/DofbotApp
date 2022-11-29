@@ -31,44 +31,6 @@ fun playSound(context: Context, name : String, duration: Long) {
     }
 }
 
-//Create new MediaPlayer use source files provided as list
-fun playSounds(context: Context, list: MutableList<String>) {
-    //only continue if provided list contains any sounds
-    if (list.size > 0) {
-        //if an existing player is found destroy it
-        if (mMediaPlayer != null) {
-            stopSound()
-        }
-        //get next sound as filename from list
-        val next = list.removeAt(0)
-        if(next.contains("stationary")){
-            val motionNumParse = next.filter { it.isDigit() }
-            object : CountDownTimer(motionNumParse.toLong(),1000){
-                override fun onTick(p0: Long) {
-                }
-                override fun onFinish() {
-                    playSounds(context, list)
-                }
-            }.start()
-        }
-        else {
-            //create new player with the next sound and add onComplete listener to recursively play next sound when done.
-            try {
-                var afd = context.assets.openFd("sounds/$next")
-                mMediaPlayer = MediaPlayer()
-                mMediaPlayer!!.setDataSource(afd)
-                mMediaPlayer!!.setOnCompletionListener {
-                    playSounds(context, list)
-                }
-                mMediaPlayer!!.prepare()
-                mMediaPlayer!!.start()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-    }
-}
-
 //Stop playback and remove current MediaPlayer
 fun stopSound() {
     try {
@@ -106,9 +68,10 @@ fun stopPlayerOnStop() {
     }
 }
 
-fun calculateSoundsLength(context: Context, list: MutableList<String>) : Long
+fun calculateSoundsLength(context: Context, list: MutableList<String>) : MutableList<Int>
 {
-    var duration : Long = 0
+    //var duration : Long = 0
+    var duration = mutableListOf<Int>()
     if (list.size > 0) {
         //if an existing player is found destroy it
         if (mMediaPlayer != null) {
@@ -119,14 +82,14 @@ fun calculateSoundsLength(context: Context, list: MutableList<String>) : Long
 
             if(next.contains("stationary")){
                 val motionNumParse = next.filter { it.isDigit() }
-                duration += motionNumParse.toLong()
+                duration.add(motionNumParse.toInt())
             }
             try {
                 var afd = context.assets.openFd("sounds/$next")
                 mMediaPlayer = MediaPlayer()
                 mMediaPlayer!!.setDataSource(afd)
                 mMediaPlayer!!.prepare()
-                duration += mMediaPlayer!!.duration
+                duration.add(mMediaPlayer!!.duration)
             } catch (e: IOException) {
                 e.printStackTrace()
             }

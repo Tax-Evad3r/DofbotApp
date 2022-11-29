@@ -7,6 +7,8 @@ import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.DialogInterface
+import android.content.res.Resources
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -15,6 +17,8 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
+import android.widget.ImageView
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -22,13 +26,18 @@ import androidx.core.animation.doOnEnd
 import androidx.core.text.HtmlCompat
 import androidx.core.view.get
 import androidx.core.view.iterator
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
+import java.io.File
+import java.io.IOException
 import java.lang.Long.max
+import kotlin.math.abs
+import java.lang.Long.min
 
 
 /**
@@ -91,11 +100,11 @@ class SecondFragment : Fragment() {
         flipRightOut = AnimatorInflater.loadAnimator(activity, R.animator.flip_right_out) as AnimatorSet
 
 
-        binding.llBottomSounds.alpha = timelineAlpha
-        binding.soundsText.alpha = timelineAlpha
+        binding.llBottomSounds.alpha = 0.3f
+        binding.soundsText.alpha = 0.3f
         binding.motions.setOnClickListener(){
             if (tabSelected == 1) {
-                setTimelineAlpha(binding,0, timelineAlpha)
+                setTimelineAlpha(binding,0)
                 binding.scRightMotions.visibility = View.VISIBLE
                 flipRightIn.setTarget(binding.scRightMotions)
                 flipRightOut.setTarget(binding.scRightSounds)
@@ -111,7 +120,7 @@ class SecondFragment : Fragment() {
 
         binding.sounds.setOnClickListener(){
             if (tabSelected == 0) {
-                setTimelineAlpha(binding,1, timelineAlpha)
+                setTimelineAlpha(binding,1)
                 binding.scRightSounds.visibility = View.VISIBLE
                 flipLeftIn.setTarget(binding.scRightSounds)
                 flipLeftOut.setTarget(binding.scRightMotions)
@@ -121,7 +130,7 @@ class SecondFragment : Fragment() {
                     binding.scRightMotions.visibility = View.GONE
                     binding.scRightSounds.visibility = View.VISIBLE
                     tabSelected = 1
-                    setTimelineAlpha(binding,tabSelected, timelineAlpha)
+                    setTimelineAlpha(binding,tabSelected)
                 }
             }
         }
@@ -133,6 +142,7 @@ class SecondFragment : Fragment() {
         binding.llBottomSounds.setOnDragListener(dragListener)
         binding.llTrash.setOnDragListener(dragListener)
         binding.trash.visibility = View.INVISIBLE
+        binding.llTrash.visibility = View.INVISIBLE
         binding.llPlay.setOnDragListener(dragListener)
         binding.play.visibility = View.INVISIBLE
 
@@ -251,7 +261,7 @@ class SecondFragment : Fragment() {
                 println(binding.llBottom.getChildAt(i).contentDescription)
             }
 
-            setTimelineAlpha(binding, 2, timelineAlpha)
+            setTimelineAlpha(binding, 2)
 
             //initialize empty initial response
             var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
@@ -302,125 +312,194 @@ class SecondFragment : Fragment() {
                     soundsList.add(importedSounds[soundId])
                 }
             }
-            val soundsDuration = calculateSoundsLength(this.requireContext(), soundsList)
-            playSounds(this.requireContext(), soundsList)
-            val motionAnimationTime = motionRunAnimations(binding,this.requireActivity(),motionDuration)
-            Handler(Looper.getMainLooper()).postDelayed({
-                setTimelineAlpha(binding, tabSelected, timelineAlpha)
-            }, max(soundsDuration,motionAnimationTime))
+            val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), soundsList)
+            var animationDone = mutableListOf<Boolean>(false,false)
+             playAnimatedSounds(this, binding, soundsList, soundsDuration, 0, tabSelected, animationDone)
 
+            motionRunAnimations(binding,this.requireActivity(), motionDuration, animationDone, tabSelected)
+            animationsDone(binding,animationDone, tabSelected)
+
+        }
+
+        val filename = "save.txt"
+
+        binding.buttonStart.setOnClickListener {
+            var message = ""
+
+            for (soundChild in binding.llBottomSounds) {
+                if (getId(soundChild) != -1) {
+                    message += getId(soundChild).toString() + ","
+                }
+            }
+            message += ";"
+            for (motionChild in binding.llBottom) {
+                if (getId(motionChild) != -1) {
+                    message += getId(motionChild).toString() + ","
+                }
+            }
+
+            this.requireContext().openFileOutput(filename, Context.MODE_PRIVATE).use {
+                it.write(message.toByteArray())
+            }
+        }
+        binding.buttonEnd.setOnClickListener {
+            val file = File(this.requireContext().filesDir, filename)
+            val contents = file.readText() // Read file
+
+            var messageTypes = contents.split(";")
+            var messageSounds = messageTypes[0].split(",")
+            var messageMotions = messageTypes[1].split(",")
+
+            val placeHolderSounds = binding.llBottomSounds[binding.llBottomSounds.childCount-1]
+            binding.llBottomSounds.removeView(placeHolderSounds)
+            val placeHolderMotions = binding.llBottom[binding.llBottom.childCount-1]
+            binding.llBottom.removeView(placeHolderMotions)
+
+            binding.llBottomSounds.removeAllViews()
+            binding.llBottom.removeAllViews()
+
+            for (savedSound in messageSounds) {
+                if (savedSound.toIntOrNull() != null) {
+                    val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, binding.llBottomSounds, false) as MaterialTextView
+                    newSoundView.contentDescription = "sound$savedSound"
+                    newSoundView.text = importedSounds[savedSound.toInt()].substring(0, importedSounds[savedSound.toInt()].indexOf("."))
+                    binding.llBottomSounds.addView(newSoundView)
+                    createDragAndDropListener(newSoundView)
+                }
+            }
+
+            for (savedMotion in messageMotions) {
+                if (savedMotion.toIntOrNull() != null) {
+                    val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, binding.llBottom, false) as ShapeableImageView
+                    newMotionView.contentDescription = "motion$savedMotion"
+                    Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${savedMotion}.gif")).into(newMotionView)
+                    binding.llBottom.addView(newMotionView)
+                    createDragAndDropListener(newMotionView)
+                }
+            }
+
+            binding.llBottomSounds.addView(placeHolderSounds)
+            binding.llBottom.addView(placeHolderMotions)
         }
     }
 
     private val dragListener = View.OnDragListener { view, event ->
-    when(event.action){
-        DragEvent.ACTION_DRAG_STARTED -> {
-            event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
-        }
-        DragEvent.ACTION_DRAG_ENTERED -> {
-            val v = event.localState as View
-            v.visibility = View.VISIBLE
-            val owner = v.parent as ViewGroup
-            val destination = view as LinearLayout
-            if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
-                binding.trash.visibility = View.VISIBLE
-            }
-            if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
-                binding.play.visibility = View.VISIBLE
-            }
-            if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
-            {
-                binding.llBottom.alpha = 0.3f
-            }
-            else if (destination.contentDescription == "sounds_timeline" && owner.contentDescription == "sounds_lib")
-            {
-                binding.llBottomSounds.alpha = 0.3f
-            }
-            else if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline"))
-            {
-                binding.llTrash.alpha = 0.3f
-            }
-            else if (destination.contentDescription == "play" && (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib"))
-            {
-                binding.llPlay.alpha = 0.3f
-            }
-            view.invalidate()
-            true
-        }
-        DragEvent.ACTION_DRAG_LOCATION -> true
-        DragEvent.ACTION_DRAG_EXITED -> {
-            setTimelineAlpha(binding,tabSelected, timelineAlpha)
-
-            binding.llTrash.alpha = 1.0f
-            binding.llPlay.alpha = 1.0f
-            view.invalidate()
-            true
-        }
-        DragEvent.ACTION_DROP -> {
-            setTimelineAlpha(binding,tabSelected, timelineAlpha)
-            binding.llTrash.alpha = 1.0f
-            binding.trash.visibility = View.INVISIBLE
-            binding.llPlay.alpha = 1.0f
-            binding.play.visibility = View.INVISIBLE
-
-            val v = event.localState as View
-            val owner = v.parent as ViewGroup
-            val destination = view as LinearLayout
-
-            if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")) {
-                owner.removeView(v)
-            } else if (destination.contentDescription == "play" && owner.contentDescription == "motion_lib") {
-                var requestdata = availableMotions[getId(v)]
-                val jsonRequestdata = requestdata.toJson()
-                SendData().send(jsonRequestdata, connectionError)
-            } else if (destination.contentDescription == "play" && owner.contentDescription == "sounds_lib") {
-                playSound(this.requireContext(), importedSounds[getId(v)], 2000)
-            } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
-                val placeHolder = destination[destination.childCount-1]
-                destination.removeView(placeHolder)
-                val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
-                newMotionView.contentDescription = v.contentDescription
-
-                if(v.contentDescription == "stationary"){
-                    Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion1.gif")).into(newMotionView)
-                    addIntToViewContentDescripton(newMotionView, destination,"Enter sleep time in ms.")
-
-                }else{
-                    Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(newMotionView)
+        if (event.localState != null){
+            when(event.action){
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 }
-                destination.addView(newMotionView)
-                createDragAndDropListener(newMotionView)
-                destination.addView(placeHolder)
-            } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
-            {
-                val placeHolder = destination[destination.childCount-1]
-                destination.removeView(placeHolder)
-                val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
-                newSoundView.contentDescription = v.contentDescription
-                val v1 = event.localState as TextView
-                newSoundView.text = v1.text
+                DragEvent.ACTION_DRAG_ENTERED -> {
 
-                if(v.contentDescription == "stationary"){
-                    addIntToViewContentDescripton(newSoundView, destination,"Enter sleep time in ms.")
+                        val v = event.localState as View
+                        v.visibility = View.VISIBLE
+                        val owner = v.parent as ViewGroup
+                        val destination = view as LinearLayout
+                        if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
+                            binding.trash.visibility = View.VISIBLE
+                            binding.llTrash.visibility = View.VISIBLE
+                        }
+                        if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
+                            binding.play.visibility = View.VISIBLE
+                        }
+                        if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
+                        {
+                            binding.llBottom.alpha = 0.3f
+                        }
+                        else if (destination.contentDescription == "sounds_timeline" && owner.contentDescription == "sounds_lib")
+                        {
+                            binding.llBottomSounds.alpha = 0.3f
+                        }
+                        else if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline"))
+                        {
+                            binding.llTrash.alpha = 0.3f
+                        }
+                        else if (destination.contentDescription == "play" && (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib"))
+                        {
+                            binding.llPlay.alpha = 0.3f
+                        }
+                        view.invalidate()
+
+                    true
                 }
+                DragEvent.ACTION_DRAG_LOCATION -> true
+                DragEvent.ACTION_DRAG_EXITED -> {
+                    setTimelineAlpha(binding,tabSelected)
 
-                destination.addView(newSoundView)
-                createDragAndDropListener(newSoundView)
-                destination.addView(placeHolder)
+                    binding.llTrash.alpha = 1.0f
+                    binding.llPlay.alpha = 1.0f
+                    view.invalidate()
+                    true
+                }
+                DragEvent.ACTION_DROP -> {
+                    setTimelineAlpha(binding,tabSelected)
+                    binding.llTrash.alpha = 1.0f
+                    binding.trash.visibility = View.INVISIBLE
+                    binding.llTrash.visibility = View.INVISIBLE
+                    binding.llPlay.alpha = 1.0f
+                    binding.play.visibility = View.INVISIBLE
+
+                    val v = event.localState as View
+                    val owner = v.parent as ViewGroup
+                    val destination = view as LinearLayout
+
+                    if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")) {
+                        owner.removeView(v)
+                    } else if (destination.contentDescription == "play" && owner.contentDescription == "motion_lib") {
+                        var requestdata = availableMotions[getId(v)]
+                        val jsonRequestdata = requestdata.toJson()
+                        SendData().send(jsonRequestdata, connectionError)
+                    } else if (destination.contentDescription == "play" && owner.contentDescription == "sounds_lib") {
+                        playSound(this.requireContext(), importedSounds[getId(v)], 2000)
+                    } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
+                        val placeHolder = destination[destination.childCount-1]
+                        destination.removeView(placeHolder)
+                        val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
+                        newMotionView.contentDescription = v.contentDescription
+
+                        if(v.contentDescription == "stationary"){
+                            Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion1.gif")).into(newMotionView)
+                            addIntToViewContentDescripton(newMotionView, destination,"Enter sleep time in ms.")
+
+                        }else{
+                            Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(newMotionView)
+                        }
+                        destination.addView(newMotionView)
+                        createDragAndDropListener(newMotionView)
+                        destination.addView(placeHolder)
+                    } else if (owner.contentDescription == "sounds_lib" && destination.contentDescription == "sounds_timeline")
+                    {
+                        val placeHolder = destination[destination.childCount-1]
+                        destination.removeView(placeHolder)
+                        val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
+                        newSoundView.contentDescription = v.contentDescription
+                        val v1 = event.localState as TextView
+                        newSoundView.text = v1.text
+
+                        if(v.contentDescription == "stationary"){
+                            addIntToViewContentDescripton(newSoundView, destination,"Enter sleep time in ms.")
+                        }
+
+                        destination.addView(newSoundView)
+                        createDragAndDropListener(newSoundView)
+                        destination.addView(placeHolder)
+                    }
+                    true
+                }
+                DragEvent.ACTION_DRAG_ENDED -> {
+                    val v = event.localState as View
+                    v.visibility = View.VISIBLE
+                    binding.trash.visibility = View.INVISIBLE
+                    binding.llTrash.visibility = View.INVISIBLE
+                    binding.play.visibility = View.INVISIBLE
+                    view.invalidate()
+                    true
+                }
+                else -> false
             }
-            true
+        } else {
+            false
         }
-        DragEvent.ACTION_DRAG_ENDED -> {
-            val v = event.localState as View
-            v.visibility = View.VISIBLE
-            binding.trash.visibility = View.INVISIBLE
-            binding.play.visibility = View.INVISIBLE
-            view.invalidate()
-            true
-        }
-        else -> false
-    }
-
 }
     fun addIntToViewContentDescripton (view: View, destination: LinearLayout, titel: String){
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
@@ -458,7 +537,6 @@ fun createDragAndDropListener(view: View) {
             it, _ ->
         val dragShadowBuilder = View.DragShadowBuilder(it)
         it.startDragAndDrop(ClipData.newPlainText("", ""), dragShadowBuilder, it, 0)
-        it.visibility = View.INVISIBLE
         true
     }
 }
@@ -485,20 +563,20 @@ fun getIntFromContentDescription(view: View) : Int {
     return -1
 }
 
-fun setTimelineAlpha(binding : FragmentSecondBinding, tabSelected : Int, timelineAlpha : Float)
+fun setTimelineAlpha(binding : FragmentSecondBinding, tabSelected : Int)
 {
     when (tabSelected) {
         0 // motion tab selected
         -> {
             binding.llBottom.alpha = 1.0f
             binding.motionsText.alpha = 1.0f
-            binding.llBottomSounds.alpha = timelineAlpha
-            binding.soundsText.alpha = timelineAlpha
+            binding.llBottomSounds.alpha = 0.3f
+            binding.soundsText.alpha = 0.3f
         }
         1 // sound tab selected
         -> {
-            binding.llBottom.alpha = timelineAlpha
-            binding.motionsText.alpha = timelineAlpha
+            binding.llBottom.alpha = 0.3f
+            binding.motionsText.alpha = 0.3f
             binding.llBottomSounds.alpha = 1.0f
             binding.soundsText.alpha = 1.0f
         }
@@ -514,13 +592,18 @@ fun setTimelineAlpha(binding : FragmentSecondBinding, tabSelected : Int, timelin
 
 
 //plays a animation on each child of llBottom except for "+"
-fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, motionDuration : MutableList<Int> ) : Long {
+fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActivity, motionDuration : MutableList<Int>, animationDone: MutableList<Boolean>, tabSelected: Int) {
     val startAnimation = R.animator.run_animation_start         //reference to animator
     val runAnimation = R.animator.run_animation_run           //reference to animator
     val endAnimation = R.animator.run_animation_end             //reference to animator
 
     var delay:Long = 0                                          //time in ms
     binding.hsvBottom.smoothScrollTo(0,0)
+    if (binding.llBottom.childCount == 1)
+    {
+        animationDone[1] = true
+        animationsDone(binding, animationDone, tabSelected)
+    }
     for (i in 0 until binding.llBottom.childCount) {
         if(i == binding.llBottom.childCount-1){//element the empty + square
             continue
@@ -561,10 +644,92 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
         motionEnd.setTarget(x)
         motionEnd.doOnEnd {
             binding.hsvBottom.smoothScrollTo(x.right - x.width - 100, 0)
+            x.alpha = 0.3f
+            if (i == binding.llBottom.childCount-2)
+            animationDone[1] = true
+            animationsDone(binding, animationDone, tabSelected)
+
         }
         motionEnd.start()
 
         delay += duration
     }
-    return delay
+}
+
+
+fun soundAnimation(binding : FragmentSecondBinding, activity : FragmentActivity, position : Int, soundsDuration : MutableList<Int>, animationDone : MutableList<Boolean>, tabSelected: Int)
+{
+    var bar = binding.hsvSounds[0] as LinearLayout
+    if (bar.childCount > 1 && position < bar.childCount-1) {
+        var soundStart: AnimatorSet = AnimatorInflater.loadAnimator(activity, R.animator.timeline_start) as AnimatorSet
+        var soundEnd: AnimatorSet = AnimatorInflater.loadAnimator(activity, R.animator.timeline_end) as AnimatorSet
+
+        var view = bar.getChildAt(position)
+        val duration = min(soundsDuration[getId(view)].toLong(), 2000)
+        println("duration: $duration")
+
+        soundStart.setTarget(view)
+        soundStart.duration = duration/2
+
+        soundEnd.setTarget(view)
+        soundEnd.duration = duration/2
+        soundEnd.startDelay = duration/2
+        soundEnd.doOnEnd {
+            binding.hsvSounds.smoothScrollTo(view.right - view.width - 100, 0)
+            //soundAnimation(hsv, activity, position + 1, soundsDuration)
+            view.alpha = 0.3f
+            if (position == bar.childCount-2)
+            {
+                animationDone[0] = true;
+                animationsDone(binding, animationDone, tabSelected)
+            }
+        }
+        soundStart.start()
+        soundEnd.start()
+    }
+}
+
+fun playAnimatedSounds(fragment : SecondFragment, binding : FragmentSecondBinding, soundsList: MutableList<String>, soundsDuration: MutableList<Int>, position : Int, tabSelected : Int, animationDone : MutableList<Boolean>){
+    //only continue if provided list contains any sounds
+    if (soundsList.size == 0)
+    {
+        animationDone[0] = true
+        animationsDone(binding, animationDone, tabSelected)
+    }
+    else if ( position < soundsList.size) {
+        //if an existing player is found destroy it
+        if (mMediaPlayer != null) {
+            stopSound()
+        }
+        //get next sound as filename from list
+        val next = soundsList[position]
+        //create new player with the next sound and add onComplete listener to recursively play next sound when done.
+        try {
+            var afd = fragment.requireContext().assets.openFd("sounds/$next")
+            mMediaPlayer = MediaPlayer()
+            mMediaPlayer!!.setDataSource(afd)
+            mMediaPlayer!!.setOnCompletionListener {
+                playAnimatedSounds(fragment, binding, soundsList, soundsDuration,position + 1, tabSelected, animationDone)
+            }
+            mMediaPlayer!!.prepare()
+            mMediaPlayer!!.start()
+            soundAnimation(binding, fragment.requireActivity(), position, soundsDuration, animationDone, tabSelected)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+}
+
+fun animationsDone(binding: FragmentSecondBinding, animationDone : MutableList<Boolean>, tabSelected : Int)
+{
+    println("animationDone: ${animationDone[0]} and ${animationDone[1]}")
+    if (animationDone[0] && animationDone[1]) {
+        for (view in (binding.hsvSounds[0] as LinearLayout)) {
+            view.alpha = 1.0f
+        }
+        for (view in (binding.hsvBottom[0] as LinearLayout)) {
+            view.alpha = 1.0f
+        }
+        setTimelineAlpha(binding, tabSelected)
+    }
 }
