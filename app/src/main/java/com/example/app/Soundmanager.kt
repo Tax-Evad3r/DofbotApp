@@ -2,6 +2,7 @@ package com.example.app
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import java.io.IOException
@@ -40,18 +41,30 @@ fun playSounds(context: Context, list: MutableList<String>) {
         }
         //get next sound as filename from list
         val next = list.removeAt(0)
-        //create new player with the next sound and add onComplete listener to recursively play next sound when done.
-        try {
-            var afd = context.assets.openFd("sounds/$next")
-            mMediaPlayer = MediaPlayer()
-            mMediaPlayer!!.setDataSource(afd)
-            mMediaPlayer!!.setOnCompletionListener {
-                playSounds(context, list)
+        if(next.contains("stationary")){
+            val motionNumParse = next.filter { it.isDigit() }
+            object : CountDownTimer(motionNumParse.toLong(),1000){
+                override fun onTick(p0: Long) {
+                }
+                override fun onFinish() {
+                    playSounds(context, list)
+                }
+            }.start()
+        }
+        else {
+            //create new player with the next sound and add onComplete listener to recursively play next sound when done.
+            try {
+                var afd = context.assets.openFd("sounds/$next")
+                mMediaPlayer = MediaPlayer()
+                mMediaPlayer!!.setDataSource(afd)
+                mMediaPlayer!!.setOnCompletionListener {
+                    playSounds(context, list)
+                }
+                mMediaPlayer!!.prepare()
+                mMediaPlayer!!.start()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-            mMediaPlayer!!.prepare()
-            mMediaPlayer!!.start()
-        } catch (e: IOException) {
-            e.printStackTrace()
         }
     }
 }
@@ -103,6 +116,11 @@ fun calculateSoundsLength(context: Context, list: MutableList<String>) : Long
         }
         for (next in list) {
             //create new player with the next sound and add onComplete listener to recursively play next sound when done.
+
+            if(next.contains("stationary")){
+                val motionNumParse = next.filter { it.isDigit() }
+                duration += motionNumParse.toLong()
+            }
             try {
                 var afd = context.assets.openFd("sounds/$next")
                 mMediaPlayer = MediaPlayer()

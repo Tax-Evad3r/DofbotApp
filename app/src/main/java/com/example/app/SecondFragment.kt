@@ -6,20 +6,16 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipDescription
-import android.content.Context
 import android.content.DialogInterface
-import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.TypedValue
 import android.view.DragEvent
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.animation.doOnEnd
@@ -33,7 +29,7 @@ import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
 import java.lang.Long.max
-import kotlin.math.abs
+
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -140,6 +136,13 @@ class SecondFragment : Fragment() {
         binding.llPlay.setOnDragListener(dragListener)
         binding.play.visibility = View.INVISIBLE
 
+        var stationaryDestination = binding.llRightMotions
+        val stationaryMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, stationaryDestination, false) as ShapeableImageView
+        stationaryMotionView.contentDescription = "stationary"
+        Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion1.gif")).into(stationaryMotionView)
+        stationaryDestination.addView(stationaryMotionView)
+        createDragAndDropListener(stationaryMotionView)
+
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
@@ -149,6 +152,13 @@ class SecondFragment : Fragment() {
             destination.addView(newMotionView)
             createDragAndDropListener(newMotionView)
         }
+
+        stationaryDestination = binding.llRightSounds
+        val stationarySoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, stationaryDestination, false) as MaterialTextView
+        stationarySoundView.text = "No sound"
+        stationarySoundView.contentDescription = "stationary"
+        stationaryDestination.addView(stationarySoundView)
+        createDragAndDropListener(stationarySoundView)
 
         //create new view for each sound depending on amount of imported sounds
         for (i in importedSounds.indices) {
@@ -249,18 +259,27 @@ class SecondFragment : Fragment() {
             //list of motion id to add to request
             val motionNumList = mutableListOf<Int>()
 
-            //loop through all motions in timeline (skip first since it is not a motion)
+            //loop through all motions in timeline and add motions to request
             for (motion in binding.llBottom) {
+                if(motion.contentDescription.contains("stationary") ){
+                    requestdata += createStationaryMotion(getIntFromContentDescription(motion))
+                    continue
+                }
                 val motionId = getId(motion)
-                if( motionId != -1) {
-                    motionNumList.add(motionId)
+                if( motionId != -1) {           //(skip elements without "motionId")
+                    //motionNumList.add(motionId)
+                    requestdata += availableMotions[motionId]
                 }
             }
+            /*
             //add motions to request
             for (i in motionNumList) {
+                if(i == availableMotions.size){
+                    continue
+                }
                 requestdata += availableMotions[i]
             }
-
+            */
             //convert request to json
             val jsonRequestdata = requestdata.toJson()
             //TODO: Remove when debug is no longer needed!
@@ -274,6 +293,10 @@ class SecondFragment : Fragment() {
 
             //loop through all sounds in timeline (skip first since it is not a sound)
             for (sound in binding.llBottomSounds) {
+                if(sound.contentDescription.contains("stationary") ){
+                    soundsList.add(sound.contentDescription.toString())
+                    continue
+                }
                 val soundId = getId(sound)
                 if( soundId != -1) {
                     soundsList.add(importedSounds[soundId])
@@ -357,7 +380,14 @@ class SecondFragment : Fragment() {
                 destination.removeView(placeHolder)
                 val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
                 newMotionView.contentDescription = v.contentDescription
-                Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(newMotionView)
+
+                if(v.contentDescription == "stationary"){
+                    Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion1.gif")).into(newMotionView)
+                    addIntToViewContentDescripton(newMotionView, destination,"Enter sleep time in ms.")
+
+                }else{
+                    Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${getId(v)}.gif")).into(newMotionView)
+                }
                 destination.addView(newMotionView)
                 createDragAndDropListener(newMotionView)
                 destination.addView(placeHolder)
@@ -369,6 +399,11 @@ class SecondFragment : Fragment() {
                 newSoundView.contentDescription = v.contentDescription
                 val v1 = event.localState as TextView
                 newSoundView.text = v1.text
+
+                if(v.contentDescription == "stationary"){
+                    addIntToViewContentDescripton(newSoundView, destination,"Enter sleep time in ms.")
+                }
+
                 destination.addView(newSoundView)
                 createDragAndDropListener(newSoundView)
                 destination.addView(placeHolder)
@@ -387,6 +422,24 @@ class SecondFragment : Fragment() {
     }
 
 }
+    fun addIntToViewContentDescripton (view: View, destination: LinearLayout, titel: String){
+        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.time_user_input_dialog,null)
+        val editText = dialogLayout.findViewById<EditText>(R.id.ip_edit_text)
+        with(builder){
+            setTitle(titel)
+            setPositiveButton("OK"){dialog,witch ->
+                view.contentDescription = view.contentDescription.toString() + editText.text.toString()
+
+            }
+            setNegativeButton("Cancel"){dialog,witch ->
+                destination.removeView(view)
+            }
+            setView(dialogLayout)
+            show()
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -418,6 +471,17 @@ fun getId(view: View) : Int {
         //parse substring to usable in for later
         return motionNumParse.toString().toInt()
     }
+    return -1
+}
+//helper function for extracting id from string (eg. "motion1" returns 1)
+fun getIntFromContentDescription(view: View) : Int {
+    var motionNumParse = view.contentDescription.filter { it.isDigit() }
+    //ignore temp motion (might not be needed in the end)
+    if (motionNumParse.toString().toIntOrNull() != null) {
+        //parse substring to usable in for later
+        return motionNumParse.toString().toInt()
+    }
+
     return -1
 }
 
@@ -465,9 +529,15 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
         val motionRun:AnimatorSet = AnimatorInflater.loadAnimator(activity, runAnimation) as AnimatorSet
         val motionEnd:AnimatorSet = AnimatorInflater.loadAnimator(activity, endAnimation) as AnimatorSet
         val x = binding.llBottom.getChildAt(i)
-        val duration:Long = motionDuration[getId(x)].toLong()       //time in ms
+        var duration:Long = 0                                       //time in ms
         var startAnimationDuration:Long                             //time in ms
         var endAnimationDelay:Long = 0                              //time in ms
+        if(x.contentDescription.contains("stationary")){
+            duration = getIntFromContentDescription(x).toLong()
+        }
+        else if(x.contentDescription.contains("motion")){
+            duration = motionDuration[getId(x)].toLong()
+        }
 
         if(duration > 1000){
             startAnimationDuration = 1000
