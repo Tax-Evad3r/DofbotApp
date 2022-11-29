@@ -462,12 +462,30 @@ class SecondFragment : Fragment() {
             false
         }
 }
+    var actionTaken = false
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        println("in motions: " + binding.llBottom.childCount)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+        builder.setMessage(HtmlCompat.fromHtml("You have exited with <b>unsaved</b> changes!", HtmlCompat.FROM_HTML_MODE_LEGACY)).setPositiveButton("Save", handleExit)
+            .setNegativeButton("Discard", handleExit).show()
         stopPlayerOnStop()
+        super.onDestroyView()
         _binding = null
     }
+
+    private val handleExit =
+        DialogInterface.OnClickListener { _, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    //TODO: save changes here
+                    actionTaken = true
+                }
+                DialogInterface.BUTTON_NEGATIVE -> {
+                    actionTaken = true
+                }
+            }
+        }
 
     override fun onStop() {
         super.onStop()
@@ -660,3 +678,4 @@ fun animationsDone(binding: FragmentSecondBinding, animationDone : MutableList<B
         setTimelineAlpha(binding, tabSelected)
     }
 }
+
