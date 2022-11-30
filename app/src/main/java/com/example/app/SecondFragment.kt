@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide
 import com.example.app.databinding.FragmentSecondBinding
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
+import java.io.File
 import java.io.IOException
 import java.lang.Long.max
 import kotlin.math.abs
@@ -291,6 +292,67 @@ class SecondFragment : Fragment() {
             motionRunAnimations(binding,this.requireActivity(), motionDuration, animationDone, tabSelected)
             animationsDone(binding,animationDone, tabSelected)
 
+        }
+
+        val filename = "save.txt"
+
+        binding.buttonStart.setOnClickListener {
+            var message = ""
+
+            for (soundChild in binding.llBottomSounds) {
+                if (getId(soundChild) != -1) {
+                    message += getId(soundChild).toString() + ","
+                }
+            }
+            message += ";"
+            for (motionChild in binding.llBottom) {
+                if (getId(motionChild) != -1) {
+                    message += getId(motionChild).toString() + ","
+                }
+            }
+
+            this.requireContext().openFileOutput(filename, Context.MODE_PRIVATE).use {
+                it.write(message.toByteArray())
+            }
+        }
+        binding.buttonEnd.setOnClickListener {
+            val file = File(this.requireContext().filesDir, filename)
+            val contents = file.readText() // Read file
+
+            var messageTypes = contents.split(";")
+            var messageSounds = messageTypes[0].split(",")
+            var messageMotions = messageTypes[1].split(",")
+
+            val placeHolderSounds = binding.llBottomSounds[binding.llBottomSounds.childCount-1]
+            binding.llBottomSounds.removeView(placeHolderSounds)
+            val placeHolderMotions = binding.llBottom[binding.llBottom.childCount-1]
+            binding.llBottom.removeView(placeHolderMotions)
+
+            binding.llBottomSounds.removeAllViews()
+            binding.llBottom.removeAllViews()
+
+            for (savedSound in messageSounds) {
+                if (savedSound.toIntOrNull() != null) {
+                    val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, binding.llBottomSounds, false) as MaterialTextView
+                    newSoundView.contentDescription = "sound$savedSound"
+                    newSoundView.text = importedSounds[savedSound.toInt()].substring(0, importedSounds[savedSound.toInt()].indexOf("."))
+                    binding.llBottomSounds.addView(newSoundView)
+                    createDragAndDropListener(newSoundView)
+                }
+            }
+
+            for (savedMotion in messageMotions) {
+                if (savedMotion.toIntOrNull() != null) {
+                    val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, binding.llBottom, false) as ShapeableImageView
+                    newMotionView.contentDescription = "motion$savedMotion"
+                    Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${savedMotion}.gif")).into(newMotionView)
+                    binding.llBottom.addView(newMotionView)
+                    createDragAndDropListener(newMotionView)
+                }
+            }
+
+            binding.llBottomSounds.addView(placeHolderSounds)
+            binding.llBottom.addView(placeHolderMotions)
         }
     }
 
