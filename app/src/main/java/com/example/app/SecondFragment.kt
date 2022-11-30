@@ -285,7 +285,7 @@ class SecondFragment : Fragment() {
                     soundsList.add(importedSounds[soundId])
                 }
             }
-            val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), soundsList)
+            val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), importedSounds)
             var animationDone = mutableListOf<Boolean>(false,false)
              playAnimatedSounds(this, binding, soundsList, soundsDuration, 0, tabSelected, animationDone)
 
