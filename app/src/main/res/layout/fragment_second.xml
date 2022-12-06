@@ -352,6 +352,39 @@
             android:paddingHorizontal="20dp"/>
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/llPreview"
+        android:layout_width="410dp"
+        android:layout_height="350dp"
+        android:alpha="0.5"
+        android:background="@drawable/dotted_button_preview"
+        android:contentDescription="Preview"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/hsvSounds"
+        app:layout_constraintEnd_toEndOf="@+id/scRightMotions"
+        app:layout_constraintStart_toStartOf="@+id/llLeft"
+        app:layout_constraintTop_toBottomOf="@+id/llTop">
+        <!--
+        <ImageView
+            android:id="@+id/trash"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:gravity="center"
+            android:src="@drawable/trashcan" />
+            -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:text="Drop here to preview motions"
+            android:textColor="@color/white"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/llPlay"
         android:layout_width="wrap_content"

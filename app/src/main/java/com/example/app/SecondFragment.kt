@@ -143,8 +143,10 @@ class SecondFragment : Fragment() {
         binding.llRightSounds.setOnDragListener(dragListener)
         binding.llBottomSounds.setOnDragListener(dragListener)
         binding.llTrash.setOnDragListener(dragListener)
+        binding.llPreview.setOnDragListener(dragListener)
         binding.trash.visibility = View.INVISIBLE
         binding.llTrash.visibility = View.INVISIBLE
+        binding.llPreview.visibility = View.INVISIBLE
         binding.llPlay.setOnDragListener(dragListener)
         binding.play.visibility = View.INVISIBLE
 
@@ -415,6 +417,9 @@ class SecondFragment : Fragment() {
                         if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
                             binding.play.visibility = View.VISIBLE
                         }
+                        if (owner.contentDescription == "motion_lib") {
+                            binding.llPreview.visibility = View.VISIBLE
+                        }
                         if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
                         {
                             binding.llBottom.alpha = 0.3f
@@ -440,6 +445,7 @@ class SecondFragment : Fragment() {
                     setTimelineAlpha(binding,tabSelected)
 
                     binding.llTrash.alpha = 1.0f
+                    binding.llPreview.alpha = 1.0f
                     binding.llPlay.alpha = 1.0f
                     view.invalidate()
                     true
@@ -449,6 +455,8 @@ class SecondFragment : Fragment() {
                     binding.llTrash.alpha = 1.0f
                     binding.trash.visibility = View.INVISIBLE
                     binding.llTrash.visibility = View.INVISIBLE
+                    binding.llPreview.alpha = 1.0f
+                    binding.llPreview.visibility = View.INVISIBLE
                     binding.llPlay.alpha = 1.0f
                     binding.play.visibility = View.INVISIBLE
 
@@ -504,6 +512,8 @@ class SecondFragment : Fragment() {
                     v.visibility = View.VISIBLE
                     binding.trash.visibility = View.INVISIBLE
                     binding.llTrash.visibility = View.INVISIBLE
+                    binding.llPreview.alpha = 1.0f
+                    binding.llPreview.visibility = View.INVISIBLE
                     binding.play.visibility = View.INVISIBLE
                     view.invalidate()
                     true
