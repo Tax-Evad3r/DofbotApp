@@ -232,6 +232,26 @@ fun  animationDuration(motion:Data):Int{
     return time
 }
 
+
+fun createStationaryMotion(time: Int) : Data {
+    val bottomRotation : MutableList<MutableList<Int>> = ArrayList()
+    val joint1 : MutableList<MutableList<Int>> = ArrayList()
+    val joint2 : MutableList<MutableList<Int>> = ArrayList()
+    val joint3 : MutableList<MutableList<Int>> = ArrayList()
+    val clawRotation : MutableList<MutableList<Int>> = ArrayList()
+    val clawGrip : MutableList<MutableList<Int>> = ArrayList()
+
+    bottomRotation.add(mutableListOf(time, -1))
+    joint1.add(mutableListOf(time, -1))
+    joint2.add(mutableListOf(time, -1))
+    joint3.add(mutableListOf(time, -1))
+    clawRotation.add(mutableListOf(time, -1))
+    clawGrip.add(mutableListOf(time, -1))
+
+    //return final data object containing both motions from lhs and rhs
+    return Data(bottomRotation, joint1, joint2, joint3, clawRotation, clawGrip)
+}
+
 fun importMotionFromFile(context: Context): List<Data> {
 
     //retrieve all files in motions folder
