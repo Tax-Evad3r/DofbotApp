@@ -12,6 +12,7 @@ import android.content.res.Resources
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.DragEvent
@@ -148,7 +149,7 @@ class SecondFragment : Fragment() {
         binding.play.visibility = View.INVISIBLE
 
         var stationaryDestination = binding.llRightMotions
-        val stationaryMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, stationaryDestination, false) as ShapeableImageView
+        val stationaryMotionView = LayoutInflater.from(this.context).inflate(R.layout.motionlib_template, stationaryDestination, false) as ShapeableImageView
         stationaryMotionView.contentDescription = "stationary"
         Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion1.gif")).into(stationaryMotionView)
         stationaryDestination.addView(stationaryMotionView)
@@ -165,7 +166,7 @@ class SecondFragment : Fragment() {
         }
 
         stationaryDestination = binding.llRightSounds
-        val stationarySoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, stationaryDestination, false) as MaterialTextView
+        val stationarySoundView = LayoutInflater.from(this.context).inflate(R.layout.soundlib_template, stationaryDestination, false) as MaterialTextView
         stationarySoundView.text = "No sound"
         stationarySoundView.contentDescription = "stationary"
         stationaryDestination.addView(stationarySoundView)
@@ -662,6 +663,7 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
                 animationDone[1] = true
                 animationsDone(binding, animationDone, tabSelected)
             }
+
         }
         motionEnd.start()
 
@@ -678,7 +680,15 @@ fun soundAnimation(binding : FragmentSecondBinding, activity : FragmentActivity,
         var soundEnd: AnimatorSet = AnimatorInflater.loadAnimator(activity, R.animator.timeline_end) as AnimatorSet
 
         var view = bar.getChildAt(position)
-        val duration = min(soundsDuration[getId(view)].toLong(), 2000)
+        var duration = 0.toLong()
+
+        if(view.contentDescription.contains("stationary")){
+            duration = getIntFromContentDescription(view).toLong()
+        }
+        else{
+            duration = min(soundsDuration[getId(view)].toLong(), 2000)
+        }
+
         println("duration: $duration")
 
         soundStart.setTarget(view)
@@ -716,6 +726,19 @@ fun playAnimatedSounds(fragment : SecondFragment, binding : FragmentSecondBindin
         }
         //get next sound as filename from list
         val next = soundsList[position]
+        if(next.contains("stationary")){
+            soundAnimation(binding, fragment.requireActivity(), position, soundsDuration, animationDone, tabSelected)
+            val motionNumParse = next.filter { it.isDigit() }
+            object : CountDownTimer(motionNumParse.toLong(),1000){
+                override fun onTick(p0: Long) {
+                }
+                override fun onFinish() {
+                    playAnimatedSounds(fragment, binding, soundsList, soundsDuration,position + 1, tabSelected, animationDone)
+
+                    //playSounds(context, list)
+                }
+            }.start()
+        }
         //create new player with the next sound and add onComplete listener to recursively play next sound when done.
         try {
             var afd = fragment.requireContext().assets.openFd("sounds/$next")
