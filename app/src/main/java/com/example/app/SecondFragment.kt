@@ -332,8 +332,8 @@ class SecondFragment : Fragment() {
                         soundsList.add(importedSounds[soundId])
                     }
                 }
-                val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), soundsList)
-                var animationDone = mutableListOf<Boolean>(false,false)
+                val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), importedSounds)
+
                 playAnimatedSounds(this, binding, soundsList, soundsDuration, 0, tabSelected, animationDone)
 
                 motionRunAnimations(binding, this.requireActivity(), motionDuration, animationDone, tabSelected)
@@ -628,23 +628,20 @@ fun soundAnimation(binding : FragmentSecondBinding, activity : FragmentActivity,
         var soundEnd: AnimatorSet = AnimatorInflater.loadAnimator(activity, R.animator.timeline_end) as AnimatorSet
 
         var view = bar.getChildAt(position)
-        var duration = 0.toLong()
-
-        if(view.contentDescription.contains("stationary")){
-            duration = getIntFromContentDescription(view).toLong()
-        }
-        else{
-            duration = min(soundsDuration[getId(view)].toLong(), 2000)
+        var duration: Long = if (view.contentDescription.contains("stationary")){
+            getIntFromContentDescription(view).toLong()
+        } else{
+            soundsDuration[getId(view)].toLong()
         }
 
-        println("duration: $duration")
+        val maxDuration = min(duration/2, 1000)
 
         soundStart.setTarget(view)
-        soundStart.duration = duration/2
+        soundStart.duration = maxDuration
 
         soundEnd.setTarget(view)
-        soundEnd.duration = duration/2
-        soundEnd.startDelay = duration/2
+        soundEnd.duration = maxDuration
+        soundEnd.startDelay = duration - maxDuration
         soundEnd.doOnEnd {
             binding.hsvSounds.smoothScrollTo(view.right - view.width - 100, 0)
             //soundAnimation(hsv, activity, position + 1, soundsDuration)
