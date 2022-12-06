@@ -37,6 +37,12 @@ class FirstFragment : Fragment() {
 
         binding.buttonFirst.setOnClickListener {
             IPADDRESS = binding.ipInput.text.toString()
+            resumeSession = false
+            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+        }
+        binding.buttonResume.setOnClickListener {
+            IPADDRESS = binding.ipInput.text.toString()
+            resumeSession = true
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
 

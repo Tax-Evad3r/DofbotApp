@@ -9,7 +9,8 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="Setup_Wifi">Start</string>
+    <string name="New_session">Start new session</string>
+    <string name="Resume_session">Resume last session</string>
     <string name="Welcome">Please setup WiFi to continue</string>
     <string name="Physical"><b>Physical</b>\nTest Run</string>
     <string name="Virtual"><b>Virtual</b>\nTest Run</string>
