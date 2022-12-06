@@ -197,6 +197,7 @@ class SecondFragment : Fragment() {
 
                         //restore add symbol in each timeline
                         motionTimeline.addView(placeHolderMotion)
+                        saveToFile(this.requireContext(), binding);
                     }
                 }
             }
@@ -218,6 +219,7 @@ class SecondFragment : Fragment() {
 
                         //restore add symbol in each timeline
                         soundTimeline.addView(placeHolderSounds)
+                        saveToFile(this.requireContext(), binding);
                     }
                 }
             }
@@ -294,65 +296,8 @@ class SecondFragment : Fragment() {
 
         }
 
-        val filename = "save.txt"
-
-        binding.buttonStart.setOnClickListener {
-            var message = ""
-
-            for (soundChild in binding.llBottomSounds) {
-                if (getId(soundChild) != -1) {
-                    message += getId(soundChild).toString() + ","
-                }
-            }
-            message += ";"
-            for (motionChild in binding.llBottom) {
-                if (getId(motionChild) != -1) {
-                    message += getId(motionChild).toString() + ","
-                }
-            }
-
-            this.requireContext().openFileOutput(filename, Context.MODE_PRIVATE).use {
-                it.write(message.toByteArray())
-            }
-        }
         binding.buttonEnd.setOnClickListener {
-            val file = File(this.requireContext().filesDir, filename)
-            val contents = file.readText() // Read file
-
-            var messageTypes = contents.split(";")
-            var messageSounds = messageTypes[0].split(",")
-            var messageMotions = messageTypes[1].split(",")
-
-            val placeHolderSounds = binding.llBottomSounds[binding.llBottomSounds.childCount-1]
-            binding.llBottomSounds.removeView(placeHolderSounds)
-            val placeHolderMotions = binding.llBottom[binding.llBottom.childCount-1]
-            binding.llBottom.removeView(placeHolderMotions)
-
-            binding.llBottomSounds.removeAllViews()
-            binding.llBottom.removeAllViews()
-
-            for (savedSound in messageSounds) {
-                if (savedSound.toIntOrNull() != null) {
-                    val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, binding.llBottomSounds, false) as MaterialTextView
-                    newSoundView.contentDescription = "sound$savedSound"
-                    newSoundView.text = importedSounds[savedSound.toInt()].substring(0, importedSounds[savedSound.toInt()].indexOf("."))
-                    binding.llBottomSounds.addView(newSoundView)
-                    createDragAndDropListener(newSoundView)
-                }
-            }
-
-            for (savedMotion in messageMotions) {
-                if (savedMotion.toIntOrNull() != null) {
-                    val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, binding.llBottom, false) as ShapeableImageView
-                    newMotionView.contentDescription = "motion$savedMotion"
-                    Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion${savedMotion}.gif")).into(newMotionView)
-                    binding.llBottom.addView(newMotionView)
-                    createDragAndDropListener(newMotionView)
-                }
-            }
-
-            binding.llBottomSounds.addView(placeHolderSounds)
-            binding.llBottom.addView(placeHolderMotions)
+            loadFromFile(this.requireContext(), binding, importedSounds)
         }
     }
 
@@ -445,6 +390,7 @@ class SecondFragment : Fragment() {
                         createDragAndDropListener(newSoundView)
                         destination.addView(placeHolder)
                     }
+                    saveToFile(this.requireContext(), binding)
                     true
                 }
                 DragEvent.ACTION_DRAG_ENDED -> {
@@ -676,6 +622,66 @@ fun animationsDone(binding: FragmentSecondBinding, animationDone : MutableList<B
             view.alpha = 1.0f
         }
         setTimelineAlpha(binding, tabSelected)
+    }
+}
+
+fun loadFromFile(context: Context, binding: FragmentSecondBinding, importedSounds : MutableList<String>) {
+    val file = File(context.filesDir, "save.txt")
+    val contents = file.readText() // Read file
+
+    var messageTypes = contents.split(";")
+    var messageSounds = messageTypes[0].split(",")
+    var messageMotions = messageTypes[1].split(",")
+
+    val placeHolderSounds = binding.llBottomSounds[binding.llBottomSounds.childCount-1]
+    binding.llBottomSounds.removeView(placeHolderSounds)
+    val placeHolderMotions = binding.llBottom[binding.llBottom.childCount-1]
+    binding.llBottom.removeView(placeHolderMotions)
+
+    binding.llBottomSounds.removeAllViews()
+    binding.llBottom.removeAllViews()
+
+    for (savedSound in messageSounds) {
+        if (savedSound.toIntOrNull() != null) {
+            val newSoundView = LayoutInflater.from(context).inflate(R.layout.sound_template, binding.llBottomSounds, false) as MaterialTextView
+            newSoundView.contentDescription = "sound$savedSound"
+            newSoundView.text = importedSounds[savedSound.toInt()].substring(0, importedSounds[savedSound.toInt()].indexOf("."))
+            binding.llBottomSounds.addView(newSoundView)
+            createDragAndDropListener(newSoundView)
+        }
+    }
+
+    for (savedMotion in messageMotions) {
+        if (savedMotion.toIntOrNull() != null) {
+            val newMotionView = LayoutInflater.from(context).inflate(R.layout.motion_template, binding.llBottom, false) as ShapeableImageView
+            newMotionView.contentDescription = "motion$savedMotion"
+            Glide.with(context).load(Uri.parse("file:///android_asset/gifs/motion${savedMotion}.gif")).into(newMotionView)
+            binding.llBottom.addView(newMotionView)
+            createDragAndDropListener(newMotionView)
+        }
+    }
+
+    binding.llBottomSounds.addView(placeHolderSounds)
+    binding.llBottom.addView(placeHolderMotions)
+}
+
+fun saveToFile(context: Context, binding: FragmentSecondBinding) {
+    var message = ""
+
+    for (soundChild in binding.llBottomSounds) {
+        if (getId(soundChild) != -1) {
+            message += getId(soundChild).toString() + ","
+        }
+    }
+    message += ";"
+    for (motionChild in binding.llBottom) {
+        if (getId(motionChild) != -1) {
+            message += getId(motionChild).toString() + ","
+        }
+    }
+
+    context.openFileOutput("save.txt", Context.MODE_PRIVATE).use {
+        it.write(message.toByteArray())
     }
 }
 
