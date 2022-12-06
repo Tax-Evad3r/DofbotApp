@@ -432,6 +432,10 @@ class SecondFragment : Fragment() {
                         {
                             binding.llTrash.alpha = 0.3f
                         }
+                        else if (destination.contentDescription == "Preview" && (owner.contentDescription == "motion_lib"))
+                        {
+                            binding.llPreview.alpha = 0.3f
+                        }
                         else if (destination.contentDescription == "play" && (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib"))
                         {
                             binding.llPlay.alpha = 0.3f
@@ -445,7 +449,7 @@ class SecondFragment : Fragment() {
                     setTimelineAlpha(binding,tabSelected)
 
                     binding.llTrash.alpha = 1.0f
-                    binding.llPreview.alpha = 1.0f
+                    binding.llPreview.alpha = 0.5f
                     binding.llPlay.alpha = 1.0f
                     view.invalidate()
                     true
@@ -512,7 +516,7 @@ class SecondFragment : Fragment() {
                     v.visibility = View.VISIBLE
                     binding.trash.visibility = View.INVISIBLE
                     binding.llTrash.visibility = View.INVISIBLE
-                    binding.llPreview.alpha = 1.0f
+                    binding.llPreview.alpha = 0.5f
                     binding.llPreview.visibility = View.INVISIBLE
                     binding.play.visibility = View.INVISIBLE
                     view.invalidate()

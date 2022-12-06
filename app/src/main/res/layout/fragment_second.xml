@@ -380,7 +380,7 @@
             android:gravity="center"
             android:paddingHorizontal="20dp"
             android:text="Drop here to preview motions"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="30dp"
             android:textStyle="bold" />
     </LinearLayout>
