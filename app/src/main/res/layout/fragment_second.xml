@@ -200,8 +200,20 @@
         android:orientation="horizontal"
         android:layout_marginTop="-13dp"
         app:layout_constraintEnd_toStartOf="@id/tabsRight"
-        app:layout_constraintStart_toEndOf="@id/llLeft"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonSave"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/Save"
+            android:textSize="16dp"
+            android:theme="@style/button"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/button_border"
+            app:strokeWidth="3dp" />
 
         <Space
             android:layout_width="wrap_content"
@@ -284,7 +296,7 @@
         android:layout_marginHorizontal="-10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/llTop">
 
         <Space
             android:layout_width="match_parent"
