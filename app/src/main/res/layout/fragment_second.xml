@@ -39,7 +39,8 @@
         app:layout_constraintBottom_toBottomOf="@id/hsvSounds"
         app:layout_constraintEnd_toStartOf="@id/dotted_button1"
         app:layout_constraintStart_toEndOf="@id/llLeft"
-        app:layout_constraintTop_toTopOf="@+id/hsvSounds" />
+        app:layout_constraintTop_toTopOf="@+id/hsvSounds"
+        tools:ignore="NotSibling" />
 
     <LinearLayout
         android:id="@+id/tabsRight"
