@@ -149,7 +149,7 @@ class SecondFragment : Fragment() {
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
-            val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
+            val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motionlib_template, destination, false) as ShapeableImageView
             newMotionView.contentDescription = "motion$i"
             Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion$i.gif")).into(newMotionView)
             destination.addView(newMotionView)
@@ -159,7 +159,7 @@ class SecondFragment : Fragment() {
         //create new view for each sound depending on amount of imported sounds
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
-            val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
+            val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.soundlib_template, destination, false) as MaterialTextView
             newSoundView.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))
             newSoundView.contentDescription = "sound$i"
             destination.addView(newSoundView)
@@ -285,7 +285,7 @@ class SecondFragment : Fragment() {
                     soundsList.add(importedSounds[soundId])
                 }
             }
-            val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), soundsList)
+            val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), importedSounds)
             var animationDone = mutableListOf<Boolean>(false,false)
              playAnimatedSounds(this, binding, soundsList, soundsDuration, 0, tabSelected, animationDone)
 
@@ -590,10 +590,10 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
         motionEnd.doOnEnd {
             binding.hsvBottom.smoothScrollTo(x.right - x.width - 100, 0)
             x.alpha = 0.3f
-            if (i == binding.llBottom.childCount-2)
-            animationDone[1] = true
-            animationsDone(binding, animationDone, tabSelected)
-
+            if (i == binding.llBottom.childCount-2) {
+                animationDone[1] = true
+                animationsDone(binding, animationDone, tabSelected)
+            }
         }
         motionEnd.start()
 
