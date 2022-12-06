@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipDescription
+import android.content.Context
 import android.content.DialogInterface
 import android.content.res.Resources
 import android.media.MediaPlayer
@@ -39,7 +40,6 @@ import java.lang.Long.max
 import kotlin.math.abs
 import java.lang.Long.min
 
-
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
@@ -55,6 +55,7 @@ class SecondFragment : Fragment() {
 
     private var tabSelected = 0 // 0=motion, 1 = sound
     private var timelineAlpha = 0.3f
+    var animationDone = mutableListOf<Boolean>(true,true)
 
     private lateinit var availableMotions : List<Data>
     private lateinit var importedSounds : MutableList<String>
@@ -156,7 +157,7 @@ class SecondFragment : Fragment() {
         //create new view for each motion depending on amount of imported motions
         for (i in availableMotions.indices) {
             val destination = binding.llRightMotions
-            val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motion_template, destination, false) as ShapeableImageView
+            val newMotionView = LayoutInflater.from(this.context).inflate(R.layout.motionlib_template, destination, false) as ShapeableImageView
             newMotionView.contentDescription = "motion$i"
             Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/motion$i.gif")).into(newMotionView)
             destination.addView(newMotionView)
@@ -173,7 +174,7 @@ class SecondFragment : Fragment() {
         //create new view for each sound depending on amount of imported sounds
         for (i in importedSounds.indices) {
             val destination = binding.llRightSounds
-            val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.sound_template, destination, false) as MaterialTextView
+            val newSoundView = LayoutInflater.from(this.context).inflate(R.layout.soundlib_template, destination, false) as MaterialTextView
             newSoundView.text = importedSounds[i].substring(0, importedSounds[i].indexOf("."))
             newSoundView.contentDescription = "sound$i"
             destination.addView(newSoundView)
@@ -253,72 +254,83 @@ class SecondFragment : Fragment() {
         }
 
         binding.buttonRun.setOnClickListener {
+            if (animationDone[0] && animationDone[1]) {
+                animationDone[0] = false
+                animationDone[1] = false
+                binding.buttonRun.alpha = 0.3f
 
-            //debug print for all objects on timeline
-            println("Current queue")
-            println(binding.llBottom.childCount)
-            for (i in 0 until binding.llBottom.childCount) {
-                println(binding.llBottom.getChildAt(i).contentDescription)
+                //debug print for all objects on timeline
+                println("Current queue")
+                println(binding.llBottom.childCount)
+                for (i in 0 until binding.llBottom.childCount) {
+                    println(binding.llBottom.getChildAt(i).contentDescription)
+                }
+
+                setTimelineAlpha(binding, 2)
+
+                //initialize empty initial response
+                var requestdata = Data(
+                    mutableListOf(),
+                    mutableListOf(),
+                    mutableListOf(),
+                    mutableListOf(),
+                    mutableListOf(),
+                    mutableListOf()
+                )
+
+                //list of motion id to add to request
+                val motionNumList = mutableListOf<Int>()
+
+                //loop through all motions in timeline and add motions to request
+                for (motion in binding.llBottom) {
+                    if(motion.contentDescription.contains("stationary") ){
+                        requestdata += createStationaryMotion(getIntFromContentDescription(motion))
+                        continue
+                    }
+                    val motionId = getId(motion)
+                    if( motionId != -1) {           //(skip elements without "motionId")
+                        //motionNumList.add(motionId)
+                        requestdata += availableMotions[motionId]
+                    }
+                }
+                /*
+                //add motions to request
+                for (i in motionNumList) {
+                    if(i == availableMotions.size){
+                        continue
+                    }
+                    requestdata += availableMotions[i]
+                }
+                */
+                //convert request to json
+                val jsonRequestdata = requestdata.toJson()
+                //TODO: Remove when debug is no longer needed!
+                println("Sending json= $jsonRequestdata")
+
+                //send request
+                SendData().send(jsonRequestdata, connectionError)
+
+                //create sound list
+                val soundsList = mutableListOf<String>()
+
+                //loop through all sounds in timeline (skip first since it is not a sound)
+                for (sound in binding.llBottomSounds) {
+                    if(sound.contentDescription.contains("stationary") ){
+                        soundsList.add(sound.contentDescription.toString())
+                        continue
+                    }
+                    val soundId = getId(sound)
+                    if( soundId != -1) {
+                        soundsList.add(importedSounds[soundId])
+                    }
+                }
+                val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), soundsList)
+                var animationDone = mutableListOf<Boolean>(false,false)
+                playAnimatedSounds(this, binding, soundsList, soundsDuration, 0, tabSelected, animationDone)
+
+                motionRunAnimations(binding, this.requireActivity(), motionDuration, animationDone, tabSelected)
+                animationsDone(binding, animationDone, tabSelected)
             }
-
-            setTimelineAlpha(binding, 2)
-
-            //initialize empty initial response
-            var requestdata = Data(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
-
-            //list of motion id to add to request
-            val motionNumList = mutableListOf<Int>()
-
-            //loop through all motions in timeline and add motions to request
-            for (motion in binding.llBottom) {
-                if(motion.contentDescription.contains("stationary") ){
-                    requestdata += createStationaryMotion(getIntFromContentDescription(motion))
-                    continue
-                }
-                val motionId = getId(motion)
-                if( motionId != -1) {           //(skip elements without "motionId")
-                    //motionNumList.add(motionId)
-                    requestdata += availableMotions[motionId]
-                }
-            }
-            /*
-            //add motions to request
-            for (i in motionNumList) {
-                if(i == availableMotions.size){
-                    continue
-                }
-                requestdata += availableMotions[i]
-            }
-            */
-            //convert request to json
-            val jsonRequestdata = requestdata.toJson()
-            //TODO: Remove when debug is no longer needed!
-            println("Sending json= $jsonRequestdata")
-
-            //send request
-            SendData().send(jsonRequestdata, connectionError)
-            
-            //create sound list
-            val soundsList = mutableListOf<String>()
-
-            //loop through all sounds in timeline (skip first since it is not a sound)
-            for (sound in binding.llBottomSounds) {
-                if(sound.contentDescription.contains("stationary") ){
-                    soundsList.add(sound.contentDescription.toString())
-                    continue
-                }
-                val soundId = getId(sound)
-                if( soundId != -1) {
-                    soundsList.add(importedSounds[soundId])
-                }
-            }
-            val soundsDuration : MutableList<Int> = calculateSoundsLength(this.requireContext(), soundsList)
-            var animationDone = mutableListOf<Boolean>(false,false)
-             playAnimatedSounds(this, binding, soundsList, soundsDuration, 0, tabSelected, animationDone)
-
-            motionRunAnimations(binding,this.requireActivity(), motionDuration, animationDone, tabSelected)
-            animationsDone(binding,animationDone, tabSelected)
-
         }
 
         val filename = "save.txt"
@@ -597,6 +609,7 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
     val runAnimation = R.animator.run_animation_run           //reference to animator
     val endAnimation = R.animator.run_animation_end             //reference to animator
 
+
     var delay:Long = 0                                          //time in ms
     binding.hsvBottom.smoothScrollTo(0,0)
     if (binding.llBottom.childCount == 1)
@@ -645,10 +658,10 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
         motionEnd.doOnEnd {
             binding.hsvBottom.smoothScrollTo(x.right - x.width - 100, 0)
             x.alpha = 0.3f
-            if (i == binding.llBottom.childCount-2)
-            animationDone[1] = true
-            animationsDone(binding, animationDone, tabSelected)
-
+            if (i == binding.llBottom.childCount-2) {
+                animationDone[1] = true
+                animationsDone(binding, animationDone, tabSelected)
+            }
         }
         motionEnd.start()
 
@@ -722,8 +735,8 @@ fun playAnimatedSounds(fragment : SecondFragment, binding : FragmentSecondBindin
 
 fun animationsDone(binding: FragmentSecondBinding, animationDone : MutableList<Boolean>, tabSelected : Int)
 {
-    println("animationDone: ${animationDone[0]} and ${animationDone[1]}")
     if (animationDone[0] && animationDone[1]) {
+        binding.buttonRun.alpha = 0.7f
         for (view in (binding.hsvSounds[0] as LinearLayout)) {
             view.alpha = 1.0f
         }
