@@ -572,10 +572,10 @@ fun motionRunAnimations(binding : FragmentSecondBinding, activity : FragmentActi
         motionEnd.doOnEnd {
             binding.hsvBottom.smoothScrollTo(x.right - x.width - 100, 0)
             x.alpha = 0.3f
-            if (i == binding.llBottom.childCount-2)
-            animationDone[1] = true
-            animationsDone(binding, animationDone, tabSelected)
-
+            if (i == binding.llBottom.childCount-2) {
+                animationDone[1] = true
+                animationsDone(binding, animationDone, tabSelected)
+            }
         }
         motionEnd.start()
 
