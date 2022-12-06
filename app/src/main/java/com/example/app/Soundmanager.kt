@@ -2,6 +2,7 @@ package com.example.app
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import java.io.IOException
@@ -78,6 +79,11 @@ fun calculateSoundsLength(context: Context, list: MutableList<String>) : Mutable
         }
         for (next in list) {
             //create new player with the next sound and add onComplete listener to recursively play next sound when done.
+
+            if(next.contains("stationary")){
+                val motionNumParse = next.filter { it.isDigit() }
+                duration.add(motionNumParse.toInt())
+            }
             try {
                 var afd = context.assets.openFd("sounds/$next")
                 mMediaPlayer = MediaPlayer()
