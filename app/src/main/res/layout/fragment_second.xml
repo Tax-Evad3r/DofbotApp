@@ -16,23 +16,28 @@
         android:padding="8dp"
         android:text="Motions:"
         android:textSize="16sp"
-        android:background="#BF79839E"
+        android:textColor="#E6BF793B"
+        android:rotation="-90"
+        android:background="#99F2F2F2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/hsvBottom"
+        app:layout_constraintEnd_toStartOf="@id/dotted_button"
         app:layout_constraintStart_toEndOf="@id/llLeft"
-        app:layout_constraintTop_toTopOf="@+id/hsvBottom" />
+        app:layout_constraintTop_toTopOf="@+id/hsvBottom"
+        tools:ignore="NotSibling" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/soundsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#99F2F2F2"
         android:gravity="center"
         android:padding="8dp"
+        android:rotation="-90"
         android:text="Sounds:"
+        android:textColor="#E6BF793B"
         android:textSize="16sp"
-        android:background="#BF79839E"
         app:layout_constraintBottom_toBottomOf="@id/hsvSounds"
-        app:layout_constraintEnd_toStartOf="@id/hsvSounds"
+        app:layout_constraintEnd_toStartOf="@id/dotted_button1"
         app:layout_constraintStart_toEndOf="@id/llLeft"
         app:layout_constraintTop_toTopOf="@+id/hsvSounds" />
 
