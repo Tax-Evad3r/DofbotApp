@@ -716,55 +716,59 @@ fun animationsDone(binding: FragmentSecondBinding, animationDone : MutableList<B
 }
 
 fun loadFromFile(context: Context, binding: FragmentSecondBinding, importedSounds : MutableList<String>) {
-    val file = File(context.filesDir, "save.txt")
-    val contents = file.readText()
+    try {
+        val file = File(context.filesDir, "save.txt")
+        val contents = file.readText()
 
-    var messageTypes = contents.split(";")
-    var messageSounds = messageTypes[0].split(",")
-    var messageMotions = messageTypes[1].split(",")
+        var messageTypes = contents.split(";")
+        var messageSounds = messageTypes[0].split(",")
+        var messageMotions = messageTypes[1].split(",")
 
-    val placeHolderSounds = binding.llBottomSounds[binding.llBottomSounds.childCount-1]
-    binding.llBottomSounds.removeView(placeHolderSounds)
-    val placeHolderMotions = binding.llBottom[binding.llBottom.childCount-1]
-    binding.llBottom.removeView(placeHolderMotions)
+        val placeHolderSounds = binding.llBottomSounds[binding.llBottomSounds.childCount-1]
+        binding.llBottomSounds.removeView(placeHolderSounds)
+        val placeHolderMotions = binding.llBottom[binding.llBottom.childCount-1]
+        binding.llBottom.removeView(placeHolderMotions)
 
-    binding.llBottomSounds.removeAllViews()
-    binding.llBottom.removeAllViews()
+        binding.llBottomSounds.removeAllViews()
+        binding.llBottom.removeAllViews()
 
-    for (savedSound in messageSounds) {
-        if (savedSound.toIntOrNull() != null) {
-            val newSoundView = LayoutInflater.from(context).inflate(R.layout.sound_template, binding.llBottomSounds, false) as MaterialTextView
-            newSoundView.contentDescription = "sound$savedSound"
-            newSoundView.text = importedSounds[savedSound.toInt()].substring(0, importedSounds[savedSound.toInt()].indexOf("."))
-            binding.llBottomSounds.addView(newSoundView)
-            createDragAndDropListener(newSoundView)
-        } else if (savedSound.contains("stationary")) {
-            val newSoundView = LayoutInflater.from(context).inflate(R.layout.sound_template, binding.llBottomSounds, false) as MaterialTextView
-            newSoundView.contentDescription = "stationary${savedSound.filter { it.isDigit() }}"
-            newSoundView.text = "No sound"
-            binding.llBottomSounds.addView(newSoundView)
-            createDragAndDropListener(newSoundView)
+        for (savedSound in messageSounds) {
+            if (savedSound.toIntOrNull() != null) {
+                val newSoundView = LayoutInflater.from(context).inflate(R.layout.sound_template, binding.llBottomSounds, false) as MaterialTextView
+                newSoundView.contentDescription = "sound$savedSound"
+                newSoundView.text = importedSounds[savedSound.toInt()].substring(0, importedSounds[savedSound.toInt()].indexOf("."))
+                binding.llBottomSounds.addView(newSoundView)
+                createDragAndDropListener(newSoundView)
+            } else if (savedSound.contains("stationary")) {
+                val newSoundView = LayoutInflater.from(context).inflate(R.layout.sound_template, binding.llBottomSounds, false) as MaterialTextView
+                newSoundView.contentDescription = "stationary${savedSound.filter { it.isDigit() }}"
+                newSoundView.text = "No sound"
+                binding.llBottomSounds.addView(newSoundView)
+                createDragAndDropListener(newSoundView)
+            }
         }
-    }
 
-    for (savedMotion in messageMotions) {
-        if (savedMotion.toIntOrNull() != null) {
-            val newMotionView = LayoutInflater.from(context).inflate(R.layout.motion_template, binding.llBottom, false) as ShapeableImageView
-            newMotionView.contentDescription = "motion$savedMotion"
-            Glide.with(context).load(Uri.parse("file:///android_asset/gifs/motion${savedMotion}.gif")).into(newMotionView)
-            binding.llBottom.addView(newMotionView)
-            createDragAndDropListener(newMotionView)
-        } else if (savedMotion.contains("stationary")) {
-            val newMotionView = LayoutInflater.from(context).inflate(R.layout.motion_template, binding.llBottom, false) as ShapeableImageView
-            newMotionView.contentDescription = "stationary${savedMotion.filter { it.isDigit() }}"
-            Glide.with(context).load(Uri.parse("file:///android_asset/gifs/hourglass.gif")).into(newMotionView)
-            binding.llBottom.addView(newMotionView)
-            createDragAndDropListener(newMotionView)
+        for (savedMotion in messageMotions) {
+            if (savedMotion.toIntOrNull() != null) {
+                val newMotionView = LayoutInflater.from(context).inflate(R.layout.motion_template, binding.llBottom, false) as ShapeableImageView
+                newMotionView.contentDescription = "motion$savedMotion"
+                Glide.with(context).load(Uri.parse("file:///android_asset/gifs/motion${savedMotion}.gif")).into(newMotionView)
+                binding.llBottom.addView(newMotionView)
+                createDragAndDropListener(newMotionView)
+            } else if (savedMotion.contains("stationary")) {
+                val newMotionView = LayoutInflater.from(context).inflate(R.layout.motion_template, binding.llBottom, false) as ShapeableImageView
+                newMotionView.contentDescription = "stationary${savedMotion.filter { it.isDigit() }}"
+                Glide.with(context).load(Uri.parse("file:///android_asset/gifs/hourglass.gif")).into(newMotionView)
+                binding.llBottom.addView(newMotionView)
+                createDragAndDropListener(newMotionView)
+            }
         }
-    }
 
-    binding.llBottomSounds.addView(placeHolderSounds)
-    binding.llBottom.addView(placeHolderMotions)
+        binding.llBottomSounds.addView(placeHolderSounds)
+        binding.llBottom.addView(placeHolderMotions)
+    } catch (e : Exception) {
+        println("Error loading from file!")
+    }
 }
 
 fun saveToFile(context: Context, binding: FragmentSecondBinding) {
