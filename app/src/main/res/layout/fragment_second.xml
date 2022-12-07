@@ -16,9 +16,9 @@
         android:padding="8dp"
         android:text="Motions:"
         android:textSize="16sp"
-        android:textColor="#E6BF793B"
+        android:textColor="@color/motion_timeline_label"
         android:rotation="-90"
-        android:background="#99F2F2F2"
+        android:background="@color/timeline_label_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/dotted_button"
         app:layout_constraintStart_toEndOf="@id/llLeft"
@@ -29,12 +29,12 @@
         android:id="@+id/soundsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#99F2F2F2"
+        android:background="@color/timeline_label_background"
         android:gravity="center"
         android:padding="8dp"
         android:rotation="-90"
         android:text="Sounds:"
-        android:textColor="#E6BF793B"
+        android:textColor="@color/sound_timeline_label"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@id/hsvSounds"
         app:layout_constraintEnd_toStartOf="@id/dotted_button1"
@@ -114,7 +114,7 @@
                     android:gravity="center"
                     android:text="+"
                     android:textSize="40sp"
-                    android:textColor="#964D56"
+                    android:textColor="@color/motion"
                     android:textStyle="bold"/>
             </FrameLayout>
         </LinearLayout>
@@ -152,7 +152,7 @@
                     android:gravity="center"
                     android:text="+"
                     android:textSize="40sp"
-                    android:textColor="#BF793B"/>
+                    android:textColor="@color/sound"/>
             </FrameLayout>
         </LinearLayout>
     </HorizontalScrollView>
