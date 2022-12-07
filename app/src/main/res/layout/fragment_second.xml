@@ -96,7 +96,7 @@
     <HorizontalScrollView
         android:id="@+id/hsvSounds"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="145dp"
         android:layout_centerHorizontal="true"
         app:layout_constraintBottom_toTopOf="@id/hsvBottom"
         app:layout_constraintEnd_toStartOf="@+id/tabsRight"
@@ -134,7 +134,7 @@
     <HorizontalScrollView
         android:id="@+id/hsvBottom"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="145dp"
         android:layout_centerHorizontal="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tabsRight"
