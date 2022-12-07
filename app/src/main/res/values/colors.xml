@@ -24,5 +24,6 @@
 
     <color name ="dotted_button_white">#cccccc</color>
     <color name ="dotted_button_gray">#99F2F2F2</color>
+    <color name ="dotted_button_trash">#B3964D56</color>
 
 </resources>

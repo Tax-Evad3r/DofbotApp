@@ -10,6 +10,6 @@
         android:right="7dp" android:bottom="7dp" />
     <corners android:radius="2dp" />
     <solid
-        android:color="@color/dotted_button_gray"
+        android:color="@color/dotted_button_trash"
         />
 </shape>
