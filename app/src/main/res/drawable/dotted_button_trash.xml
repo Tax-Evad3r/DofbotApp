@@ -3,13 +3,13 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <stroke
         android:width="2dp"
-        android:color="#cccccc"
+        android:color="@color/dotted_button_white"
         android:dashWidth="12dp"
         android:dashGap="10dp"/>
     <padding android:left="7dp" android:top="7dp"
         android:right="7dp" android:bottom="7dp" />
     <corners android:radius="2dp" />
     <solid
-        android:color="#B3964D56"
+        android:color="@color/dotted_button_trash"
         />
 </shape>

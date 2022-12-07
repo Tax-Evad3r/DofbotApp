@@ -20,13 +20,14 @@
             android:id="@+id/motionsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/motion_timeline_label"
+            android:background="@color/timeline_label_background"
             android:layout_marginBottom="10dp"
-            android:background="#99F2F2F2"
             android:layout_gravity="center_vertical"
             android:padding="8dp"
             android:rotation="-90"
             android:text="Motions:"
-            android:textColor="#E6BF793B"
             android:textSize="16sp"/>
     </FrameLayout>
 
@@ -44,12 +45,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:background="#99F2F2F2"
+            android:background="@color/timeline_label_background"
             android:layout_gravity="center_vertical"
             android:padding="8dp"
             android:rotation="-90"
             android:text="Sounds:"
-            android:textColor="#E6BF793B"
+            android:textColor="@color/sound_timeline_label"
             android:textSize="16sp" />
     </FrameLayout>
 
@@ -58,7 +59,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:alpha="0.8"
-        android:layout_marginTop="-10dp"
+        android:layout_marginTop="-13dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -163,7 +164,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="+"
-                    android:textColor="#964D56"
+                    android:textColor="@color/motion"
                     android:textSize="40sp"
                     android:textStyle="bold" />
             </FrameLayout>
@@ -218,6 +219,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="-13dp"
+        android:layout_marginStart="-13dp"
         app:layout_constraintEnd_toStartOf="@id/tabsRight"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -232,12 +234,16 @@
             android:theme="@style/button"
             app:cornerRadius="8dp"
             app:strokeColor="@color/button_border"
-            app:strokeWidth="3dp" />
+            app:strokeWidth="3dp"
+            android:drawableLeft="?attr/homeAsUpIndicator"
+            android:drawableTint="@color/white"
+            />
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="2" />
+            android:layout_weight="1"
+            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonRun"

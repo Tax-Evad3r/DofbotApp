@@ -14,7 +14,16 @@
     <color name ="text_dark">#505053</color>
     <color name ="motion">#964D56</color>
     <color name ="sound">#BF793B</color>
+    <color name ="sound_background">#B3F2F2F2</color>
     <color name ="tabs_motion">#964D56</color>
     <color name ="tabs_sound">#BF793B</color>
+
+    <color name ="timeline_label_background">#99F2F2F2</color>
+    <color name ="motion_timeline_label">#964D56</color>
+    <color name ="sound_timeline_label">#BF793B</color>
+
+    <color name ="dotted_button_white">#cccccc</color>
+    <color name ="dotted_button_gray">#99F2F2F2</color>
+    <color name ="dotted_button_trash">#B3964D56</color>
 
 </resources>

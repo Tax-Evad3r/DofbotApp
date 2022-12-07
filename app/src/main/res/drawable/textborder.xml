@@ -2,8 +2,8 @@
 <inset xmlns:android="http://schemas.android.com/apk/res/android">
 
     <shape android:shape="rectangle">
-        <solid android:color="#B3F2F2F2" />
-        <stroke android:width="4dp" android:color="#BF793B" />
+        <solid android:color="@color/sound_background" />
+        <stroke android:width="4dp" android:color="@color/sound" />
         <corners android:radius="4dp" />
     </shape>
 

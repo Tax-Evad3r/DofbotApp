@@ -14,7 +14,7 @@
     <string name="Welcome">Please setup WiFi to continue</string>
     <string name="Physical"><b>Physical</b>\nTest Run</string>
     <string name="Virtual"><b>Virtual</b>\nTest Run</string>
-    <string name="Save"><b>Save\n&amp; Quit</b></string>
+    <string name="Save"><b>Save\n&amp;\n Quit</b></string>
     <string name="EraseMotion"><b>Erase</b>\nMotion Bar</string>
     <string name="EraseSound"><b>Erase</b>\nSound Bar</string>
     <string name="remove">Remove</string>

@@ -17,7 +17,7 @@
     android:layout_gravity="bottom"
     android:textAlignment="center"
     android:text="sound"
-    app:strokeColor="#964D56"
+    app:strokeColor="@color/motion"
     app:strokeWidth="6dp"
     android:background="@drawable/textborder"
     android:shadowColor="@color/black"
