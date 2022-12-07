@@ -52,11 +52,16 @@
 
     </FrameLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_first"
         android:layout_width="204dp"
         android:layout_height="86dp"
         android:text="@string/New_session"
+        android:textColor="@color/white"
+        app:strokeColor="@color/button_border"
+        app:strokeWidth="3dp"
+        android:theme="@style/button"
+        android:alpha="0.7"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.642"
@@ -64,11 +69,16 @@
         app:layout_constraintTop_toBottomOf="@+id/textview_first"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_resume"
         android:layout_width="204dp"
         android:layout_height="86dp"
         android:text="@string/Resume_session"
+        android:theme="@style/button"
+        android:textColor="@color/white"
+        app:strokeColor="@color/button_border"
+        app:strokeWidth="3dp"
+        android:alpha="0.7"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.642"

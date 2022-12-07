@@ -301,15 +301,6 @@ class SecondFragment : Fragment() {
                         requestdata += availableMotions[motionId]
                     }
                 }
-                /*
-                //add motions to request
-                for (i in motionNumList) {
-                    if(i == availableMotions.size){
-                        continue
-                    }
-                    requestdata += availableMotions[i]
-                }
-                */
                 //convert request to json
                 val jsonRequestdata = requestdata.toJson()
                 //TODO: Remove when debug is no longer needed!
