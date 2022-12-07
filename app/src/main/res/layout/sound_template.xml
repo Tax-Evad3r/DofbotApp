@@ -2,21 +2,25 @@
 <com.google.android.material.textview.MaterialTextView
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sound999"
     android:layout_width="100dp"
     android:layout_height="100dp"
-    android:layout_margin="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginBottom="4dp"
     android:contentDescription="sound_template"
     android:textStyle="bold"
     android:textSize="12pt"
     android:fontStyle="italic"
     android:textColor="@color/white"
+    android:layout_gravity="bottom"
     android:textAlignment="center"
     android:text="sound"
     app:strokeColor="#964D56"
     app:strokeWidth="6dp"
     android:background="@drawable/textborder"
     android:shadowColor="@color/black"
-    />
+    tools:ignore="RtlCompat" />
 
 

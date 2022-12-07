@@ -9,4 +9,5 @@
     app:strokeColor="#964D56"
     app:strokeWidth="8dp"
     android:contentDescription="motion_template"
+    android:layout_gravity="bottom"
     />

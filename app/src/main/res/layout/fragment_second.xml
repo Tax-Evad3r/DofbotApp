@@ -8,39 +8,50 @@
     tools:context=".SecondFragment">
 
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/motionsText"
+    <FrameLayout
+        android:id="@+id/flMotionText"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="8dp"
-        android:text="Motions:"
-        android:textSize="16sp"
-        android:textColor="#E6BF793B"
-        android:rotation="-90"
-        android:background="#99F2F2F2"
+        android:layout_height="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/dotted_button"
-        app:layout_constraintStart_toEndOf="@id/llLeft"
-        app:layout_constraintTop_toTopOf="@+id/hsvBottom"
-        tools:ignore="NotSibling" />
+        app:layout_constraintEnd_toStartOf="@+id/hsvBottom"
+        app:layout_constraintStart_toEndOf="@id/llLeft">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/soundsText"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/motionsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="#99F2F2F2"
+            android:layout_gravity="center_vertical"
+            android:padding="8dp"
+            android:rotation="-90"
+            android:text="Motions:"
+            android:textColor="#E6BF793B"
+            android:textSize="16sp"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/flSoundText"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#99F2F2F2"
-        android:gravity="center"
-        android:padding="8dp"
-        android:rotation="-90"
-        android:text="Sounds:"
-        android:textColor="#E6BF793B"
-        android:textSize="16sp"
+        android:layout_height="100dp"
         app:layout_constraintBottom_toBottomOf="@id/hsvSounds"
-        app:layout_constraintEnd_toStartOf="@id/dotted_button1"
+        app:layout_constraintEnd_toStartOf="@+id/hsvBottom"
         app:layout_constraintStart_toEndOf="@id/llLeft"
-        app:layout_constraintTop_toTopOf="@+id/hsvSounds"
-        tools:ignore="NotSibling" />
+        tools:ignore="NotSibling">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/soundsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="#99F2F2F2"
+            android:layout_gravity="center_vertical"
+            android:padding="8dp"
+            android:rotation="-90"
+            android:text="Sounds:"
+            android:textColor="#E6BF793B"
+            android:textSize="16sp" />
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/tabsRight"
@@ -83,56 +94,19 @@
     </LinearLayout>
 
     <HorizontalScrollView
-        android:id="@+id/hsvBottom"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tabsRight"
-        app:layout_constraintStart_toEndOf="@+id/motionsText">
-
-        <LinearLayout
-            android:id="@+id/llBottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="motion_timeline"
-            android:orientation="horizontal">
-
-            <FrameLayout
-                android:id="@+id/dotted_button"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignParentEnd="true"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="8dp"
-                android:background="@drawable/dotted_button"
-                android:contentDescription="placeholder_motion">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="+"
-                    android:textSize="40sp"
-                    android:textColor="#964D56"
-                    android:textStyle="bold"/>
-            </FrameLayout>
-        </LinearLayout>
-    </HorizontalScrollView>
-
-    <HorizontalScrollView
         android:id="@+id/hsvSounds"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
         android:layout_centerHorizontal="true"
         app:layout_constraintBottom_toTopOf="@id/hsvBottom"
         app:layout_constraintEnd_toStartOf="@+id/tabsRight"
-        app:layout_constraintStart_toEndOf="@+id/motionsText">
+        app:layout_constraintStart_toEndOf="@+id/flMotionText">
 
         <LinearLayout
             android:id="@+id/llBottomSounds"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
             android:contentDescription="sounds_timeline"
             android:orientation="horizontal">
 
@@ -141,7 +115,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_alignParentEnd="true"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="bottom|center_vertical"
                 android:layout_margin="8dp"
                 android:background="@drawable/dotted_button"
                 android:contentDescription="placeholder_sounds">
@@ -151,8 +125,47 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="+"
+                    android:textColor="#BF793B"
+                    android:textSize="40sp" />
+            </FrameLayout>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <HorizontalScrollView
+        android:id="@+id/hsvBottom"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tabsRight"
+        app:layout_constraintStart_toEndOf="@+id/flMotionText">
+
+        <LinearLayout
+            android:id="@+id/llBottom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:contentDescription="motion_timeline"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/dotted_button"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="bottom|center_vertical"
+                android:layout_margin="8dp"
+                android:background="@drawable/dotted_button"
+                android:contentDescription="placeholder_motion">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="+"
+                    android:textColor="#964D56"
                     android:textSize="40sp"
-                    android:textColor="#BF793B"/>
+                    android:textStyle="bold" />
             </FrameLayout>
         </LinearLayout>
     </HorizontalScrollView>
