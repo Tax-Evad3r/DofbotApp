@@ -146,7 +146,7 @@ class SecondFragment : Fragment() {
         var stationaryDestination = binding.llRightMotions
         val stationaryMotionView = LayoutInflater.from(this.context).inflate(R.layout.motionlib_template, stationaryDestination, false) as ShapeableImageView
         stationaryMotionView.contentDescription = "stationary"
-        Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/hourglass.gif")).into(stationaryMotionView)
+        Glide.with(this.requireContext()).load(Uri.parse("file:///android_asset/gifs/sleep.gif")).into(stationaryMotionView)
         stationaryDestination.addView(stationaryMotionView)
         createDragAndDropListener(stationaryMotionView)
 
@@ -465,7 +465,7 @@ class SecondFragment : Fragment() {
                     newMotionView.contentDescription =
                         view.contentDescription.toString() + editText.text.toString()
                     Glide.with(this.context)
-                        .load(Uri.parse("file:///android_asset/gifs/hourglass.gif"))
+                        .load(Uri.parse("file:///android_asset/gifs/sleep.gif"))
                         .into(newMotionView)
                     destination.addView(newMotionView)
                     createDragAndDropListener(newMotionView)
@@ -787,7 +787,7 @@ fun loadFromFile(context: Context, binding: FragmentSecondBinding, importedSound
             } else if (savedMotion.contains("stationary")) {
                 val newMotionView = LayoutInflater.from(context).inflate(R.layout.motion_template, binding.llBottom, false) as ShapeableImageView
                 newMotionView.contentDescription = "stationary${savedMotion.filter { it.isDigit() }}"
-                Glide.with(context).load(Uri.parse("file:///android_asset/gifs/hourglass.gif")).into(newMotionView)
+                Glide.with(context).load(Uri.parse("file:///android_asset/gifs/sleep.gif")).into(newMotionView)
                 binding.llBottom.addView(newMotionView)
                 createDragAndDropListener(newMotionView)
             }
