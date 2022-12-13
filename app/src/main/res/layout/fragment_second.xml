@@ -391,20 +391,26 @@
 
     <LinearLayout
         android:id="@+id/llPlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="350dp"
+        android:layout_height="250dp"
         android:contentDescription="play"
         android:orientation="vertical"
+        android:background="@drawable/dotted_button"
+        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/hsvSounds"
         app:layout_constraintEnd_toEndOf="@+id/scRightMotions"
-        app:layout_constraintStart_toEndOf="@+id/llTrash"
+        app:layout_constraintStart_toStartOf="@+id/llLeft"
         app:layout_constraintTop_toBottomOf="@+id/llTop">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Play"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            android:paddingHorizontal="20dp"/>
 
-        <ImageView
-            android:id="@+id/play"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:src="@drawable/play" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

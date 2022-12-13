@@ -141,7 +141,7 @@ class SecondFragment : Fragment() {
         binding.trash.visibility = View.INVISIBLE
         binding.llTrash.visibility = View.INVISIBLE
         binding.llPlay.setOnDragListener(dragListener)
-        binding.play.visibility = View.INVISIBLE
+        binding.llPlay.visibility = View.INVISIBLE
 
         var stationaryDestination = binding.llRightMotions
         val stationaryMotionView = LayoutInflater.from(this.context).inflate(R.layout.motionlib_template, stationaryDestination, false) as ShapeableImageView
@@ -351,7 +351,7 @@ class SecondFragment : Fragment() {
                             binding.llTrash.visibility = View.VISIBLE
                         }
                         if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
-                            binding.play.visibility = View.VISIBLE
+                            binding.llPlay.visibility = View.VISIBLE
                         }
                         if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
                         {
@@ -388,7 +388,7 @@ class SecondFragment : Fragment() {
                     binding.trash.visibility = View.INVISIBLE
                     binding.llTrash.visibility = View.INVISIBLE
                     binding.llPlay.alpha = 1.0f
-                    binding.play.visibility = View.INVISIBLE
+                    binding.llPlay.visibility = View.INVISIBLE
 
                     val v = event.localState as View
                     val owner = v.parent as ViewGroup
@@ -439,7 +439,7 @@ class SecondFragment : Fragment() {
                     v.visibility = View.VISIBLE
                     binding.trash.visibility = View.INVISIBLE
                     binding.llTrash.visibility = View.INVISIBLE
-                    binding.play.visibility = View.INVISIBLE
+                    binding.llPlay.visibility = View.INVISIBLE
                     view.invalidate()
                     true
                 }
