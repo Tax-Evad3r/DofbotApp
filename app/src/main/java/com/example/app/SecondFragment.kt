@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.animation.doOnEnd
 import androidx.core.text.HtmlCompat
@@ -131,7 +132,6 @@ class SecondFragment : Fragment() {
                 }
             }
         }
-
 
         binding.llRightMotions.setOnDragListener(dragListener)
         binding.llBottom.setOnDragListener(dragListener)
@@ -336,6 +336,7 @@ class SecondFragment : Fragment() {
 
     private val dragListener = View.OnDragListener { view, event ->
         if (event.localState != null){
+            var x = 0 as Int
             when(event.action){
                 DragEvent.ACTION_DRAG_STARTED -> {
                     event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
@@ -373,7 +374,24 @@ class SecondFragment : Fragment() {
 
                     true
                 }
-                DragEvent.ACTION_DRAG_LOCATION -> true
+                DragEvent.ACTION_DRAG_LOCATION -> {
+                    val v = event.localState as View
+                    val owner = v.parent as ViewGroup
+                    val destination = view as LinearLayout
+
+                    /* Scroll functionality with drag and drop support */
+                    if(owner.contentDescription == destination.contentDescription){
+                        if(owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib"){
+                            val dp = destination.parent as ScrollView
+                            dp.scrollTo(dp.scrollX,(dp.scrollY+v.height/2+v.y-event.y).toInt())
+                        }
+                        if(owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline" ){
+                            val dp = destination.parent as android.widget.HorizontalScrollView
+                            dp.scrollTo((dp.scrollX+v.width/2+v.x-event.x).toInt(),dp.scrollY)
+                        }
+                    }
+                    true
+                }
                 DragEvent.ACTION_DRAG_EXITED -> {
                     setTimelineAlpha(binding,tabSelected)
 
