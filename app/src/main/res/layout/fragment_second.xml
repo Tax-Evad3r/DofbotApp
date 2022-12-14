@@ -126,7 +126,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="+"
-                    android:textColor="#BF793B"
+                    android:textColor="@color/sound"
                     android:textSize="40sp" />
             </FrameLayout>
         </LinearLayout>
