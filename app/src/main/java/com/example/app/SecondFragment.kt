@@ -339,21 +339,23 @@ class SecondFragment : Fragment() {
             var x = 0 as Int
             when(event.action){
                 DragEvent.ACTION_DRAG_STARTED -> {
+                    val v = event.localState as View
+                    v.visibility = View.VISIBLE
+                    val owner = v.parent as ViewGroup
+                    if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
+                        binding.trash.visibility = View.VISIBLE
+                        binding.llTrash.visibility = View.VISIBLE
+                    }
+                    if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
+                        binding.llPlay.visibility = View.VISIBLE
+                    }
                     event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 }
                 DragEvent.ACTION_DRAG_ENTERED -> {
 
                         val v = event.localState as View
-                        v.visibility = View.VISIBLE
                         val owner = v.parent as ViewGroup
                         val destination = view as LinearLayout
-                        if (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline") {
-                            binding.trash.visibility = View.VISIBLE
-                            binding.llTrash.visibility = View.VISIBLE
-                        }
-                        if (owner.contentDescription == "motion_lib" || owner.contentDescription == "sounds_lib") {
-                            binding.llPlay.visibility = View.VISIBLE
-                        }
                         if (destination.contentDescription == "motion_timeline" && owner.contentDescription == "motion_lib")
                         {
                             binding.llBottom.alpha = 0.3f
@@ -520,6 +522,7 @@ class SecondFragment : Fragment() {
                     destination.addView(newSoundView)
                     createDragAndDropListener(newSoundView)
                     destination.addView(placeHolder)
+                    saveToFile(view.context, binding)
                 }
 
             }
