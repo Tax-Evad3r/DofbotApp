@@ -415,11 +415,15 @@ class SecondFragment : Fragment() {
                     if (destination.contentDescription == "trash" && (owner.contentDescription == "motion_timeline" || owner.contentDescription == "sounds_timeline")) {
                         owner.removeView(v)
                     } else if (destination.contentDescription == "play" && owner.contentDescription == "motion_lib") {
-                        var requestdata = availableMotions[getId(v)]
-                        val jsonRequestdata = requestdata.toJson()
-                        SendData().send(jsonRequestdata, connectionError)
+                        if(v.contentDescription != "stationary") {
+                            var requestdata = availableMotions[getId(v)]
+                            val jsonRequestdata = requestdata.toJson()
+                            SendData().send(jsonRequestdata, connectionError)
+                        }
                     } else if (destination.contentDescription == "play" && owner.contentDescription == "sounds_lib") {
-                        playSound(this.requireContext(), importedSounds[getId(v)], 2000)
+                        if(v.contentDescription != "stationary") {
+                            playSound(this.requireContext(), importedSounds[getId(v)], 2000)
+                        }
                     } else if (owner.contentDescription == "motion_lib" && destination.contentDescription == "motion_timeline") {
                         if(v.contentDescription == "stationary"){
                             addStationaryMotion(v, destination,"Enter sleep time in ms.")
